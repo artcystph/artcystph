@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>artcyst.ph — handcrafted for minds in motion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --nude: #fdf6f0;
+    --cream: #faeee6;
+    --dusty-rose: #d4879c;
+    --muted-salmon: #c97b8a;
+    --deep-mauve: #8b4d63;
+    --terracotta: #c4607a;
+    --champagne: #e8d5c4;
+    --warm-brown: #7a4f3a;
+    --text-dark: #2d1f1f;
+    --text-mid: #6b4a4a;
+    --text-light: #a08080;
+    --border: #e8d5c4;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--nude);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* ── Typography ── */
+  .serif { font-family: 'DM Serif Display', serif; }
+  .italic-serif { font-family: 'Playfair Display', serif; font-style: italic; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb { background: var(--dusty-rose); border-radius: 3px; }
+
+  /* ── Nav ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(253,246,240,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { height: 42px; }
+  .nav-links a {
+    font-size: 13px; font-weight: 500; color: var(--text-mid);
+    text-decoration: none; margin-left: 28px; letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--terracotta); }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(155deg, #fdf6f0 0%, #faeee6 40%, #f5e0d5 100%);
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 120px 24px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -60px; right: -80px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(196,96,122,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; left: -60px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(212,135,156,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-logo { height: 110px; margin: 0 auto 32px; filter: drop-shadow(0 4px 20px rgba(139,77,99,0.15)); }
+  .hero h1 { font-size: clamp(42px, 7vw, 80px); color: var(--deep-mauve); line-height: 1.05; margin-bottom: 16px; }
+  .hero-sub { font-size: 15px; color: var(--text-light); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 40px; }
+  .btn-primary {
+    display: inline-block; padding: 16px 48px;
+    background: var(--terracotta); color: #fff;
+    border: none; border-radius: 50px; font-size: 15px; font-weight: 600;
+    cursor: pointer; letter-spacing: 0.05em; text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    box-shadow: 0 6px 24px rgba(196,96,122,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(196,96,122,0.45); background: var(--deep-mauve); }
+  .btn-secondary {
+    display: inline-block; padding: 12px 32px;
+    background: transparent; color: var(--terracotta);
+    border: 1.5px solid var(--terracotta); border-radius: 50px;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    transition: all 0.2s; text-decoration: none;
+  }
+  .btn-secondary:hover { background: var(--terracotta); color: #fff; }
+
+  /* ── Section Shells ── */
+  section { padding: 80px 24px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--dusty-rose); margin-bottom: 10px;
+  }
+  .section-title { font-size: clamp(28px, 4vw, 48px); color: var(--deep-mauve); margin-bottom: 8px; }
+  .section-sub { font-size: 15px; color: var(--text-light); max-width: 500px; margin-bottom: 48px; }
+
+  /* ── Customizer Layout ── */
+  #customizer { background: var(--cream); }
+  .customizer-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 48px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .customizer-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Step Cards ── */
+  .step-card {
+    background: #fff; border-radius: 20px; padding: 28px;
+    border: 1px solid var(--border); margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(139,77,99,0.06);
+  }
+  .step-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 22px;
+    cursor: pointer;
+  }
+  .step-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--terracotta); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .step-title { font-size: 16px; font-weight: 600; color: var(--deep-mauve); }
+  .step-body { display: block; }
+  .step-body.collapsed { display: none; }
+
+  /* ── Option Pills ── */
+  .option-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .opt-pill {
+    padding: 8px 18px; border-radius: 50px;
+    border: 1.5px solid var(--border); font-size: 13px; font-weight: 500;
+    background: #fff; color: var(--text-mid); cursor: pointer;
+    transition: all 0.18s;
+  }
+  .opt-pill:hover { border-color: var(--dusty-rose); color: var(--deep-mauve); }
+  .opt-pill.active { background: var(--terracotta); color: #fff; border-color: var(--terracotta); }
+
+  /* ── Color Swatches ── */
+  .swatch-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .swatch {
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+    border: 3px solid transparent;
+    transition: transform 0.18s, border-color 0.18s;
+    position: relative;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch.active { border-color: var(--terracotta); box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--terracotta); }
+  .swatch-label { font-size: 11px; text-align: center; color: var(--text-light); margin-top: 4px; }
+  .swatch-wrap { display: flex; flex-direction: column; align-items: center; }
+
+  /* Leather colors */
+  .lc-coal { background: #2c2c2c; }
+  .lc-wine { background: #5c1a2a; }
+  .lc-latte { background: #a0673a; }
+  .lc-lychee { background: #e8b4b0; }
+  .lc-pistachio { background: #7a9b5e; }
+  .lc-sky { background: #7aa8c0; }
+  .lc-midnight { background: #1e3a7a; }
+  .lc-taro { background: #8e8aad; }
+
+  /* Cord colors */
+  .cc-petal { background: #e8a4b0; }
+  .cc-rose { background: #d42060; }
+  .cc-lavender { background: #9b7fd4; }
+  .cc-bone { background: #d4c8a8; }
+  .cc-orange { background: #e87040; }
+  .cc-mahogany { background: #2c1a10; }
+  .cc-sky { background: #7aa8c0; }
+  .cc-peacock { background: #008080; }
+  .cc-mint { background: #6dba8a; }
+  .cc-rust { background: #7a2020; }
+  .cc-apple { background: #8aaa28; }
+
+  /* ── Range / Input ── */
+  input[type="text"], input[type="email"], input[type="tel"], textarea, select {
+    width: 100%; padding: 10px 14px;
+    border: 1.5px solid var(--border); border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    background: #fff; color: var(--text-dark);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--dusty-rose); }
+  label.field-label { font-size: 13px; font-weight: 500; color: var(--text-mid); margin-bottom: 6px; display: block; }
+
+  /* ── Preview Panel ── */
+  .preview-panel {
+    position: sticky; top: 90px;
+    background: #fff; border-radius: 24px; padding: 28px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 24px rgba(139,77,99,0.08);
+  }
+  .preview-title { font-size: 14px; font-weight: 600; color: var(--deep-mauve); margin-bottom: 16px; text-align: center; }
+
+  /* ── Folio SVG Preview ── */
+  #folio-preview { width: 100%; height: 280px; position: relative; }
+  .folio-svg { width: 100%; height: 100%; }
+
+  /* ── Order Summary ── */
+  .summary-line {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .summary-line:last-child { border-bottom: none; }
+  .summary-key { color: var(--text-mid); }
+  .summary-val { font-weight: 500; color: var(--text-dark); text-align: right; max-width: 180px; }
+  .summary-total {
+    display: flex; justify-content: space-between;
+    padding: 14px 0 0; margin-top: 8px;
+    font-size: 18px; font-weight: 700; color: var(--deep-mauve);
+  }
+
+  /* ── Charm Tier Cards ── */
+  .charm-tiers { display: flex; flex-direction: column; gap: 12px; }
+  .charm-tier-card {
+    border: 1.5px solid var(--border); border-radius: 14px; padding: 14px 18px;
+  }
+  .tier-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+  .tier-badge {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    padding: 3px 10px; border-radius: 50px; background: var(--cream); color: var(--terracotta);
+  }
+  .tier-price { font-size: 13px; color: var(--text-light); }
+  .tier-charms { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .charm-btn {
+    padding: 6px 14px; border-radius: 50px; border: 1.5px solid var(--border);
+    font-size: 12px; font-weight: 500; background: #fff; color: var(--text-mid);
+    cursor: pointer; transition: all 0.18s;
+  }
+  .charm-btn:hover { border-color: var(--dusty-rose); }
+  .charm-btn.selected { background: var(--terracotta); color: #fff; border-color: var(--terracotta); }
+  .charm-placement-row { margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .charm-placement-row label { font-size: 12px; color: var(--text-mid); }
+  .charm-placement-row select { width: auto; padding: 6px 10px; font-size: 12px; }
+
+  /* Stacked per-charm placement rows */
+  [id$="-placements"] { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+  [id$="-placements"] .charm-placement-row {
+    background: rgba(212,135,156,0.06); border-radius: 8px;
+    padding: 6px 10px; margin-top: 0;
+  }
+
+  /* Tier reference images */
+  .charm-tier-card .nav-logo {
+    display: block; height: 56px; object-fit: contain;
+    border-radius: 8px; border: 1px solid var(--border);
+    background: var(--cream); padding: 4px;
+  }
+
+  /* ── Toggle ── */
+  .toggle-group { display: flex; gap: 0; background: var(--cream); border-radius: 50px; padding: 3px; width: fit-content; }
+  .toggle-btn {
+    padding: 8px 22px; border-radius: 50px; border: none;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    background: transparent; color: var(--text-mid); transition: all 0.2s;
+  }
+  .toggle-btn.active { background: var(--terracotta); color: #fff; }
+
+  /* ── Engraving Preview ── */
+  .engraving-zone-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px;
+  }
+  .zone-card {
+    border: 1.5px solid var(--border); border-radius: 12px; padding: 12px;
+    font-size: 12px;
+  }
+  .zone-card.active-zone { border-color: var(--dusty-rose); background: rgba(212,135,156,0.05); }
+  .zone-name { font-weight: 600; color: var(--deep-mauve); margin-bottom: 4px; }
+  .zone-desc { color: var(--text-light); font-size: 11px; }
+
+  /* ── Payment Section ── */
+  #payment { background: var(--nude); }
+  .payment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .qr-card {
+    background: #fff; border-radius: 20px; padding: 20px; text-align: center;
+    border: 1.5px solid var(--border);
+    box-shadow: 0 2px 12px rgba(139,77,99,0.06);
+  }
+  .qr-card img { width: 140px; height: 140px; object-fit: contain; margin: 12px auto; display: block; }
+  .qr-bank { font-weight: 700; font-size: 14px; color: var(--deep-mauve); }
+  .qr-name { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+  /* ── Upload box ── */
+  .upload-box {
+    border: 2px dashed var(--border); border-radius: 16px; padding: 32px;
+    text-align: center; cursor: pointer; transition: border-color 0.2s;
+  }
+  .upload-box:hover { border-color: var(--dusty-rose); }
+  .upload-box input { display: none; }
+  .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .upload-text { font-size: 14px; color: var(--text-light); }
+  .upload-text span { color: var(--terracotta); font-weight: 600; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(45,31,31,0.6); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center; padding: 24px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--nude); border-radius: 28px; padding: 40px;
+    max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(45,31,31,0.25);
+    animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes modalIn { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .modal-title { font-size: 26px; color: var(--deep-mauve); margin-bottom: 6px; }
+  .modal-sub { font-size: 14px; color: var(--text-light); margin-bottom: 28px; }
+
+  .zoom-hint-label {
+    font-size: 10px; color: var(--text-light); letter-spacing: 0.08em;
+    text-align: center; margin-top: 2px; margin-bottom: 6px;
+  }
+
+  /* ── Tap-to-Zoom ── */
+  .zoomable {
+    cursor: zoom-in;
+    transition: transform 0.18s;
+    position: relative;
+  }
+  .zoomable:hover { transform: scale(1.04); }
+  .zoom-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(45,31,31,0.82); backdrop-filter: blur(10px);
+    align-items: center; justify-content: center; padding: 24px;
+    cursor: zoom-out;
+  }
+  .zoom-overlay.open { display: flex; }
+  .zoom-overlay img {
+    max-width: 92vw; max-height: 88vh;
+    object-fit: contain; border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(45,31,31,0.4);
+    animation: zoomIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .zoom-close {
+    position: absolute; top: 20px; right: 24px;
+    font-size: 28px; color: #fff; cursor: pointer;
+    background: rgba(45,31,31,0.5); border-radius: 50%;
+    width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .zoom-close:hover { background: rgba(196,96,122,0.7); }
+  .zoom-hint {
+    position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; color: rgba(255,255,255,0.6); letter-spacing: 0.08em;
+    pointer-events: none;
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--deep-mauve); color: #fff; padding: 14px 32px;
+    border-radius: 50px; font-size: 14px; font-weight: 500;
+    opacity: 0; pointer-events: none; z-index: 300;
+    transition: all 0.3s; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── Footer ── */
+  footer {
+    background: var(--text-dark); color: rgba(255,255,255,0.6);
+    padding: 48px 40px; text-align: center;
+  }
+  footer .footer-logo { height: 48px; margin: 0 auto 16px; opacity: 0.8; }
+  footer p { font-size: 13px; margin-bottom: 6px; }
+
+  /* ── Animations ── */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
+  .fade-in.visible { opacity: 1; transform: none; }
+
+  /* ── Divider ── */
+  .petal-divider {
+    text-align: center; font-size: 22px; color: var(--dusty-rose);
+    letter-spacing: 12px; margin: 8px 0;
+  }
+
+  /* Misc helpers */
+  .price-pill {
+    display: inline-block; padding: 3px 10px; border-radius: 50px;
+    background: rgba(196,96,122,0.1); color: var(--terracotta);
+    font-size: 12px; font-weight: 600;
+  }
+  .info-box {
+    background: rgba(212,135,156,0.08); border-left: 3px solid var(--dusty-rose);
+    border-radius: 0 10px 10px 0; padding: 12px 16px;
+    font-size: 13px; color: var(--text-mid); margin: 12px 0;
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+  .field-group { margin-bottom: 14px; }
+  .required { color: var(--terracotta); }
+
+  /* Engraving letter counter */
+  #letter-count { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+  #letter-count .warn { color: var(--terracotta); font-weight: 600; }
+
+  /* Addon checkbox row */
+  .addon-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .addon-row:last-child { border-bottom: none; }
+  .addon-check {
+    width: 20px; height: 20px; accent-color: var(--terracotta); cursor: pointer; flex-shrink: 0;
+  }
+  .addon-info { flex: 1; }
+  .addon-name { font-size: 14px; font-weight: 500; color: var(--text-dark); }
+  .addon-desc { font-size: 12px; color: var(--text-light); }
+  .addon-price { font-size: 14px; font-weight: 600; color: var(--terracotta); }
+
+  /* Shipping */
+  .ship-option {
+    border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 18px;
+    cursor: pointer; transition: all 0.18s; margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .ship-option.selected { border-color: var(--terracotta); background: rgba(196,96,122,0.05); }
+  .ship-option.disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Progress bar */
+  .progress-bar { background: var(--border); height: 4px; border-radius: 2px; margin-bottom: 32px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--dusty-rose), var(--terracotta)); border-radius: 2px; transition: width 0.4s; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ NAV ══════════════ -->
+<nav>
+  <img src="images/Logo.png" alt="artcyst.ph" class="nav-logo">
+  <div class="nav-links">
+    <a href="#customizer">Customize</a>
+    <a href="#addons">Add-Ons</a>
+    <a href="#payment">Payment</a>
+    <a href="#checkout">Order</a>
+  </div>
+</nav>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="hero" id="home">
+  <div style="position:relative;z-index:1;">
+    <img src="images/Logo.png" alt="artcyst.ph" class="hero-logo">
+    <p class="section-label">artcyst.ph</p>
+    <h1 class="serif">Build Your<br><em class="italic-serif">Own</em> Folio</h1>
+    <p class="hero-sub">Handcrafted for minds in motion</p>
+    <a href="#customizer" class="btn-primary">✦ Customize Your Journal</a>
+    <p style="margin-top:20px;font-size:13px;color:var(--text-light);">Premium vegan leather · Made to order · 7–10 business days</p>
+  </div>
+</section>
+
+<!-- ══════════════ CUSTOMIZER ══════════════ -->
+<section id="customizer">
+  <div class="container">
+    <div class="section-label">Build Your Folio</div>
+    <h2 class="serif section-title">The Customizer</h2>
+    <p class="section-sub">Every detail is yours to choose — make it unmistakably you.</p>
+
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:10%"></div></div>
+
+    <div class="customizer-grid">
+      <!-- LEFT: Steps -->
+      <div id="steps-panel">
+
+        <!-- STEP 1: Base Size -->
+        <div class="step-card fade-in">
+          <div class="step-header">
+            <div class="step-num">1</div>
+            <div>
+              <div class="step-title">Choose Your Base Folio</div>
+              <div style="font-size:12px;color:var(--text-light);">Select size & fold type</div>
+            </div>
+          </div>
+          <div class="step-body">
+            <div class="option-grid" id="base-options">
+              <button class="opt-pill active" data-base="a6-bifold" data-price="499" onclick="selectBase(this)">A6 Bifold — ₱499</button>
+              <button class="opt-pill" data-base="a6-trifold" data-price="499" onclick="selectBase(this)">A6 Trifold — ₱499</button>
+              <button class="opt-pill" data-base="a5-bifold" data-price="699" onclick="selectBase(this)">A5 Bifold — ₱699</button>
+              <button class="opt-pill" data-base="a5-trifold" data-price="699" onclick="selectBase(this)">A5 Trifold — ₱699</button>
+              <button class="opt-pill" data-base="pp-trifold" data-price="399" onclick="selectBase(this)">Passport Trifold — ₱399</button>
+            </div>
+            <div class="info-box" style="margin-top:14px;">
+              ✦ Includes: 1 cord · 1 free charm · 2 inserts (except PP) · up to 5 letters free engraving
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: Leather -->
+        <div class="step-card fade-in">
+          <div class="step-header">
+            <div class="step-num">2</div>
+            <div>
+              <div class="step-title">Leather Color</div>
+              <div style="font-size:12px;color:var(--text-light);">Premium vegan · Smooth matte texture</div>
+            </div>
+          </div>
+          <div class="step-body">
+            <div class="swatch-grid" id="leather-swatches">
+              <div class="swatch-wrap"><div class="swatch lc-coal active" data-color="Coal" onclick="selectLeather(this)" title="Coal"></div><div class="swatch-label">Coal</div></div>
+              <div class="swatch-wrap"><div class="swatch lc-wine" data-color="Wine" onclick="selectLeather(this)" title="Wine"></div><div class="swatch-label">Wine</div></div>
+              <div class="swatch-wrap"><div class="swatch lc-latte" data-color="Latte" onclick="selectLeather(this)" title="Latte"></div><div class="swatch-label">Latte</div></div>
+              <div class="swatch-wrap"><div class="swatch lc-lychee" data-color="Lychee" onclick="selectLeather(this)" title="Lychee"></div><div class="swatch-label">Lychee</div></div>
+              <div class="swatch-wrap"><div class="swatch lc-pistachio" data-color="Pistachio" onclick="selectLeather(this)" title="Pistachio"></div><div class="swatch-label">Pistachio</div></div>
+              <div class="swatch-wrap"><div class="swatch lc-sky" data-color="Sky" onclick="selectLeather(this)" title="Sky"></div><div class="swatch-label">Sky</div></div>
+              <div class="swatch-wrap"><div class="swatch lc-midnight" data-color="Midnight" onclick="selectLeather(this)" title="Midnight"></div><div class="swatch-label">Midnight</div></div>
+              <div class="swatch-wrap"><div class="swatch lc-taro" data-color="Taro" onclick="selectLeather(this)" title="Taro"></div><div class="swatch-label">Taro</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: Edge & Hardware -->
+        <div class="step-card fade-in">
+          <div class="step-header">
+            <div class="step-num">3</div>
+            <div>
+              <div class="step-title">Edge Shape & Hardware</div>
+            </div>
+          </div>
+          <div class="step-body">
+            <div style="margin-bottom:18px;">
+              <div class="field-label" style="margin-bottom:10px;">Edge Shape</div>
+              <div class="toggle-group" id="edge-toggle">
+                <button class="toggle-btn active" onclick="selectEdge(this,'Round')">Round</button>
+                <button class="toggle-btn" onclick="selectEdge(this,'Sharp')">Sharp</button>
+              </div>
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:10px;">Grommets / Hardware</div>
+              <div class="option-grid" id="hardware-opts">
+                <button class="opt-pill active" onclick="selectOpt('hardware',this,'None',0)">None</button>
+                <button class="opt-pill" onclick="selectOpt('hardware',this,'Gold',0)">Gold</button>
+                <button class="opt-pill" onclick="selectOpt('hardware',this,'Silver',0)">Silver</button>
+              </div>
+              <p style="font-size:12px;color:var(--text-light);margin-top:8px;">No additional charge — colors may vary</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: Cords -->
+        <div class="step-card fade-in">
+          <div class="step-header">
+            <div class="step-num">4</div>
+            <div>
+              <div class="step-title">Cord Colors</div>
+            </div>
+          </div>
+          <div class="step-body">
+            <div style="margin-bottom:20px;">
+              <div class="field-label">Front Cord (Horizontal Wrap)</div>
+              <div class="swatch-grid" id="front-cord-swatches">
+                <!-- generated by JS -->
+              </div>
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:6px;">Inside Cords</div>
+              <div class="info-box">Pick a color for each of S1 (Left), S2 (Middle), and S3 (Right). These run vertically along the spine.</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;" id="inside-cords-grid">
+                <div><div class="field-label">S1 (Left)</div><div class="swatch-grid" id="s1-cord-swatches"></div></div>
+                <div><div class="field-label">S2 (Middle)</div><div class="swatch-grid" id="s2-cord-swatches"></div></div>
+                <div><div class="field-label">S3 (Right)</div><div class="swatch-grid" id="s3-cord-swatches"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5: Engraving -->
+        <div class="step-card fade-in">
+          <div class="step-header">
+            <div class="step-num">5</div>
+            <div>
+              <div class="step-title">Engraving</div>
+              <div style="font-size:12px;color:var(--text-light);">1–5 letters free · 6–10 letters +₱50</div>
+            </div>
+          </div>
+          <div class="step-body">
+            <div class="field-group">
+              <label class="field-label">Your Text <span id="letter-count"></span></label>
+              <input type="text" id="engraving-text" maxlength="10" placeholder="e.g. artcyst ♡" oninput="onEngravingInput(this)" style="letter-spacing:0.1em;">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Font Style</label>
+              <div class="option-grid" id="font-opts">
+                <button class="opt-pill active" onclick="selectOpt('font',this,'3mm Uppercase',0)">3mm UPPERCASE</button>
+                <button class="opt-pill" onclick="selectOpt('font',this,'6mm Uppercase',0)">6mm UPPERCASE</button>
+                <button class="opt-pill" onclick="selectOpt('font',this,'6mm Lowercase',0)">6mm lowercase</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Placement Zone</label>
+              <div style="font-size:12px;color:var(--text-light);margin-bottom:10px;">Outer Flap (1A–1D) · Inner Flap (2A–2D)</div>
+          <img src="images/The Engraving - Placement.png" alt="Free Charms Reference" class="nav-logo zoomable" style="margin:10px 0 6px;height:80px;width:auto;object-fit:contain;" onclick="openZoom(this)" title="Tap to zoom">
+
+              <div class="engraving-zone-grid">
+                <div class="zone-card active-zone" id="zone-1A" onclick="selectZone(this,'1A')">
+                  <div class="zone-name">1A — Outer</div><div class="zone-desc">Horizontal Bottom</div>
+                </div>
+                <div class="zone-card" id="zone-1B" onclick="selectZone(this,'1B')">
+                  <div class="zone-name">1B — Outer</div><div class="zone-desc">Vertical Bottom</div>
+                </div>
+                <div class="zone-card" id="zone-1C" onclick="selectZone(this,'1C')">
+                  <div class="zone-name">1C — Outer</div><div class="zone-desc">Vertical Top</div>
+                </div>
+                <div class="zone-card" id="zone-1D" onclick="selectZone(this,'1D')">
+                  <div class="zone-name">1D — Outer</div><div class="zone-desc">Horizontal Top</div>
+                </div>
+                <div class="zone-card" id="zone-2A" onclick="selectZone(this,'2A')">
+                  <div class="zone-name">2A — Inner</div><div class="zone-desc">Horizontal Bottom</div>
+                </div>
+                <div class="zone-card" id="zone-2B" onclick="selectZone(this,'2B')">
+                  <div class="zone-name">2B — Inner</div><div class="zone-desc">Vertical Bottom</div>
+                </div>
+                <div class="zone-card" id="zone-2C" onclick="selectZone(this,'2C')">
+                  <div class="zone-name">2C — Inner</div><div class="zone-desc">Vertical Top</div>
+                </div>
+                <div class="zone-card" id="zone-2D" onclick="selectZone(this,'2D')">
+                  <div class="zone-name">2D — Inner</div><div class="zone-desc">Horizontal Top</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /steps-panel -->
+
+      <!-- RIGHT: Preview + Summary -->
+      <div>
+        <div class="preview-panel">
+          <div class="preview-title">✦ Live Preview</div>
+          <!-- Folio SVG Preview -->
+          <div id="folio-preview">
+            <svg id="folio-svg" viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" class="folio-svg">
+              <!-- Shadow -->
+              <ellipse cx="160" cy="250" rx="100" ry="10" fill="rgba(45,31,31,0.08)"/>
+              <!-- Back cover -->
+              <rect id="back-cover" x="30" y="20" width="130" height="210" rx="10" fill="#2c2c2c" opacity="0.5"/>
+              <!-- Front cover -->
+              <rect id="front-cover" x="80" y="15" width="170" height="220" rx="10" fill="#2c2c2c"/>
+              <!-- Texture shimmer -->
+              <rect id="cover-shine" x="80" y="15" width="170" height="220" rx="10" fill="url(#leatherGrad)" opacity="0.25"/>
+              <defs>
+                <linearGradient id="leatherGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+                  <stop offset="50%" stop-color="#ffffff" stop-opacity="0"/>
+                  <stop offset="100%" stop-color="#000000" stop-opacity="0.15"/>
+                </linearGradient>
+              </defs>
+              <!-- Front Cord -->
+              <line id="front-cord-line" x1="80" y1="125" x2="250" y2="125" stroke="#d4c8a8" stroke-width="3" stroke-linecap="round"/>
+              <!-- Grommet dots (spine) — vertical layout -->
+              <circle id="g-s1" cx="80" cy="55" r="5" fill="none" stroke="#b8a090" stroke-width="2"/>
+              <circle id="g-s2" cx="80" cy="100" r="5" fill="none" stroke="#b8a090" stroke-width="2"/>
+              <circle id="g-s3" cx="80" cy="145" r="5" fill="none" stroke="#b8a090" stroke-width="2"/>
+              <!-- Spine inside cords — vertical layout -->
+              <line id="inside-s1" x1="80" y1="55" x2="30" y2="55" stroke="#e8a4b0" stroke-width="2.5" stroke-dasharray="4,3" stroke-linecap="round" opacity="0.7"/>
+              <line id="inside-s2" x1="80" y1="100" x2="30" y2="100" stroke="#9b7fd4" stroke-width="2.5" stroke-dasharray="4,3" stroke-linecap="round" opacity="0.7"/>
+              <line id="inside-s3" x1="80" y1="145" x2="30" y2="145" stroke="#6dba8a" stroke-width="2.5" stroke-dasharray="4,3" stroke-linecap="round" opacity="0.7"/>
+              <!-- S1/S2/S3 vertical labels -->
+              <text x="22" y="58" font-family="DM Sans,sans-serif" font-size="8" fill="#a08080" text-anchor="middle">S1</text>
+              <text x="22" y="103" font-family="DM Sans,sans-serif" font-size="8" fill="#a08080" text-anchor="middle">S2</text>
+              <text x="22" y="148" font-family="DM Sans,sans-serif" font-size="8" fill="#a08080" text-anchor="middle">S3</text>
+              <!-- Charm -->
+              <circle id="charm-icon" cx="165" cy="125" r="8" fill="#c4a882" stroke="#a08060" stroke-width="1.5"/>
+              <line x1="165" y1="117" x2="165" y2="113" stroke="#a08060" stroke-width="1.5"/>
+              <!-- Engraving text -->
+              <text id="engraving-preview" x="165" y="195" text-anchor="middle" font-family="serif" font-size="13" fill="rgba(255,255,255,0.5)" letter-spacing="3"></text>
+              <!-- Edge corners (sharp indicator) -->
+              <rect id="corner-tl" x="80" y="15" width="10" height="10" fill="transparent"/>
+              <rect id="corner-br" x="240" y="225" width="10" height="10" fill="transparent"/>
+            </svg>
+          </div>
+
+          <div style="border-top:1px solid var(--border);margin:16px 0;"></div>
+
+          <!-- Mini Summary -->
+          <div id="mini-summary">
+            <div class="summary-line"><span class="summary-key">Base</span><span class="summary-val" id="s-base">A6 Bifold</span></div>
+            <div class="summary-line"><span class="summary-key">Leather</span><span class="summary-val" id="s-leather">Coal</span></div>
+            <div class="summary-line"><span class="summary-key">Edge</span><span class="summary-val" id="s-edge">Round</span></div>
+            <div class="summary-line"><span class="summary-key">Hardware</span><span class="summary-val" id="s-hardware">None</span></div>
+            <div class="summary-line"><span class="summary-key">Front Cord</span><span class="summary-val" id="s-front-cord">—</span></div>
+            <div class="summary-line"><span class="summary-key">Inside Cords</span><span class="summary-val" id="s-inside-cords">—</span></div>
+            <div class="summary-line"><span class="summary-key">Charms</span><span class="summary-val" id="s-charms">—</span></div>
+            <div class="summary-line"><span class="summary-key">Engraving</span><span class="summary-val" id="s-engraving">—</span></div>
+            <div class="summary-line" id="addons-line" style="display:none;"><span class="summary-key">Add-Ons</span><span class="summary-val" id="s-addons">—</span></div>
+            <div class="summary-line"><span class="summary-key">Shipping</span><span class="summary-val" id="s-shipping">—</span></div>
+            <div class="summary-total"><span>Total</span><span id="s-total">₱499</span></div>
+          </div>
+
+          <button class="btn-primary" style="width:100%;margin-top:18px;text-align:center;" onclick="scrollToCheckout()">
+            Proceed to Checkout →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ ADD-ONS ══════════════ -->
+<section id="addons" style="background:var(--nude);">
+  <div class="container">
+    <div class="section-label">Personalize Further</div>
+    <h2 class="serif section-title">Add-Ons & Upgrades</h2>
+
+    <!-- Charms -->
+    <div class="step-card fade-in" style="max-width:800px;">
+      <div class="step-header"><div class="step-num" style="background:var(--dusty-rose);">★</div><div class="step-title">Charms</div></div>
+
+      <div class="charm-tiers">
+
+        <!-- FREE (multi-select) -->
+        <div class="charm-tier-card">
+          <div class="tier-header">
+            <span class="tier-badge">FREE</span>
+            <span class="tier-price">Choose 1 — included</span>
+          </div>
+          <img src="images/Charms-Free.png" alt="Free Charms Reference" class="nav-logo zoomable" style="margin:10px 0 6px;height:80px;width:auto;object-fit:contain;" onclick="openZoom(this)" title="Tap to zoom">
+          <div class="tier-charms" id="free-charms">
+            <button class="charm-btn" onclick="toggleFreeCharm(this,'A1')" data-charm="A1">A1</button>
+            <button class="charm-btn" onclick="toggleFreeCharm(this,'A2')" data-charm="A2">A2</button>
+            <button class="charm-btn" onclick="toggleFreeCharm(this,'A3')" data-charm="A3">A3</button>
+            <button class="charm-btn" onclick="toggleFreeCharm(this,'A4')" data-charm="A4">A4</button>
+            <button class="charm-btn" onclick="toggleFreeCharm(this,'A5')" data-charm="A5">A5</button>
+          </div>
+          <!-- Per-charm placement rows injected by JS into #free-placements -->
+          <div id="free-placements"></div>
+        </div>
+
+        <!-- Tier I: +₱20 each (multi-select) -->
+        <div class="charm-tier-card">
+          <div class="tier-header">
+            <span class="tier-badge">TIER I</span>
+            <span class="tier-price">+₱20 each · subject to availability</span>
+          </div>
+          <img src="images/Charms-Tier 1.png" alt="Tier 1 Charms Reference" class="nav-logo zoomable" style="margin:10px 0 6px;height:80px;width:auto;object-fit:contain;" onclick="openZoom(this)" title="Tap to zoom">
+          <div class="tier-charms" id="t1-charms">
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t1','B1',20)">B1</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t1','B2',20)">B2</button>
+          </div>
+          <div id="t1-placements"></div>
+        </div>
+
+        <!-- Tier II: +₱40 each (multi-select) -->
+        <div class="charm-tier-card">
+          <div class="tier-header">
+            <span class="tier-badge">TIER II</span>
+            <span class="tier-price">+₱40 each · limited pieces</span>
+          </div>
+          <img src="images/Charms-Tier 2.png" alt="Tier 2 Charms Reference" class="nav-logo zoomable" style="margin:10px 0 6px;height:80px;width:auto;object-fit:contain;" onclick="openZoom(this)" title="Tap to zoom">
+          <div class="tier-charms" id="t2-charms">
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t2','C1',40)">C1</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t2','C2',40)">C2</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t2','C3',40)">C3</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t2','C4',40)">C4</button>
+          </div>
+          <div id="t2-placements"></div>
+        </div>
+
+        <!-- Tier III: +₱60 each (multi-select) -->
+        <div class="charm-tier-card">
+          <div class="tier-header">
+            <span class="tier-badge">TIER III</span>
+            <span class="tier-price">+₱60 each · limited pieces</span>
+          </div>
+          <img src="images/Charms-Tier 3.png" alt="Tier 3 Charms Reference" class="nav-logo zoomable" style="margin:10px 0 6px;height:80px;width:auto;object-fit:contain;" onclick="openZoom(this)" title="Tap to zoom">
+          <div class="tier-charms" id="t3-charms">
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t3','D1',60)">D1</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t3','D2',60)">D2</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t3','D3',60)">D3</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t3','D4',60)">D4</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t3','D5',60)">D5</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t3','D6',60)">D6</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t3','D7',60)">D7</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t3','D8',60)">D8</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t3','D9',60)">D9</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t3','D10',60)">D10</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t3','D11',60)">D11</button>
+          </div>
+          <div id="t3-placements"></div>
+        </div>
+
+	<!-- Tier IV: +₱70 each (multi-select) -->
+        <div class="charm-tier-card">
+          <div class="tier-header">
+            <span class="tier-badge">TIER IV</span>
+            <span class="tier-price">+₱70 each · subject to availability</span>
+          </div>
+          <img src="images/Charms-Tier 4-1.png" alt="Tier 4 Charms Reference (1)" class="nav-logo zoomable" style="margin:10px 0 6px;height:80px;width:auto;object-fit:contain;" onclick="openZoom(this)" title="Tap to zoom">
+	  <img src="images/Charms-Tier 4-2.png" alt="Tier 4 Charms Reference (2)" class="nav-logo zoomable" style="margin:10px 0 6px;height:80px;width:auto;object-fit:contain;" onclick="openZoom(this)" title="Tap to zoom">
+          <div class="tier-charms" id="t4-charms">
+            <button class="charm-btn" onclick="toggleAddonCharm(this,'t4','Amethyst',70)">Amethyst</button>
+            <button class="charm-btn" onclick="toggleAddonCharm(this,'t4','Strawberry Quartz',70)">Strawberry Quartz</button>
+            <button class="charm-btn" onclick="toggleAddonCharm(this,'t4','Aventurine',70)">Aventurine</button>
+            <button class="charm-btn" onclick="toggleAddonCharm(this,'t4','Lapis Lazuli',70)">Lapis Lazuli</button>
+            <button class="charm-btn" onclick="toggleAddonCharm(this,'t4','Tiger Eye',70)">Tiger Eye</button>
+            <button class="charm-btn" onclick="toggleAddonCharm(this,'t4','Red Agate',70)">Red Agate</button>
+            <button class="charm-btn" onclick="toggleAddonCharm(this,'t4','Howlite',70)">Howlite</button>
+            <button class="charm-btn" onclick="toggleAddonCharm(this,'t4','Amazonite',70)">Amazonite</button>
+          </div>
+          <div id="t4-placements"></div>
+        </div>
+
+        <!-- Tier V: +₱80 each (multi-select) -->
+        <div class="charm-tier-card">
+          <div class="tier-header">
+            <span class="tier-badge">TIER V</span>
+            <span class="tier-price">+₱80 each · limited pieces</span>
+          </div>
+          <img src="images/Charms-Tier 5.png" alt="Tier 5 Charms Reference" class="nav-logo zoomable" style="margin:10px 0 6px;height:80px;width:auto;object-fit:contain;" onclick="openZoom(this)" title="Tap to zoom">
+          <div class="tier-charms" id="t5-charms">
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t5','E1',80)">E1</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t5','E2',80)">E2</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t5','E3',80)">E3</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t5','E4',80)">E4</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t5','E5',80)">E5</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t5','E6',80)">E6</button>
+            <button class="charm-btn" onclick="toggleAddonCharmMulti(this,'t5','E7',80)">E7</button>
+          </div>
+          <div id="t5-placements"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Other Add-Ons -->
+    <div class="step-card fade-in" style="max-width:800px;margin-top:24px;">
+      <div class="step-header"><div class="step-num" style="background:var(--dusty-rose);">+</div><div class="step-title">Extras & Upgrades</div></div>
+      <div>
+        <!-- Fabric Insert -->
+        <div class="addon-row" id="fabric-row">
+          <input type="checkbox" class="addon-check" id="fabric-check" onchange="toggleFabric(this)">
+          <div class="addon-info">
+            <div class="addon-name">Fabric Folio Insert (Inabel)</div>
+            <div class="addon-desc" id="fabric-desc">A6 only · Traditional Inabel weave</div>
+            <img src="images/Inabel.png" alt="Inabel Fabric Reference" class="nav-logo zoomable" style="margin-top:6px;height:80px;width:auto;object-fit:contain;" onclick="openZoom(this)" title="Tap to zoom">
+          </div>
+          <div class="addon-price">₱250</div>
+        </div>
+        <div id="fabric-sub" style="display:none;padding:12px 32px 4px;">
+          <label class="field-label">Pattern</label>
+          <div class="option-grid">
+            <button class="opt-pill active" onclick="selectOpt('fabric-pattern',this,'Flower',0)">Flower</button>
+            <button class="opt-pill" onclick="selectOpt('fabric-pattern',this,'Grid',0)">Grid</button>
+          </div>
+        </div>
+
+        <!-- Edge Protector -->
+        <div class="addon-row" id="edge-prot-row" style="opacity:0.4;pointer-events:none;">
+          <input type="checkbox" class="addon-check" id="edge-prot-check" onchange="toggleEdgeProt(this)">
+          <div class="addon-info">
+            <div class="addon-name">Edge Protectors</div>
+            <div class="addon-desc">Only for Sharp edge · +₱59</div>
+          </div>
+          <div class="addon-price">₱59</div>
+        </div>
+        <div id="edge-prot-sub" style="display:none;padding:12px 32px 4px;">
+          <label class="field-label">Finish</label>
+          <div class="option-grid">
+            <button class="opt-pill active" onclick="selectOpt('edge-prot-finish',this,'Silver',0)">Silver</button>
+            <button class="opt-pill" onclick="selectOpt('edge-prot-finish',this,'Gold',0)">Gold</button>
+          </div>
+        </div>
+
+        <!-- Double Cord -->
+        <div class="addon-row">
+          <input type="checkbox" class="addon-check" id="double-cord-check" onchange="toggleDoubleCord(this)">
+          <div class="addon-info">
+            <div class="addon-name">Double Front Cord (Add-On)</div>
+            <div class="addon-desc" id="double-cord-desc">Layered cord look · A6: ₱40 / A5: ₱50</div>
+          </div>
+          <div class="addon-price" id="double-cord-price">₱40</div>
+        </div>
+        <div id="double-cord-sub" style="display:none;padding:14px 32px 8px;">
+          <label class="field-label" style="font-size:12px;margin-bottom:10px;display:block;">2nd Cord Color</label>
+          <div class="swatch-grid" id="double-cord-swatches"></div>
+          <div style="font-size:11px;color:var(--text-light);margin-top:8px;">Selected: <span id="double-cord-color-label" style="font-weight:600;color:var(--deep-mauve);">—</span></div>
+        </div>
+
+        <!-- Extra Inserts -->
+        <div class="addon-row">
+          <input type="checkbox" class="addon-check" id="extra-insert-check" onchange="calcTotal()">
+          <div class="addon-info">
+            <div class="addon-name">Extra Blank Inserts</div>
+            <div class="addon-desc" id="extra-insert-desc">A6: ₱35 / A5: ₱40</div>
+          </div>
+          <div class="addon-price" id="extra-insert-price">₱35</div>
+        </div>
+        <div id="extra-insert-sub" style="display:none;padding:8px 32px;">
+          <label class="field-label" style="font-size:12px;">How many extra inserts?</label>
+          <input type="number" id="extra-insert-qty" min="1" max="10" value="1" style="width:80px;" onchange="calcTotal()">
+        </div>
+
+        <!-- Lace -->
+        <div class="addon-row">
+          <input type="checkbox" class="addon-check" id="lace-check" onchange="calcTotal()">
+          <div class="addon-info">
+            <div class="addon-name">Lace</div>
+            <div class="addon-desc" id="lace-desc">A6: ₱40 / A5: ₱50</div>
+          </div>
+          <div class="addon-price" id="lace-price">₱40</div>
+        </div>
+
+        <!-- Mini Keychain -->
+        <div class="addon-row">
+          <input type="checkbox" class="addon-check" id="keychain-check" onchange="toggleKeychain(this)">
+          <div class="addon-info">
+            <div class="addon-name">Mini Leather Keychain</div>
+            <div class="addon-desc">Matching keychain · 1 free 3mm letter</div>
+          </div>
+          <div class="addon-price">₱99</div>
+        </div>
+        <div id="keychain-sub" style="display:none;padding:12px 32px 4px;background:rgba(212,135,156,0.05);border-radius:12px;margin:4px 0;">
+          <div class="field-row">
+            <div>
+              <label class="field-label">Leather Color</label>
+              <select id="kc-leather" onchange="calcTotal()">
+                <option>Coal</option><option>Wine</option><option>Latte</option><option>Lychee</option>
+                <option>Pistachio</option><option>Sky</option><option>Midnight</option><option>Taro</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">Cord Color</label>
+              <select id="kc-cord" onchange="calcTotal()">
+                <option>Petal</option><option>Rose</option><option>Lavender</option><option>Bone</option>
+                <option>Orange</option><option>Mahogany</option><option>Sky</option><option>Peacock</option>
+                <option>Mint</option><option>Rust</option><option>Apple</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="field-label">1 Letter (free, 3mm)</label>
+            <input type="text" id="kc-letter" maxlength="1" placeholder="e.g. A" style="width:80px;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ SHIPPING ══════════════ -->
+<section id="shipping" style="background:var(--cream);">
+  <div class="container" style="max-width:700px;">
+    <div class="section-label">Delivery</div>
+    <h2 class="serif section-title">Shipping</h2>
+    <div id="shipping-options">
+      <div class="ship-option selected" id="ship-luzon" onclick="selectShipping(this,'Luzon',100)">
+        <div><div style="font-weight:600;">Luzon</div><div style="font-size:12px;color:var(--text-light);">Standard courier</div></div>
+        <div style="font-weight:700;color:var(--terracotta);">₱100</div>
+      </div>
+      <div class="ship-option" id="ship-visayas" onclick="selectShipping(this,'Visayas',115)">
+        <div><div style="font-weight:600;">Visayas</div><div style="font-size:12px;color:var(--text-light);">Standard courier</div></div>
+        <div style="font-weight:700;color:var(--terracotta);">₱115</div>
+      </div>
+      <div class="ship-option" id="ship-mindanao" onclick="selectShipping(this,'Mindanao',130)">
+        <div><div style="font-weight:600;">Mindanao</div><div style="font-size:12px;color:var(--text-light);">Standard courier</div></div>
+        <div style="font-weight:700;color:var(--terracotta);">₱130</div>
+      </div>
+      <div class="ship-option disabled">
+        <div><div style="font-weight:600;">Overseas</div><div style="font-size:12px;color:var(--text-light);">Not yet available</div></div>
+        <div style="font-size:13px;color:var(--text-light);">Coming soon</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ PAYMENT ══════════════ -->
+<section id="payment">
+  <div class="container">
+    <div class="section-label">Settle Your Order</div>
+    <h2 class="serif section-title">Payment</h2>
+    <p class="section-sub">Choose your preferred channel and scan to pay.</p>
+
+    <div class="payment-grid">
+      <div class="qr-card">
+        <div class="qr-bank" style="color:#003087;">BDO</div>
+        <img src="images/BDO.jpg" alt="BDO QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
+        <div class="qr-name">ARTCYST</div>
+        <div style="font-size:11px;color:var(--text-light);">Acct ending ••••7638</div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:4px;">BDO-to-BDO transfers free</div>
+      </div>
+      <div class="qr-card">
+        <div class="qr-bank" style="color:#007aff;">GCash</div>
+        <img src="images/GCASH.jpg" alt="GCash QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
+        <div class="qr-name">ARTCYST.PH</div>
+        <div style="font-size:11px;color:var(--text-light);">0923 025 ••••</div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
+      </div>
+      <div class="qr-card">
+        <div class="qr-bank" style="color:#00b4d8;">GoTyme Bank</div>
+        <img src="images/GOTYME.png" alt="GoTyme QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
+        <div class="qr-name">ARTCYST</div>
+        <div style="font-size:11px;color:var(--text-light);">Acct ending ••••7784</div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
+      </div>
+      <div class="qr-card">
+        <div class="qr-bank" style="color:#00a651;">Maya</div>
+        <img src="images/MAYA.png" alt="Maya QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
+        <div class="qr-name">ARTCYST</div>
+        <div style="font-size:11px;color:var(--text-light);">+63 *** *** 6912</div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ CHECKOUT FORM ══════════════ -->
+<section id="checkout" style="background:var(--cream);">
+  <div class="container" style="max-width:720px;">
+    <div class="section-label">Almost There</div>
+    <h2 class="serif section-title">Complete Your Order</h2>
+
+    <div class="info-box" style="margin-bottom:28px;">
+      🕐 <strong>Handcrafting takes 7–10 business days</strong> before courier pickup. You'll receive a confirmation email once your order is received.
+    </div>
+
+    <!-- Order Summary Review -->
+    <div class="step-card" style="margin-bottom:24px;">
+      <div style="font-weight:700;font-size:15px;color:var(--deep-mauve);margin-bottom:16px;">✦ Your Order Summary</div>
+      <div id="final-summary-lines"></div>
+      <div class="summary-total" id="final-total-line">
+        <span>Total</span><span id="final-total-val">₱499</span>
+      </div>
+    </div>
+
+    <!-- Customer Details -->
+    <div class="step-card">
+      <div style="font-weight:700;font-size:15px;color:var(--deep-mauve);margin-bottom:16px;">Your Details</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Full Name <span class="required">*</span></label>
+          <input type="text" id="cust-name" placeholder="Your full name">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email <span class="required">*</span></label>
+          <input type="email" id="cust-email" placeholder="you@email.com">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Phone <span class="required">*</span></label>
+          <input type="tel" id="cust-phone" placeholder="09XX XXX XXXX">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Shipping Destination <span class="required">*</span></label>
+          <input type="text" id="cust-destination" readonly placeholder="Select above in Shipping section" style="background:var(--cream);">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Complete Shipping Address <span class="required">*</span></label>
+        <textarea id="cust-address" rows="3" placeholder="House No., Street, Barangay, City, Province, ZIP"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Order Notes (optional)</label>
+        <textarea id="cust-notes" rows="2" placeholder="Any special requests or notes..."></textarea>
+      </div>
+    </div>
+
+    <!-- Proof of Payment -->
+    <div class="step-card" style="margin-top:20px;">
+      <div style="font-weight:700;font-size:15px;color:var(--deep-mauve);margin-bottom:16px;">Proof of Payment <span class="required">*</span></div>
+      <div class="upload-box" onclick="document.getElementById('pop-upload').click()">
+        <div class="upload-icon">📎</div>
+        <div class="upload-text"><span>Click to upload</span> or drag & drop</div>
+        <div style="font-size:12px;color:var(--text-light);margin-top:4px;">PNG, JPG, PDF · max 10MB</div>
+        <div id="pop-filename" style="margin-top:10px;font-size:13px;color:var(--terracotta);font-weight:600;"></div>
+        <input type="file" id="pop-upload" accept="image/*,.pdf" onchange="onFileSelected(this)">
+      </div>
+    </div>
+
+    <button class="btn-primary" style="width:100%;margin-top:28px;padding:18px;font-size:16px;" onclick="submitOrder()">
+      ✦ Place My Order
+    </button>
+    <p style="text-align:center;font-size:12px;color:var(--text-light);margin-top:12px;">By placing your order you agree to our handcrafting lead time of 7–10 business days.</p>
+  </div>
+</section>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+  <img src="images/Logo.png" alt="artcyst.ph" class="footer-logo">
+  <p>handcrafted for minds in motion</p>
+  <p style="margin-top:8px;">© 2025 artcyst.ph · All rights reserved</p>
+  <p style="margin-top:4px;font-size:12px;">Made with ♡ in the Philippines</p>
+</footer>
+
+<!-- ══════════════ ZOOM OVERLAY ══════════════ -->
+<div class="zoom-overlay" id="zoom-overlay" onclick="closeZoom(event)">
+  <div class="zoom-close" onclick="closeZoom(event, true)">✕</div>
+  <img id="zoom-img" src="" alt="Zoomed view">
+  <div class="zoom-hint">tap anywhere to close</div>
+</div>
+
+<!-- ══════════════ TOAST ══════════════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════ SUCCESS MODAL ══════════════ -->
+<div class="modal-overlay" id="success-modal">
+  <div class="modal-box" style="text-align:center;">
+    <div style="font-size:48px;margin-bottom:16px;">🎉</div>
+    <h2 class="serif modal-title">Order Received!</h2>
+    <p class="modal-sub">Thank you for your order. We'll confirm via email within 24 hours. Your folio will be handcrafted with love in 7–10 business days.</p>
+    <div style="background:var(--cream);border-radius:16px;padding:20px;margin:16px 0;text-align:left;" id="order-confirm-summary"></div>
+    <button class="btn-primary" onclick="closeModal()" style="margin-top:8px;">Done ✦</button>
+  </div>
+</div>
+
+<!-- ══════════════ JAVASCRIPT ══════════════ -->
+<script>
+// ── State ──
+const state = {
+  base: 'a6-bifold', basePrice: 499,
+  leather: 'Coal',
+  edge: 'Round',
+  hardware: 'None',
+  frontCord: null,
+  insideCords: { s1: null, s2: null, s3: null },
+  engravingText: '', engravingFont: '3mm Uppercase', engravingZone: '1A',
+  // freeCharms: array of { id, placement }
+  freeCharms: [],
+  // addonCharms: { tierKey: [ { id, price, placement } ] }
+  addonCharms: {},
+  fabricInsert: false, fabricPattern: 'Flower',
+  edgeProtector: false, edgeProtectorFinish: 'Silver',
+  doubleCord: false, doubleCordColor: null,
+  extraInserts: false, extraInsertQty: 1,
+  lace: false,
+  keychain: false, kcLeather: 'Coal', kcCord: 'Petal', kcLetter: '',
+  shipping: 'Luzon', shippingFee: 100,
+  'fabric-pattern': 'Flower',
+  'edge-prot-finish': 'Silver',
+  'font': '3mm Uppercase',
+};
+
+// ── Leather color map ──
+const leatherColors = {
+  Coal:'#2c2c2c', Wine:'#5c1a2a', Latte:'#a0673a', Lychee:'#e8b4b0',
+  Pistachio:'#7a9b5e', Sky:'#7aa8c0', Midnight:'#1e3a7a', Taro:'#8e8aad'
+};
+const cordColors = {
+  Petal:'#e8a4b0', Rose:'#d42060', Lavender:'#9b7fd4', Bone:'#d4c8a8',
+  Orange:'#e87040', Mahogany:'#2c1a10', Sky:'#7aa8c0', Peacock:'#008080',
+  Mint:'#6dba8a', Rust:'#7a2020', Apple:'#8aaa28'
+};
+const cordKeys = ['Petal','Rose','Lavender','Bone','Orange','Mahogany','Sky','Peacock','Mint','Rust','Apple'];
+
+// ── Build cord swatch grids ──
+function buildCordSwatches(containerId, stateKey, isInside) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  cordKeys.forEach(name => {
+    const wrap = document.createElement('div');
+    wrap.className = 'swatch-wrap';
+    const dot = document.createElement('div');
+    dot.className = 'swatch';
+    dot.style.background = cordColors[name];
+    dot.title = name;
+    dot.dataset.color = name;
+    if (isInside) {
+      const key = stateKey;
+      dot.onclick = () => {
+        state.insideCords[key] = name;
+        container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+        dot.classList.add('active');
+        updateInsideCordPreview();
+        calcTotal();
+      };
+    } else {
+      dot.onclick = () => {
+        state.frontCord = name;
+        container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+        dot.classList.add('active');
+        updateFrontCordPreview();
+        calcTotal();
+      };
+    }
+    const lbl = document.createElement('div');
+    lbl.className = 'swatch-label';
+    lbl.textContent = name;
+    wrap.appendChild(dot); wrap.appendChild(lbl);
+    container.appendChild(wrap);
+  });
+}
+
+buildCordSwatches('front-cord-swatches', 'frontCord', false);
+buildCordSwatches('s1-cord-swatches', 's1', true);
+buildCordSwatches('s2-cord-swatches', 's2', true);
+buildCordSwatches('s3-cord-swatches', 's3', true);
+buildDoubleCordSwatches();
+
+// ── Double Cord Color Swatches ──
+function buildDoubleCordSwatches() {
+  const container = document.getElementById('double-cord-swatches');
+  if (!container) return;
+  container.innerHTML = '';
+  cordKeys.forEach(name => {
+    const wrap = document.createElement('div');
+    wrap.className = 'swatch-wrap';
+    const dot = document.createElement('div');
+    dot.className = 'swatch';
+    dot.style.background = cordColors[name];
+    dot.title = name;
+    dot.dataset.color = name;
+    dot.onclick = () => {
+      state.doubleCordColor = name;
+      container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+      dot.classList.add('active');
+      const lbl = document.getElementById('double-cord-color-label');
+      if (lbl) lbl.textContent = name;
+      calcTotal();
+    };
+    const lbl = document.createElement('div');
+    lbl.className = 'swatch-label';
+    lbl.textContent = name;
+    wrap.appendChild(dot); wrap.appendChild(lbl);
+    container.appendChild(wrap);
+  });
+}
+
+function toggleDoubleCord(cb) {
+  const sub = document.getElementById('double-cord-sub');
+  sub.style.display = cb.checked ? 'block' : 'none';
+  if (!cb.checked) {
+    // clear selection
+    state.doubleCordColor = null;
+    document.querySelectorAll('#double-cord-swatches .swatch').forEach(s => s.classList.remove('active'));
+    const lbl = document.getElementById('double-cord-color-label');
+    if (lbl) lbl.textContent = '—';
+  }
+  calcTotal();
+}
+
+// ── Step functions ──
+function selectBase(btn) {
+  document.querySelectorAll('#base-options .opt-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.base = btn.dataset.base;
+  state.basePrice = parseInt(btn.dataset.price);
+  document.getElementById('s-base').textContent = btn.textContent.split('—')[0].trim();
+  updateAddonPrices();
+  updateFabricAvailability();
+  calcTotal();
+  updateProgress();
+}
+
+function selectLeather(swatch) {
+  document.querySelectorAll('#leather-swatches .swatch').forEach(s => s.classList.remove('active'));
+  swatch.classList.add('active');
+  state.leather = swatch.dataset.color;
+  document.getElementById('s-leather').textContent = state.leather;
+  updateFolioColor(leatherColors[state.leather]);
+  calcTotal();
+}
+
+function selectEdge(btn, val) {
+  document.querySelectorAll('#edge-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.edge = val;
+  document.getElementById('s-edge').textContent = val;
+  updateEdgeCorners(val);
+  updateEdgeProtRow();
+  calcTotal();
+}
+
+function selectZone(card, zone) {
+  document.querySelectorAll('.zone-card').forEach(c => c.classList.remove('active-zone'));
+  card.classList.add('active-zone');
+  state.engravingZone = zone;
+  calcTotal();
+}
+
+function selectOpt(group, btn, val, price) {
+  const parent = btn.closest('.option-grid') || btn.closest('.charm-tiers');
+  if (parent) parent.querySelectorAll('.opt-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state[group] = val;
+  // Sync named aliases
+  if (group === 'font') state.engravingFont = val;
+  if (group === 'hardware') {
+    document.getElementById('s-hardware').textContent = val || 'None';
+  }
+  calcTotal();
+}
+
+function onEngravingInput(input) {
+  state.engravingText = input.value;
+  const len = input.value.length;
+  const el = document.getElementById('letter-count');
+  if (len === 0) el.innerHTML = '';
+  else if (len <= 5) el.innerHTML = `<span>${len}/10 — free</span>`;
+  else el.innerHTML = `<span class="warn">${len}/10 — +₱50 (6–10 letters)</span>`;
+  document.getElementById('engraving-preview').textContent = input.value.toUpperCase();
+  document.getElementById('s-engraving').textContent = len > 0 ? `"${input.value}" · ${state.engravingFont} · Zone ${state.engravingZone}` : '—';
+  calcTotal();
+}
+
+// ── Charm helpers ──
+
+// Render per-charm placement row in a container div
+function renderPlacementRow(charm, placementsContainerId, onChangeFn) {
+  const rowId = `placement-row-${charm.id}`;
+  if (document.getElementById(rowId)) return; // already exists
+  const container = document.getElementById(placementsContainerId);
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'charm-placement-row';
+  row.id = rowId;
+  row.style.marginTop = '8px';
+  row.innerHTML = `
+    <label style="font-size:12px;color:var(--text-mid);min-width:80px;">${charm.id} Placement:</label>
+    <select id="sel-${charm.id}" onchange="${onChangeFn}" style="width:auto;padding:6px 10px;font-size:12px;">
+      <option value="S1">S1</option>
+      <option value="S2">S2</option>
+      <option value="S3">S3</option>
+      <option value="Front">Front</option>
+    </select>
+  `;
+  container.appendChild(row);
+}
+
+// Render placement row locked to "Front" only — used for Tier 4 charms
+function renderPlacementRowFrontOnly(charm, placementsContainerId) {
+  const rowId = `placement-row-${charm.id}`;
+  if (document.getElementById(rowId)) return; // already exists
+  const container = document.getElementById(placementsContainerId);
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'charm-placement-row';
+  row.id = rowId;
+  row.style.marginTop = '8px';
+  row.innerHTML = `
+    <label style="font-size:12px;color:var(--text-mid);min-width:80px;">${charm.id} Placement:</label>
+    <span style="font-size:12px;font-weight:600;color:var(--terracotta);padding:6px 12px;background:rgba(196,96,122,0.08);border-radius:8px;border:1.5px solid var(--terracotta);">Front (only)</span>
+  `;
+  container.appendChild(row);
+}
+
+function removePlacementRow(charmId) {
+  const row = document.getElementById(`placement-row-${charmId}`);
+  if (row) row.remove();
+  const sel = document.getElementById(`sel-${charmId}`);
+  if (sel) sel.remove();
+}
+
+// ── Free charm (Tier A) single-select — only 1 allowed ──
+function toggleFreeCharm(btn, id) {
+  const isSelected = btn.classList.contains('selected');
+
+  // Deselect all free charms first
+  document.querySelectorAll('#free-charms .charm-btn').forEach(b => {
+    if (b.classList.contains('selected')) {
+      const prevId = b.dataset.charm;
+      b.classList.remove('selected');
+      removePlacementRow(prevId);
+    }
+  });
+  state.freeCharms = [];
+
+  if (!isSelected) {
+    // Select the tapped one
+    btn.classList.add('selected');
+    state.freeCharms.push({ id, placement: 'S1' });
+    renderPlacementRow({ id }, 'free-placements', `updateFreeCharmPlacement('${id}')`);
+  }
+  calcTotal();
+}
+
+function updateFreeCharmPlacement(id) {
+  const sel = document.getElementById(`sel-${id}`);
+  if (!sel) return;
+  const charm = state.freeCharms.find(c => c.id === id);
+  if (charm) charm.placement = sel.value;
+  calcTotal();
+}
+
+// ── Addon charm (Tiers B–E) multi-select ──
+function toggleAddonCharmMulti(btn, tier, id, price) {
+  const isSelected = btn.classList.contains('selected');
+  if (!state.addonCharms[tier]) state.addonCharms[tier] = [];
+  const placementsId = `${tier}-placements`;
+  if (isSelected) {
+    btn.classList.remove('selected');
+    state.addonCharms[tier] = state.addonCharms[tier].filter(c => c.id !== id);
+    removePlacementRow(id);
+  } else {
+    btn.classList.add('selected');
+    state.addonCharms[tier].push({ id, price, placement: 'S1' });
+    renderPlacementRow({ id }, placementsId, `updateAddonCharmPlacement('${tier}','${id}')`);
+  }
+  calcTotal();
+}
+
+function updateAddonCharmPlacement(tier, id) {
+  const sel = document.getElementById(`sel-${id}`);
+  if (!sel || !state.addonCharms[tier]) return;
+  const charm = state.addonCharms[tier].find(c => c.id === id);
+  if (charm) charm.placement = sel.value;
+  calcTotal();
+}
+
+// Legacy selectCharm stub kept for safety
+function selectCharm(btn, tier, id, price) { toggleFreeCharm(btn, id); }
+
+// Legacy single-charm toggleAddonCharm — routes t4 to Front-only, others to multi
+function toggleAddonCharm(btn, tier, id, price) {
+  if (tier === 't4') {
+    const isSelected = btn.classList.contains('selected');
+    if (!state.addonCharms[tier]) state.addonCharms[tier] = [];
+    if (isSelected) {
+      btn.classList.remove('selected');
+      state.addonCharms[tier] = state.addonCharms[tier].filter(c => c.id !== id);
+      removePlacementRow(id);
+    } else {
+      btn.classList.add('selected');
+      state.addonCharms[tier].push({ id, price, placement: 'Front' });
+      renderPlacementRowFrontOnly({ id }, 't4-placements');
+    }
+    calcTotal();
+  } else {
+    toggleAddonCharmMulti(btn, tier, id, price);
+  }
+}
+
+function toggleFabric(cb) {
+  state.fabricInsert = cb.checked;
+  document.getElementById('fabric-sub').style.display = cb.checked ? 'block' : 'none';
+  calcTotal();
+}
+
+function toggleEdgeProt(cb) {
+  state.edgeProtector = cb.checked;
+  document.getElementById('edge-prot-sub').style.display = cb.checked ? 'block' : 'none';
+  calcTotal();
+}
+
+function toggleKeychain(cb) {
+  state.keychain = cb.checked;
+  document.getElementById('keychain-sub').style.display = cb.checked ? 'block' : 'none';
+  calcTotal();
+}
+
+function updateEdgeProtRow() {
+  const row = document.getElementById('edge-prot-row');
+  if (state.edge === 'Sharp') {
+    row.style.opacity = '1'; row.style.pointerEvents = 'auto';
+  } else {
+    row.style.opacity = '0.4'; row.style.pointerEvents = 'none';
+    document.getElementById('edge-prot-check').checked = false;
+    state.edgeProtector = false;
+    document.getElementById('edge-prot-sub').style.display = 'none';
+  }
+}
+
+function updateFabricAvailability() {
+  const isA6 = state.base.startsWith('a6');
+  const row = document.getElementById('fabric-row');
+  const desc = document.getElementById('fabric-desc');
+  if (!isA6) {
+    row.style.opacity = '0.4'; row.style.pointerEvents = 'none';
+    document.getElementById('fabric-check').checked = false;
+    state.fabricInsert = false;
+    desc.textContent = 'A6 only';
+  } else {
+    row.style.opacity = '1'; row.style.pointerEvents = 'auto';
+    desc.textContent = 'A6 only · Traditional Inabel weave';
+  }
+}
+
+function updateAddonPrices() {
+  const isA5 = state.base.startsWith('a5');
+  document.getElementById('double-cord-price').textContent = isA5 ? '₱50' : '₱40';
+  document.getElementById('extra-insert-price').textContent = isA5 ? '₱40' : '₱35';
+  document.getElementById('lace-price').textContent = isA5 ? '₱50' : '₱40';
+  document.getElementById('double-cord-desc').textContent = `Layered cord look · A6: ₱40 / A5: ₱50`;
+}
+
+function selectShipping(el, dest, fee) {
+  document.querySelectorAll('.ship-option:not(.disabled)').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  state.shipping = dest; state.shippingFee = fee;
+  document.getElementById('cust-destination').value = dest;
+  document.getElementById('s-shipping').textContent = `${dest} — ₱${fee}`;
+  calcTotal();
+}
+
+// ── calcTotal ──
+function calcTotal() {
+  let total = state.basePrice;
+
+  // Engraving
+  const engLen = state.engravingText.length;
+  const engCost = engLen > 5 ? 50 : 0;
+  total += engCost;
+
+  // Addon charms (now arrays per tier)
+  let charmCostStr = '';
+  Object.values(state.addonCharms).forEach(charmArr => {
+    if (!Array.isArray(charmArr)) return;
+    charmArr.forEach(c => { total += c.price; charmCostStr += `${c.id}(+₱${c.price}) `; });
+  });
+
+  // Fabric insert
+  if (state.fabricInsert) total += 250;
+
+  // Edge protector
+  if (state.edgeProtector) total += 59;
+
+  // Double cord
+  const isA5 = state.base.startsWith('a5');
+  if (document.getElementById('double-cord-check').checked) total += isA5 ? 50 : 40;
+
+  // Extra inserts
+  if (document.getElementById('extra-insert-check').checked) {
+    const qty = parseInt(document.getElementById('extra-insert-qty').value) || 1;
+    const unitPrice = isA5 ? 40 : 35;
+    total += qty * unitPrice;
+    document.getElementById('extra-insert-sub').style.display = 'block';
+  } else {
+    document.getElementById('extra-insert-sub').style.display = 'none';
+  }
+
+  // Lace
+  if (document.getElementById('lace-check').checked) total += isA5 ? 50 : 40;
+
+  // Keychain
+  if (state.keychain) total += 99;
+
+  // Shipping
+  total += state.shippingFee;
+
+  // Update mini summary
+  document.getElementById('s-hardware').textContent = state.hardware || 'None';
+  document.getElementById('s-front-cord').textContent = state.frontCord || '—';
+  const ic = state.insideCords;
+  document.getElementById('s-inside-cords').textContent =
+    (ic.s1 || ic.s2 || ic.s3) ? `S1: ${ic.s1||'—'} · S2: ${ic.s2||'—'} · S3: ${ic.s3||'—'}` : '—';
+
+  // Charm mini summary
+  const allCharms = [
+    ...state.freeCharms.map(c => `${c.id}@${c.placement}`),
+    ...Object.values(state.addonCharms).flat().filter(c => c?.id).map(c => `${c.id}@${c.placement}(+₱${c.price})`)
+  ];
+  document.getElementById('s-charms').textContent = allCharms.length ? allCharms.join(' · ') : '—';
+
+  document.getElementById('s-engraving').textContent =
+    state.engravingText ? `"${state.engravingText}" · ${state.engravingFont} · Zone ${state.engravingZone}` : '—';
+  document.getElementById('s-shipping').textContent = `${state.shipping} — ₱${state.shippingFee}`;
+  document.getElementById('s-total').textContent = `₱${total}`;
+  document.getElementById('final-total-val').textContent = `₱${total}`;
+
+  // Final summary
+  buildFinalSummary(total, engCost, charmCostStr);
+  return total;
+}
+
+function buildFinalSummary(total, engCost, charmStr) {
+  // Free charms
+  const freeCharmLines = state.freeCharms.length
+    ? state.freeCharms.map(c => [`Free Charm — ${c.id}`, `Placement: ${c.placement}`])
+    : [['Free Charm', 'None selected']];
+
+  // Addon charm lines (array per tier)
+  const addonCharmLines = [];
+  Object.entries(state.addonCharms).forEach(([tier, charmArr]) => {
+    if (!Array.isArray(charmArr)) return;
+    charmArr.forEach(c => {
+      addonCharmLines.push([`Addon Charm (${tier.toUpperCase()}) — ${c.id}`, `+₱${c.price} · Placement: ${c.placement}`]);
+    });
+  });
+
+  const lines = [
+    ['Base Folio', `${state.base.toUpperCase()} — ₱${state.basePrice}`],
+    ['Leather', state.leather], ['Edge', state.edge], ['Hardware', state.hardware || 'None'],
+    ['Front Cord', state.frontCord || '—'],
+    ['Inside Cords', `S1: ${state.insideCords.s1||'—'} · S2: ${state.insideCords.s2||'—'} · S3: ${state.insideCords.s3||'—'}`],
+    ['Engraving', state.engravingText ? `"${state.engravingText}" · ${state.engravingFont} · Zone ${state.engravingZone}${engCost ? ' (+₱50)' : ''}` : 'None'],
+    ...freeCharmLines,
+    ...addonCharmLines,
+    state.fabricInsert ? ['Fabric Insert', `Inabel · ${state['fabric-pattern']} · ₱250`] : null,
+    state.edgeProtector ? ['Edge Protectors', `${state['edge-prot-finish']} · ₱59`] : null,
+    document.getElementById('double-cord-check')?.checked ? ['Double Cord', `${state.doubleCordColor || '—'} · +₱${state.base.startsWith('a5')?50:40}`] : null,
+    document.getElementById('extra-insert-check')?.checked ? ['Extra Inserts', `×${document.getElementById('extra-insert-qty')?.value||1} · +₱${state.base.startsWith('a5') ? 40*(document.getElementById('extra-insert-qty')?.value||1) : 35*(document.getElementById('extra-insert-qty')?.value||1)}`] : null,
+    document.getElementById('lace-check')?.checked ? ['Lace Trim', `+₱${state.base.startsWith('a5')?50:40}`] : null,
+    state.keychain ? ['Mini Keychain', `${document.getElementById('kc-leather')?.value} leather · ${document.getElementById('kc-cord')?.value} cord · "${document.getElementById('kc-letter')?.value||'?'}" · ₱99`] : null,
+    ['Shipping', `${state.shipping} — ₱${state.shippingFee}`],
+  ].filter(Boolean);
+
+  const el = document.getElementById('final-summary-lines');
+  el.innerHTML = lines.map(([k, v]) =>
+    `<div class="summary-line"><span class="summary-key">${k}</span><span class="summary-val">${v}</span></div>`
+  ).join('');
+}
+
+// ── SVG Preview ──
+function updateFolioColor(hex) {
+  const alpha = (h) => h + 'bb';
+  document.getElementById('front-cover').style.fill = hex;
+  document.getElementById('back-cover').style.fill = hex;
+  document.getElementById('front-cover').setAttribute('fill', hex);
+  document.getElementById('back-cover').setAttribute('fill', hex + '99');
+}
+
+function updateFrontCordPreview() {
+  const color = cordColors[state.frontCord] || '#d4c8a8';
+  document.getElementById('front-cord-line').setAttribute('stroke', color);
+}
+
+function updateInsideCordPreview() {
+  const s1c = cordColors[state.insideCords.s1] || '#e8a4b0';
+  const s2c = cordColors[state.insideCords.s2] || '#9b7fd4';
+  const s3c = cordColors[state.insideCords.s3] || '#6dba8a';
+  const s1el = document.getElementById('inside-s1');
+  const s2el = document.getElementById('inside-s2');
+  const s3el = document.getElementById('inside-s3');
+  const g1 = document.getElementById('g-s1');
+  const g2 = document.getElementById('g-s2');
+  const g3 = document.getElementById('g-s3');
+  if (s1el) { s1el.setAttribute('stroke', s1c); s1el.setAttribute('y1','55'); s1el.setAttribute('y2','55'); s1el.setAttribute('x1','80'); s1el.setAttribute('x2','30'); }
+  if (s2el) { s2el.setAttribute('stroke', s2c); s2el.setAttribute('y1','100'); s2el.setAttribute('y2','100'); s2el.setAttribute('x1','80'); s2el.setAttribute('x2','30'); }
+  if (s3el) { s3el.setAttribute('stroke', s3c); s3el.setAttribute('y1','145'); s3el.setAttribute('y2','145'); s3el.setAttribute('x1','80'); s3el.setAttribute('x2','30'); }
+  if (g1) { g1.setAttribute('cy','55'); } if (g2) { g2.setAttribute('cy','100'); } if (g3) { g3.setAttribute('cy','145'); }
+}
+
+function updateEdgeCorners(edge) {
+  const fc = document.getElementById('front-cover');
+  fc.setAttribute('rx', edge === 'Round' ? '10' : '0');
+  document.getElementById('back-cover').setAttribute('rx', edge === 'Round' ? '10' : '0');
+}
+
+// ── Scroll helpers ──
+function scrollToCheckout() {
+  document.getElementById('checkout').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ── Progress ──
+function updateProgress() {
+  const steps = [
+    state.base, state.leather, state.edge,
+    state.frontCord, state.engravingText,
+  ];
+  const filled = steps.filter(Boolean).length;
+  const pct = 10 + (filled / steps.length) * 80;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+// ── Submit Order ──
+async function submitOrder() {
+  const name    = document.getElementById('cust-name').value.trim();
+  const email   = document.getElementById('cust-email').value.trim();
+  const phone   = document.getElementById('cust-phone').value.trim();
+  const address = document.getElementById('cust-address').value.trim();
+  const notes   = document.getElementById('cust-notes').value.trim();
+  const popFile = document.getElementById('pop-upload').files[0];
+
+  if (!name || !email || !phone || !address) {
+    showToast('Please fill in all required fields.'); return;
+  }
+  if (!popFile) { showToast('Please upload your proof of payment.'); return; }
+  if (!state.frontCord) { showToast('Please select a front cord color.'); return; }
+  if (!state.insideCords.s1 || !state.insideCords.s2 || !state.insideCords.s3) {
+    showToast('Please select all inside cord colors (S1, S2, S3).'); return;
+  }
+
+  const total = calcTotal();
+
+  // ── Show success modal immediately so the customer isn't waiting ──
+  const modal     = document.getElementById('success-modal');
+  const confirmEl = document.getElementById('order-confirm-summary');
+  const freeCharmDisplay = state.freeCharms.length
+    ? state.freeCharms.map(c => `${c.id} @ ${c.placement}`).join(', ')
+    : 'None';
+  const addonCharmDisplay = Object.values(state.addonCharms)
+    .flat()
+    .filter(c => c && c.id)
+    .map(c => `${c.id} @ ${c.placement} (+₱${c.price})`)
+    .join(', ') || 'None';
+
+  confirmEl.innerHTML = `
+    <div style="font-size:13px;line-height:1.9;">
+      <strong>Name:</strong> ${name}<br>
+      <strong>Email:</strong> ${email}<br>
+      <strong>Folio:</strong> ${state.base.toUpperCase()} · ${state.leather}<br>
+      <strong>Inside Cords:</strong> S1: ${state.insideCords.s1||'—'} · S2: ${state.insideCords.s2||'—'} · S3: ${state.insideCords.s3||'—'}<br>
+      <strong>Free Charms:</strong> ${freeCharmDisplay}<br>
+      ${addonCharmDisplay !== 'None' ? `<strong>Addon Charms:</strong> ${addonCharmDisplay}<br>` : ''}
+      <strong>Shipping:</strong> ${state.shipping} — ₱${state.shippingFee}<br>
+      <strong style="color:var(--terracotta);font-size:16px;">Total: ₱${total}</strong>
+    </div>
+  `;
+  modal.classList.add('open');
+
+  // ── POST to Google Apps Script ──────────────────────────────────────
+  // IMPORTANT: We read the file as Base64 and send everything as JSON.
+  // GAS cannot parse multipart/form-data binary blobs from fetch() natively,
+  // so we encode the file and send a single JSON body instead.
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyQQy8N5wBZ9vhl8pRKBQv-ltc3SsT1n_n4CopxRd2R5Nd8CsgV7hQ-BlyaajOvHsL8Ng/exec';
+
+  try {
+    // Convert the proof-of-payment file to a Base64 string
+    const fileBase64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = () => resolve(reader.result.split(',')[1]); // strip the data:...;base64, prefix
+      reader.onerror = () => reject(new Error('File read failed'));
+      reader.readAsDataURL(popFile);
+    });
+
+    const payload = {
+      timestamp: new Date().toISOString(),
+      customer: { name, email, phone, address, notes },
+      order: {
+        base:        state.base,
+        basePrice:   state.basePrice,
+        leather:     state.leather,
+        edge:        state.edge,
+        hardware:    state.hardware,
+        frontCord:   state.frontCord,
+        insideCords: state.insideCords,
+        engraving:   { text: state.engravingText, font: state.engravingFont, zone: state.engravingZone },
+        freeCharms:  state.freeCharms,
+        addonCharms: state.addonCharms,
+        fabricInsert:   state.fabricInsert  ? { pattern: state['fabric-pattern'] }  : null,
+        edgeProtector:  state.edgeProtector ? state['edge-prot-finish']              : null,
+        doubleCord:     document.getElementById('double-cord-check').checked,
+        doubleCordColor: state.doubleCordColor || null,
+        extraInserts:   document.getElementById('extra-insert-check').checked
+                          ? parseInt(document.getElementById('extra-insert-qty').value) : 0,
+        lace:        document.getElementById('lace-check').checked,
+        keychain:    state.keychain
+                       ? { leather: document.getElementById('kc-leather').value,
+                           cord:    document.getElementById('kc-cord').value,
+                           letter:  document.getElementById('kc-letter').value }
+                       : null,
+        shipping:    { destination: state.shipping, fee: state.shippingFee },
+        total,
+      },
+      // File data — GAS will decode this and save it to Drive
+      proof: {
+        base64:    fileBase64,
+        mimeType:  popFile.type  || 'application/octet-stream',
+        fileName:  popFile.name  || 'proof_of_payment',
+      },
+    };
+
+    await fetch(GAS_URL, {
+      method:  'POST',
+      // Send as plain text so GAS receives it in e.postData.contents
+      // (GAS cannot parse fetch FormData multipart blobs natively)
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body:    JSON.stringify(payload),
+    });
+  } catch (err) {
+    console.error('Order submission error:', err);
+  }
+}
+
+function closeModal() {
+  document.getElementById('success-modal').classList.remove('open');
+}
+
+function onFileSelected(input) {
+  if (input.files[0]) {
+    document.getElementById('pop-filename').textContent = '✓ ' + input.files[0].name;
+  }
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Tap-to-Zoom ──
+function openZoom(img) {
+  const overlay = document.getElementById('zoom-overlay');
+  const zoomImg = document.getElementById('zoom-img');
+  zoomImg.src = img.src;
+  zoomImg.alt = img.alt;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeZoom(event, force) {
+  if (force || event.target === document.getElementById('zoom-overlay')) {
+    document.getElementById('zoom-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeZoom(null, true);
+});
+
+// ── Intersection observer for fade-ins ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ── Init ──
+updateFolioColor(leatherColors.Coal);
+calcTotal();
+document.getElementById('cust-destination').value = 'Luzon';
+</script>
+</body>
+</html>
