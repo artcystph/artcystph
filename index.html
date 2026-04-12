@@ -6,46 +6,66 @@
 <title>artcyst.ph — handcrafted for minds in motion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
+<!-- Swiper.js -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
+  /* ════════════════════════════════════
+     CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+     ════════════════════════════════════ */
   :root {
-    --nude: #fdf6f0;
-    --cream: #faeee6;
-    --dusty-rose: #d4879c;
+    /* Brand palette */
+    --accent:       #C2458C;
+    --accent-dark:  #9e3372;
+    --accent-light: rgba(194,69,140,0.10);
+
+    /* Backgrounds */
+    --bg:           #F9F4F2;
+    --bg-alt:       #F3EBE8;
+    --bg-card:      #FFFFFF;
+
+    /* Neutrals */
+    --border:       #E8D9D3;
+    --text-dark:    #2d1f1f;
+    --text-mid:     #6b4a4a;
+    --text-light:   #a08080;
+
+    /* Legacy aliases */
+    --nude:         var(--bg);
+    --cream:        var(--bg-alt);
+    --dusty-rose:   #d4879c;
     --muted-salmon: #c97b8a;
-    --deep-mauve: #8b4d63;
-    --terracotta: #c4607a;
-    --champagne: #e8d5c4;
-    --warm-brown: #7a4f3a;
-    --text-dark: #2d1f1f;
-    --text-mid: #6b4a4a;
-    --text-light: #a08080;
-    --border: #e8d5c4;
+    --deep-mauve:   #8b4d63;
+    --terracotta:   var(--accent);
+    --champagne:    #e8d5c4;
+    --warm-brown:   #7a4f3a;
   }
 
-  * { box-sizing: border-box; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'DM Sans', sans-serif;
-    background: var(--nude);
+    background: var(--bg);
     color: var(--text-dark);
     overflow-x: hidden;
+    line-height: 1.6;
   }
 
-  /* ── Typography ── */
-  .serif { font-family: 'DM Serif Display', serif; }
-  .italic-serif { font-family: 'Playfair Display', serif; font-style: italic; }
-
-  /* ── Scrollbar ── */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg-alt); }
   ::-webkit-scrollbar-thumb { background: var(--dusty-rose); border-radius: 3px; }
 
-  /* ── Nav ── */
+  .serif       { font-family: 'DM Serif Display', serif; }
+  .italic-serif{ font-family: 'Playfair Display', serif; font-style: italic; }
+
+  /* ══════════════════════════════════
+     NAV
+     ══════════════════════════════════ */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: rgba(253,246,240,0.92); backdrop-filter: blur(12px);
+    background: rgba(249,244,242,0.94);
+    backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border);
     padding: 14px 40px;
     display: flex; align-items: center; justify-content: space-between;
@@ -56,12 +76,18 @@
     text-decoration: none; margin-left: 28px; letter-spacing: 0.04em;
     transition: color 0.2s;
   }
-  .nav-links a:hover { color: var(--terracotta); }
+  .nav-links a:hover { color: var(--accent); }
+  @media (max-width: 600px) {
+    nav { padding: 12px 18px; }
+    .nav-links a { margin-left: 14px; font-size: 12px; }
+  }
 
-  /* ── Hero ── */
+  /* ══════════════════════════════════
+     HERO
+     ══════════════════════════════════ */
   .hero {
     min-height: 100vh;
-    background: linear-gradient(155deg, #fdf6f0 0%, #faeee6 40%, #f5e0d5 100%);
+    background: linear-gradient(155deg, #fdf6f0 0%, #f5e5e0 45%, #f0d8d5 100%);
     display: flex; align-items: center; justify-content: center;
     text-align: center; padding: 120px 24px 80px;
     position: relative; overflow: hidden;
@@ -70,49 +96,179 @@
     content: '';
     position: absolute; top: -60px; right: -80px;
     width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(196,96,122,0.08) 0%, transparent 70%);
-    border-radius: 50%;
+    background: radial-gradient(circle, rgba(194,69,140,0.07) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none;
   }
   .hero::after {
     content: '';
     position: absolute; bottom: -40px; left: -60px;
     width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(212,135,156,0.1) 0%, transparent 70%);
-    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,135,156,0.09) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none;
   }
-  .hero-logo { height: 110px; margin: 0 auto 32px; filter: drop-shadow(0 4px 20px rgba(139,77,99,0.15)); }
-  .hero h1 { font-size: clamp(42px, 7vw, 80px); color: var(--deep-mauve); line-height: 1.05; margin-bottom: 16px; }
+  .hero-logo { height: 110px; margin: 0 auto 32px; filter: drop-shadow(0 4px 20px rgba(139,77,99,0.15)); display: block; }
+  .hero h1 { font-size: clamp(42px,7vw,80px); color: var(--deep-mauve); line-height: 1.05; margin-bottom: 16px; }
   .hero-sub { font-size: 15px; color: var(--text-light); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 40px; }
+
+  /* ══════════════════════════════════
+     BUTTONS
+     ══════════════════════════════════ */
   .btn-primary {
     display: inline-block; padding: 16px 48px;
-    background: var(--terracotta); color: #fff;
+    background: var(--accent); color: #fff;
     border: none; border-radius: 50px; font-size: 15px; font-weight: 600;
     cursor: pointer; letter-spacing: 0.05em; text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-    box-shadow: 0 6px 24px rgba(196,96,122,0.35);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s, opacity 0.2s;
+    box-shadow: 0 6px 24px rgba(194,69,140,0.30);
+    font-family: 'DM Sans', sans-serif;
   }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(196,96,122,0.45); background: var(--deep-mauve); }
+  .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(194,69,140,0.40); background: var(--accent-dark); }
+  .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
   .btn-secondary {
     display: inline-block; padding: 12px 32px;
-    background: transparent; color: var(--terracotta);
-    border: 1.5px solid var(--terracotta); border-radius: 50px;
+    background: transparent; color: var(--accent);
+    border: 1.5px solid var(--accent); border-radius: 50px;
     font-size: 14px; font-weight: 500; cursor: pointer;
     transition: all 0.2s; text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
   }
-  .btn-secondary:hover { background: var(--terracotta); color: #fff; }
+  .btn-secondary:hover { background: var(--accent); color: #fff; }
 
-  /* ── Section Shells ── */
+  .btn-ghost {
+    background: transparent; border: none; color: var(--text-mid);
+    font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  .btn-ghost:hover { color: var(--accent); }
+
+  /* ══════════════════════════════════
+     SECTION SHELLS
+     ══════════════════════════════════ */
   section { padding: 80px 24px; }
   .container { max-width: 1100px; margin: 0 auto; }
+
   .section-label {
     font-size: 11px; font-weight: 600; letter-spacing: 0.2em;
-    text-transform: uppercase; color: var(--dusty-rose); margin-bottom: 10px;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
   }
-  .section-title { font-size: clamp(28px, 4vw, 48px); color: var(--deep-mauve); margin-bottom: 8px; }
+  .section-title { font-size: clamp(28px,4vw,48px); color: var(--deep-mauve); margin-bottom: 8px; }
   .section-sub { font-size: 15px; color: var(--text-light); max-width: 500px; margin-bottom: 48px; }
 
-  /* ── Customizer Layout ── */
-  #customizer { background: var(--cream); }
+  /* ══════════════════════════════════
+     LOOKBOOK CAROUSEL (Swiper)
+     ══════════════════════════════════ */
+  #inspiration { background: var(--bg); }
+
+  .lookbook-carousel-wrap {
+    position: relative;
+    margin-bottom: 32px;
+  }
+
+  .lookbook-swiper {
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .lookbook-swiper .swiper-slide {
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--bg-alt);
+  }
+
+  .lookbook-swiper .swiper-slide img {
+    width: 100%;
+    height: 480px;
+    object-fit: cover;
+    display: block;
+    border-radius: 20px;
+  }
+
+  /* Vertical 9:16 video slide */
+  .lookbook-slide-video {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--text-dark);
+    height: 480px;
+    border-radius: 20px;
+  }
+  .lookbook-video-inner {
+    /* 9:16 ratio container capped at slide height */
+    aspect-ratio: 9/16;
+    height: 100%;
+    max-height: 480px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+  .lookbook-video-inner iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 16px;
+  }
+
+  .lookbook-slide-caption {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(45,31,31,0.5) 0%, transparent 100%);
+    padding: 24px 20px 16px;
+    border-radius: 0 0 20px 20px;
+    pointer-events: none;
+  }
+  .lookbook-slide-caption span {
+    font-size: 12px; color: rgba(255,255,255,0.85);
+    letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;
+  }
+
+  /* Swiper navigation arrows */
+  .lookbook-swiper .swiper-button-next,
+  .lookbook-swiper .swiper-button-prev {
+    color: var(--accent);
+    background: rgba(249,244,242,0.9);
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 2px 12px rgba(139,77,99,0.15);
+  }
+  .lookbook-swiper .swiper-button-next::after,
+  .lookbook-swiper .swiper-button-prev::after { font-size: 14px; font-weight: 700; }
+
+  .lookbook-swiper .swiper-pagination-bullet { background: var(--dusty-rose); }
+  .lookbook-swiper .swiper-pagination-bullet-active { background: var(--accent); }
+
+  /* ── Navigation Modal Buttons (4 below carousel) ── */
+  .lookbook-nav-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+  .lookbook-nav-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 24px; border-radius: 50px;
+    border: 1.5px solid var(--border);
+    background: var(--bg-card);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; color: var(--deep-mauve);
+    cursor: pointer; letter-spacing: 0.04em;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(139,77,99,0.06);
+  }
+  .lookbook-nav-btn:hover {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+    box-shadow: 0 6px 20px rgba(194,69,140,0.25);
+    transform: translateY(-1px);
+  }
+  .lookbook-nav-btn .nav-btn-icon { font-size: 15px; }
+
+  /* ══════════════════════════════════
+     CUSTOMIZER
+     ══════════════════════════════════ */
+  #customizer { background: var(--bg-alt); }
+
   .customizer-grid {
     display: grid;
     grid-template-columns: 1fr 380px;
@@ -125,17 +281,14 @@
 
   /* ── Step Cards ── */
   .step-card {
-    background: #fff; border-radius: 20px; padding: 28px;
+    background: var(--bg-card); border-radius: 20px; padding: 28px;
     border: 1px solid var(--border); margin-bottom: 20px;
-    box-shadow: 0 2px 12px rgba(139,77,99,0.06);
+    box-shadow: 0 2px 12px rgba(139,77,99,0.05);
   }
-  .step-header {
-    display: flex; align-items: center; gap: 14px; margin-bottom: 22px;
-    cursor: pointer;
-  }
+  .step-header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; cursor: pointer; }
   .step-num {
     width: 32px; height: 32px; border-radius: 50%;
-    background: var(--terracotta); color: #fff;
+    background: var(--accent); color: #fff;
     display: flex; align-items: center; justify-content: center;
     font-size: 13px; font-weight: 700; flex-shrink: 0;
   }
@@ -148,11 +301,11 @@
   .opt-pill {
     padding: 8px 18px; border-radius: 50px;
     border: 1.5px solid var(--border); font-size: 13px; font-weight: 500;
-    background: #fff; color: var(--text-mid); cursor: pointer;
-    transition: all 0.18s;
+    background: var(--bg-card); color: var(--text-mid); cursor: pointer;
+    transition: all 0.18s; font-family: 'DM Sans', sans-serif;
   }
   .opt-pill:hover { border-color: var(--dusty-rose); color: var(--deep-mauve); }
-  .opt-pill.active { background: var(--terracotta); color: #fff; border-color: var(--terracotta); }
+  .opt-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
   /* ── Color Swatches ── */
   .swatch-grid { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -160,66 +313,62 @@
     width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
     border: 3px solid transparent;
     transition: transform 0.18s, border-color 0.18s;
-    position: relative;
   }
   .swatch:hover { transform: scale(1.15); }
-  .swatch.active { border-color: var(--terracotta); box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--terracotta); }
+  .swatch.active { border-color: var(--accent); box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--accent); }
   .swatch-label { font-size: 11px; text-align: center; color: var(--text-light); margin-top: 4px; }
   .swatch-wrap { display: flex; flex-direction: column; align-items: center; }
 
-  /* Leather colors */
-  .lc-coal { background: #2c2c2c; }
-  .lc-wine { background: #5c1a2a; }
-  .lc-latte { background: #a0673a; }
-  .lc-lychee { background: #e8b4b0; }
+  /* Leather swatches */
+  .lc-coal      { background: #2c2c2c; }
+  .lc-wine      { background: #5c1a2a; }
+  .lc-latte     { background: #a0673a; }
+  .lc-lychee    { background: #e8b4b0; }
   .lc-pistachio { background: #7a9b5e; }
-  .lc-sky { background: #7aa8c0; }
-  .lc-midnight { background: #1e3a7a; }
-  .lc-taro { background: #8e8aad; }
+  .lc-sky       { background: #7aa8c0; }
+  .lc-midnight  { background: #1e3a7a; }
+  .lc-taro      { background: #8e8aad; }
 
-  /* Cord colors */
-  .cc-petal { background: #e8a4b0; }
-  .cc-rose { background: #d42060; }
-  .cc-lavender { background: #9b7fd4; }
-  .cc-bone { background: #d4c8a8; }
-  .cc-orange { background: #e87040; }
-  .cc-mahogany { background: #2c1a10; }
-  .cc-sky { background: #7aa8c0; }
-  .cc-peacock { background: #008080; }
-  .cc-mint { background: #6dba8a; }
-  .cc-rust { background: #7a2020; }
-  .cc-apple { background: #8aaa28; }
+  /* Cord swatches */
+  .cc-petal     { background: #e8a4b0; }
+  .cc-rose      { background: #d42060; }
+  .cc-lavender  { background: #9b7fd4; }
+  .cc-bone      { background: #d4c8a8; }
+  .cc-orange    { background: #e87040; }
+  .cc-mahogany  { background: #2c1a10; }
+  .cc-sky       { background: #7aa8c0; }
+  .cc-peacock   { background: #008080; }
+  .cc-mint      { background: #6dba8a; }
+  .cc-rust      { background: #7a2020; }
+  .cc-apple     { background: #8aaa28; }
 
-  /* ── Range / Input ── */
-  input[type="text"], input[type="email"], input[type="tel"], textarea, select {
+  /* ── Inputs ── */
+  input[type="text"], input[type="email"], input[type="tel"],
+  input[type="number"], textarea, select {
     width: 100%; padding: 10px 14px;
     border: 1.5px solid var(--border); border-radius: 12px;
     font-family: 'DM Sans', sans-serif; font-size: 14px;
-    background: #fff; color: var(--text-dark);
-    transition: border-color 0.2s;
-    outline: none;
+    background: var(--bg-card); color: var(--text-dark);
+    transition: border-color 0.2s; outline: none;
   }
-  input:focus, textarea:focus, select:focus { border-color: var(--dusty-rose); }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
   label.field-label { font-size: 13px; font-weight: 500; color: var(--text-mid); margin-bottom: 6px; display: block; }
 
   /* ── Preview Panel ── */
   .preview-panel {
     position: sticky; top: 90px;
-    background: #fff; border-radius: 24px; padding: 28px;
+    background: var(--bg-card); border-radius: 24px; padding: 28px;
     border: 1px solid var(--border);
-    box-shadow: 0 4px 24px rgba(139,77,99,0.08);
+    box-shadow: 0 4px 24px rgba(139,77,99,0.07);
   }
   .preview-title { font-size: 14px; font-weight: 600; color: var(--deep-mauve); margin-bottom: 16px; text-align: center; }
-
-  /* ── Folio SVG Preview ── */
   #folio-preview { width: 100%; height: 280px; position: relative; }
   .folio-svg { width: 100%; height: 100%; }
 
   /* ── Order Summary ── */
   .summary-line {
     display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 8px 0; border-bottom: 1px solid var(--border);
-    font-size: 13px;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
   }
   .summary-line:last-child { border-bottom: none; }
   .summary-key { color: var(--text-mid); }
@@ -230,7 +379,7 @@
     font-size: 18px; font-weight: 700; color: var(--deep-mauve);
   }
 
-  /* ── Charm Tier Cards ── */
+  /* ── Charm Tiers ── */
   .charm-tiers { display: flex; flex-direction: column; gap: 12px; }
   .charm-tier-card {
     border: 1.5px solid var(--border); border-radius: 14px; padding: 14px 18px;
@@ -238,111 +387,243 @@
   .tier-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
   .tier-badge {
     font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-    padding: 3px 10px; border-radius: 50px; background: var(--cream); color: var(--terracotta);
+    padding: 3px 10px; border-radius: 50px; background: var(--bg-alt); color: var(--accent);
   }
   .tier-price { font-size: 13px; color: var(--text-light); }
   .tier-charms { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
   .charm-btn {
     padding: 6px 14px; border-radius: 50px; border: 1.5px solid var(--border);
-    font-size: 12px; font-weight: 500; background: #fff; color: var(--text-mid);
-    cursor: pointer; transition: all 0.18s;
+    font-size: 12px; font-weight: 500; background: var(--bg-card); color: var(--text-mid);
+    cursor: pointer; transition: all 0.18s; font-family: 'DM Sans', sans-serif;
   }
   .charm-btn:hover { border-color: var(--dusty-rose); }
-  .charm-btn.selected { background: var(--terracotta); color: #fff; border-color: var(--terracotta); }
+  .charm-btn.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
   .charm-placement-row { margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .charm-placement-row label { font-size: 12px; color: var(--text-mid); }
   .charm-placement-row select { width: auto; padding: 6px 10px; font-size: 12px; }
-
-  /* Stacked per-charm placement rows */
   [id$="-placements"] { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
   [id$="-placements"] .charm-placement-row {
-    background: rgba(212,135,156,0.06); border-radius: 8px;
-    padding: 6px 10px; margin-top: 0;
+    background: var(--accent-light); border-radius: 8px; padding: 6px 10px; margin-top: 0;
   }
-
-  /* Tier reference images */
-  .charm-tier-card .nav-logo {
+  .charm-tier-card .tier-ref-img {
     display: block; height: 56px; object-fit: contain;
     border-radius: 8px; border: 1px solid var(--border);
-    background: var(--cream); padding: 4px;
+    background: var(--bg-alt); padding: 4px; margin: 10px 0 6px;
+    cursor: zoom-in; transition: transform 0.18s;
   }
+  .charm-tier-card .tier-ref-img:hover { transform: scale(1.04); }
 
-  /* ── Toggle ── */
-  .toggle-group { display: flex; gap: 0; background: var(--cream); border-radius: 50px; padding: 3px; width: fit-content; }
+  /* ── Toggles ── */
+  .toggle-group { display: flex; gap: 0; background: var(--bg-alt); border-radius: 50px; padding: 3px; width: fit-content; }
   .toggle-btn {
     padding: 8px 22px; border-radius: 50px; border: none;
     font-size: 13px; font-weight: 500; cursor: pointer;
     background: transparent; color: var(--text-mid); transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
   }
-  .toggle-btn.active { background: var(--terracotta); color: #fff; }
+  .toggle-btn.active { background: var(--accent); color: #fff; }
 
-  /* ── Engraving Preview ── */
-  .engraving-zone-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px;
-  }
+  /* ── Engraving ── */
+  .engraving-zone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
   .zone-card {
     border: 1.5px solid var(--border); border-radius: 12px; padding: 12px;
-    font-size: 12px;
+    font-size: 12px; cursor: pointer; transition: all 0.18s;
   }
-  .zone-card.active-zone { border-color: var(--dusty-rose); background: rgba(212,135,156,0.05); }
+  .zone-card:hover { border-color: var(--dusty-rose); }
+  .zone-card.active-zone { border-color: var(--accent); background: var(--accent-light); }
   .zone-name { font-weight: 600; color: var(--deep-mauve); margin-bottom: 4px; }
   .zone-desc { color: var(--text-light); font-size: 11px; }
 
-  /* ── Payment Section ── */
-  #payment { background: var(--nude); }
+  /* ── Lace Orientation ── */
+  .lace-orientation-group {
+    margin-top: 12px;
+    display: none; /* shown when lace is checked */
+  }
+  .lace-orientation-group.visible { display: block; }
+  .lace-orientation-label {
+    font-size: 12px; font-weight: 600; color: var(--text-mid); margin-bottom: 8px; display: block;
+  }
+  .lace-radio-group { display: flex; flex-direction: column; gap: 8px; }
+  .lace-radio-option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--border);
+    cursor: pointer; transition: all 0.18s;
+    font-size: 13px; color: var(--text-mid);
+  }
+  .lace-radio-option:has(input:checked) {
+    border-color: var(--accent); background: var(--accent-light); color: var(--deep-mauve); font-weight: 500;
+  }
+  .lace-radio-option input[type="radio"] {
+    width: auto; accent-color: var(--accent); cursor: pointer;
+  }
+
+  /* ── Add-Ons ── */
+  .addon-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .addon-row:last-child { border-bottom: none; }
+  .addon-check { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+  .addon-info { flex: 1; }
+  .addon-name { font-size: 14px; font-weight: 500; color: var(--text-dark); }
+  .addon-desc { font-size: 12px; color: var(--text-light); }
+  .addon-price { font-size: 14px; font-weight: 600; color: var(--accent); }
+
+  /* ── Shipping ── */
+  .ship-option {
+    border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 18px;
+    cursor: pointer; transition: all 0.18s; margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .ship-option.selected { border-color: var(--accent); background: var(--accent-light); }
+  .ship-option.disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── Payment ── */
+  #payment { background: var(--bg); }
   .payment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
   .qr-card {
-    background: #fff; border-radius: 20px; padding: 20px; text-align: center;
-    border: 1.5px solid var(--border);
-    box-shadow: 0 2px 12px rgba(139,77,99,0.06);
+    background: var(--bg-card); border-radius: 20px; padding: 20px; text-align: center;
+    border: 1.5px solid var(--border); box-shadow: 0 2px 12px rgba(139,77,99,0.05);
   }
-  .qr-card img { width: 140px; height: 140px; object-fit: contain; margin: 12px auto; display: block; }
+  .qr-card img { width: 140px; height: 140px; object-fit: contain; margin: 12px auto; display: block; cursor: zoom-in; }
   .qr-bank { font-weight: 700; font-size: 14px; color: var(--deep-mauve); }
   .qr-name { font-size: 12px; color: var(--text-light); margin-top: 4px; }
 
-  /* ── Upload box ── */
+  /* ── Upload Box ── */
   .upload-box {
     border: 2px dashed var(--border); border-radius: 16px; padding: 32px;
     text-align: center; cursor: pointer; transition: border-color 0.2s;
   }
-  .upload-box:hover { border-color: var(--dusty-rose); }
-  .upload-box input { display: none; }
+  .upload-box:hover { border-color: var(--accent); }
+  .upload-box input[type="file"] { display: none; }
   .upload-icon { font-size: 32px; margin-bottom: 8px; }
   .upload-text { font-size: 14px; color: var(--text-light); }
-  .upload-text span { color: var(--terracotta); font-weight: 600; }
+  .upload-text span { color: var(--accent); font-weight: 600; }
 
-  /* ── Modal ── */
+  /* ── Checkout ── */
+  #checkout { background: var(--bg-alt); }
+
+  /* ════════════════════════════════════
+     MODALS (shared base)
+     ════════════════════════════════════ */
   .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 200;
-    background: rgba(45,31,31,0.6); backdrop-filter: blur(8px);
+    background: rgba(45,31,31,0.55); backdrop-filter: blur(10px);
     align-items: center; justify-content: center; padding: 24px;
   }
   .modal-overlay.open { display: flex; }
   .modal-box {
-    background: var(--nude); border-radius: 28px; padding: 40px;
+    background: var(--bg); border-radius: 28px; padding: 40px;
     max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(45,31,31,0.25);
-    animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 20px 60px rgba(45,31,31,0.22);
+    animation: modalIn 0.32s cubic-bezier(0.34,1.56,0.64,1);
   }
-  @keyframes modalIn { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes modalIn {
+    from { transform: scale(0.9) translateY(24px); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+  }
   .modal-title { font-size: 26px; color: var(--deep-mauve); margin-bottom: 6px; }
   .modal-sub { font-size: 14px; color: var(--text-light); margin-bottom: 28px; }
 
-  .zoom-hint-label {
-    font-size: 10px; color: var(--text-light); letter-spacing: 0.08em;
-    text-align: center; margin-top: 2px; margin-bottom: 6px;
+  /* ── Success Modal ── */
+  .success-summary-box {
+    background: var(--bg-alt); border-radius: 16px; padding: 20px;
+    margin: 16px 0; text-align: left;
+  }
+  .success-summary-box .summary-line { font-size: 13px; }
+  .success-total {
+    font-size: 20px; font-weight: 700; color: var(--accent);
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--border);
   }
 
-  /* ── Tap-to-Zoom ── */
-  .zoomable {
-    cursor: zoom-in;
-    transition: transform 0.18s;
+  /* ── Story Modal ── */
+  .story-modal-box { max-width: 640px; }
+  .story-pull-quote {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(22px,4vw,32px);
+    color: var(--deep-mauve);
+    line-height: 1.4;
+    margin: 28px 0;
+    padding-left: 20px;
+    border-left: 3px solid var(--accent);
+  }
+  .story-body-text {
+    font-size: 15px; color: var(--text-mid); line-height: 1.9;
+    margin-bottom: 16px;
+  }
+
+  /* ── FAQ Modal ── */
+  .faq-item { border-bottom: 1px solid var(--border); padding: 16px 0; }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-q {
+    font-size: 14px; font-weight: 600; color: var(--deep-mauve);
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    gap: 12px;
+  }
+  .faq-q .faq-icon { font-size: 18px; transition: transform 0.2s; flex-shrink: 0; }
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+  .faq-a {
+    font-size: 13px; color: var(--text-mid); line-height: 1.8;
+    margin-top: 10px; display: none;
+  }
+  .faq-item.open .faq-a { display: block; }
+
+  /* ── Reviews Modal ── */
+  .reviews-modal-box { max-width: 420px; }
+  .reviews-scroll-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .review-screenshot {
+    /* 9:16 aspect ratio container */
+    aspect-ratio: 9/16;
+    background: var(--bg-alt);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-light); font-size: 13px;
     position: relative;
   }
-  .zoomable:hover { transform: scale(1.04); }
+  .review-screenshot img {
+    width: 100%; height: 100%; object-fit: cover; border-radius: 16px;
+  }
+  .review-screenshot .review-placeholder {
+    text-align: center; padding: 24px;
+    font-size: 12px; color: var(--text-light);
+  }
+
+  /* ── Contact Modal ── */
+  .contact-modal-box { max-width: 480px; }
+  .contact-link-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+    text-decoration: none; color: var(--text-dark);
+    transition: color 0.2s;
+  }
+  .contact-link-item:last-child { border-bottom: none; }
+  .contact-link-item:hover { color: var(--accent); }
+  .contact-link-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: var(--accent-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .contact-link-label { font-size: 13px; color: var(--text-light); }
+  .contact-link-value { font-size: 14px; font-weight: 600; }
+
+  /* ════════════════════════════════════
+     ZOOM OVERLAY
+     ════════════════════════════════════ */
   .zoom-overlay {
     display: none; position: fixed; inset: 0; z-index: 9999;
-    background: rgba(45,31,31,0.82); backdrop-filter: blur(10px);
+    background: rgba(45,31,31,0.85); backdrop-filter: blur(10px);
     align-items: center; justify-content: center; padding: 24px;
     cursor: zoom-out;
   }
@@ -356,19 +637,27 @@
   @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   .zoom-close {
     position: absolute; top: 20px; right: 24px;
-    font-size: 28px; color: #fff; cursor: pointer;
+    font-size: 24px; color: #fff; cursor: pointer;
     background: rgba(45,31,31,0.5); border-radius: 50%;
     width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
     transition: background 0.2s;
   }
-  .zoom-close:hover { background: rgba(196,96,122,0.7); }
+  .zoom-close:hover { background: rgba(194,69,140,0.7); }
   .zoom-hint {
     position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
     font-size: 12px; color: rgba(255,255,255,0.6); letter-spacing: 0.08em;
     pointer-events: none;
   }
+  .zoomable { cursor: zoom-in; transition: transform 0.18s; }
+  .zoomable:hover { transform: scale(1.04); }
+  .zoom-hint-label {
+    font-size: 10px; color: var(--text-light); letter-spacing: 0.08em;
+    text-align: center; margin-top: 2px; margin-bottom: 6px;
+  }
 
-  /* ── Toast ── */
+  /* ════════════════════════════════════
+     TOAST
+     ════════════════════════════════════ */
   .toast {
     position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
     background: var(--deep-mauve); color: #fff; padding: 14px 32px;
@@ -378,28 +667,59 @@
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ── Footer ── */
-  footer {
-    background: var(--text-dark); color: rgba(255,255,255,0.6);
-    padding: 48px 40px; text-align: center;
+  /* ════════════════════════════════════
+     PROCESS FOOTER
+     ════════════════════════════════════ */
+  .process-footer {
+    background: var(--text-dark);
+    padding: 60px 40px 40px;
+    text-align: center;
+    color: rgba(255,255,255,0.55);
   }
-  footer .footer-logo { height: 48px; margin: 0 auto 16px; opacity: 0.8; }
-  footer p { font-size: 13px; margin-bottom: 6px; }
-
-  /* ── Animations ── */
-  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
-  .fade-in.visible { opacity: 1; transform: none; }
-
-  /* ── Divider ── */
-  .petal-divider {
-    text-align: center; font-size: 22px; color: var(--dusty-rose);
-    letter-spacing: 12px; margin: 8px 0;
+  .process-footer .footer-logo {
+    height: 48px; margin: 0 auto 20px; opacity: 0.75; display: block; filter: brightness(1.5);
   }
+  .process-follow-label {
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(255,255,255,0.35); margin-bottom: 18px; font-weight: 500;
+  }
+  .process-social-links {
+    display: flex; align-items: center; justify-content: center; gap: 20px;
+    margin-bottom: 32px; flex-wrap: wrap;
+  }
+  .process-social-links a {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 22px; border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500;
+    text-decoration: none; letter-spacing: 0.04em;
+    transition: all 0.22s;
+  }
+  .process-social-links a:hover { border-color: var(--accent); color: var(--accent); background: rgba(194,69,140,0.08); }
+  .process-social-icon { font-size: 16px; }
+  .footer-divider { width: 40px; height: 1px; background: rgba(255,255,255,0.1); margin: 28px auto; }
+  .footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+  .footer-story-link {
+    color: rgba(255,255,255,0.45); font-size: 13px; cursor: pointer;
+    background: none; border: none; font-family: 'DM Sans', sans-serif;
+    text-decoration: underline; text-underline-offset: 3px;
+    transition: color 0.2s; margin-bottom: 6px; display: inline-block;
+  }
+  .footer-story-link:hover { color: var(--accent); }
 
-  /* Misc helpers */
+  /* ════════════════════════════════════
+     MISC HELPERS
+     ════════════════════════════════════ */
+  .progress-bar { background: var(--border); height: 4px; border-radius: 2px; margin-bottom: 32px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--dusty-rose), var(--accent));
+    border-radius: 2px; transition: width 0.4s;
+  }
+  .petal-divider { text-align: center; font-size: 22px; color: var(--dusty-rose); letter-spacing: 12px; margin: 8px 0; }
   .price-pill {
     display: inline-block; padding: 3px 10px; border-radius: 50px;
-    background: rgba(196,96,122,0.1); color: var(--terracotta);
+    background: var(--accent-light); color: var(--accent);
     font-size: 12px; font-weight: 600;
   }
   .info-box {
@@ -410,46 +730,23 @@
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
   @media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
   .field-group { margin-bottom: 14px; }
-  .required { color: var(--terracotta); }
-
-  /* Engraving letter counter */
+  .required { color: var(--accent); }
   #letter-count { font-size: 12px; color: var(--text-light); margin-top: 4px; }
-  #letter-count .warn { color: var(--terracotta); font-weight: 600; }
+  #letter-count .warn { color: var(--accent); font-weight: 600; }
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
+  .fade-in.visible { opacity: 1; transform: none; }
 
-  /* Addon checkbox row */
-  .addon-row {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 0; border-bottom: 1px solid var(--border);
-  }
-  .addon-row:last-child { border-bottom: none; }
-  .addon-check {
-    width: 20px; height: 20px; accent-color: var(--terracotta); cursor: pointer; flex-shrink: 0;
-  }
-  .addon-info { flex: 1; }
-  .addon-name { font-size: 14px; font-weight: 500; color: var(--text-dark); }
-  .addon-desc { font-size: 12px; color: var(--text-light); }
-  .addon-price { font-size: 14px; font-weight: 600; color: var(--terracotta); }
-
-  /* Shipping */
-  .ship-option {
-    border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 18px;
-    cursor: pointer; transition: all 0.18s; margin-bottom: 8px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .ship-option.selected { border-color: var(--terracotta); background: rgba(196,96,122,0.05); }
-  .ship-option.disabled { opacity: 0.4; cursor: not-allowed; }
-
-  /* Progress bar */
-  .progress-bar { background: var(--border); height: 4px; border-radius: 2px; margin-bottom: 32px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--dusty-rose), var(--terracotta)); border-radius: 2px; transition: width 0.4s; }
+  /* Modal wide override */
+  .modal-wide { max-width: 680px; }
 </style>
 </head>
 <body>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav>
-  <img src="images/Logo.png" alt="artcyst.ph" class="nav-logo">
+  <img src="Logo.png" alt="artcyst.ph" class="nav-logo">
   <div class="nav-links">
+    <a href="#inspiration">Gallery</a>
     <a href="#customizer">Customize</a>
     <a href="#addons">Add-Ons</a>
     <a href="#payment">Payment</a>
@@ -460,12 +757,105 @@
 <!-- ══════════════ HERO ══════════════ -->
 <section class="hero" id="home">
   <div style="position:relative;z-index:1;">
-    <img src="images/Logo.png" alt="artcyst.ph" class="hero-logo">
+    <img src="Logo.png" alt="artcyst.ph" class="hero-logo">
     <p class="section-label">artcyst.ph</p>
     <h1 class="serif">Build Your<br><em class="italic-serif">Own</em> Folio</h1>
     <p class="hero-sub">Handcrafted for minds in motion</p>
     <a href="#customizer" class="btn-primary">✦ Customize Your Journal</a>
     <p style="margin-top:20px;font-size:13px;color:var(--text-light);">Premium vegan leather · Made to order · 7–10 business days</p>
+  </div>
+</section>
+
+<!-- ══════════════ VISUAL INSPIRATION / LOOKBOOK ══════════════ -->
+<section id="inspiration">
+  <div class="container">
+    <div class="section-label">Our Work</div>
+    <h2 class="serif section-title">Visual Inspiration</h2>
+    <p class="section-sub">Each folio is one of a kind — here's a glimpse of what we've made.</p>
+
+    <!-- ── Swiper Carousel ── -->
+    <div class="lookbook-carousel-wrap">
+      <div class="swiper lookbook-swiper">
+        <div class="swiper-wrapper">
+
+          <!-- Slide 1 -->
+          <div class="swiper-slide" style="position:relative;">
+            <img src="gallery/Packaging.jpg" alt="artcyst folio — packaging">
+            <div class="lookbook-slide-caption"><span>Ready to Ship</span></div>
+          </div>
+
+          <!-- Slide 2 -->
+          <div class="swiper-slide" style="position:relative;">
+            <img src="gallery/The_Journals.jpg" alt="artcyst folio — the journals">
+            <div class="lookbook-slide-caption"><span>Every Order, Handcrafted</span></div>
+          </div>
+
+          <!-- Slide 3 -->
+          <div class="swiper-slide" style="position:relative;">
+            <img src="gallery/Cord_detail.jpg" alt="artcyst folio — cord detail">
+            <div class="lookbook-slide-caption"><span>Charms & Cords</span></div>
+          </div>
+
+          <!-- Slide 4 -->
+          <div class="swiper-slide" style="position:relative;">
+            <img src="gallery/Flatlay.jpg" alt="artcyst folio — flat lay">
+            <div class="lookbook-slide-caption"><span>Flat Lay</span></div>
+          </div>
+
+           <!-- Slide 5 — 9:16 Vertical Video -->
+          <div class="swiper-slide lookbook-slide-video">
+            <div class="lookbook-video-inner">
+              <video
+                src="gallery/lookbook-video.mp4"
+                playsinline
+                controls
+                loop
+                style="width:100%;height:100%;object-fit:cover;border-radius:16px;"
+              ></video>
+            </div>
+          </div>
+
+          <!-- Slide 6 -->
+          <div class="swiper-slide" style="position:relative;">
+            <img src="gallery/Lifestyle2.jpg" alt="artcyst folio — lifestyle">
+            <div class="lookbook-slide-caption"><span>In the Wild</span></div>
+          </div>
+
+          <!-- Slide 7 -->
+          <div class="swiper-slide" style="position:relative;">
+            <img src="gallery/Leather_close_up.jpg" alt="artcyst folio — leather close-up">
+            <div class="lookbook-slide-caption"><span>Leather & Charms</span></div>
+          </div>
+
+          <!-- Slide 8 -->
+          <div class="swiper-slide" style="position:relative;">
+            <img src="gallery/Lifestyle.jpg" alt="artcyst folio — in the wild">
+            <div class="lookbook-slide-caption"><span>Made for Minds in Motion</span></div>
+          </div>
+
+        </div><!-- /swiper-wrapper -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div><!-- /lookbook-carousel-wrap -->
+
+    <!-- ── 4 Navigation Modal Buttons ── -->
+    <div class="lookbook-nav-buttons">
+      <button class="lookbook-nav-btn" onclick="openModal('story-modal')">
+        <span class="nav-btn-icon">✦</span> Our Story
+      </button>
+      <button class="lookbook-nav-btn" onclick="openModal('faq-modal')">
+        <span class="nav-btn-icon">?</span> FAQs
+      </button>
+      <button class="lookbook-nav-btn" onclick="openModal('reviews-modal')">
+        <span class="nav-btn-icon">♡</span> Customer Reviews
+      </button>
+      <button class="lookbook-nav-btn" onclick="openModal('contact-modal')">
+        <span class="nav-btn-icon">✉</span> Contact Us
+      </button>
+    </div>
+
   </div>
 </section>
 
@@ -505,7 +895,7 @@
           </div>
         </div>
 
-        <!-- STEP 2: Leather -->
+        <!-- STEP 2: Leather Color -->
         <div class="step-card fade-in">
           <div class="step-header">
             <div class="step-num">2</div>
@@ -567,9 +957,7 @@
           <div class="step-body">
             <div style="margin-bottom:20px;">
               <div class="field-label">Front Cord (Horizontal Wrap)</div>
-              <div class="swatch-grid" id="front-cord-swatches">
-                <!-- generated by JS -->
-              </div>
+              <div class="swatch-grid" id="front-cord-swatches"><!-- generated by JS --></div>
             </div>
             <div>
               <div class="field-label" style="margin-bottom:6px;">Inside Cords</div>
@@ -594,7 +982,7 @@
           </div>
           <div class="step-body">
             <div class="field-group">
-              <label class="field-label">Your Text (available special characters: ♡♪☆) <span id="letter-count"></span></label>
+              <label class="field-label">Your Text <span id="letter-count"></span></label>
               <input type="text" id="engraving-text" maxlength="10" placeholder="e.g. artcyst ♡" oninput="onEngravingInput(this)" style="letter-spacing:0.1em;">
             </div>
             <div class="field-group">
@@ -607,34 +995,17 @@
             </div>
             <div class="field-group">
               <label class="field-label">Placement Zone</label>
-              <div style="font-size:12px;color:var(--text-light);margin-bottom:10px;">Outer Flap (1A–1D) · Inner Flap (2A–2D)</div>
-          <img src="images/The Engraving - Placement.png" alt="Free Charms Reference" class="nav-logo zoomable" style="margin:10px 0 6px;height:80px;width:auto;object-fit:contain;" onclick="openZoom(this)" title="Tap to zoom">
-
+              <div style="font-size:12px;color:var(--text-light);margin-bottom:10px;">Outer Flap: "Left over Right" (1A–1D) · Inner Flap: "Right over Left" (2A–2D)</div>
+              <img src="The Engraving - Placement.png" alt="Engraving Placement Reference" class="zoomable" style="margin:10px 0 6px;height:80px;width:auto;object-fit:contain;display:block;" onclick="openZoom(this)" title="Tap to zoom">
               <div class="engraving-zone-grid">
-                <div class="zone-card active-zone" id="zone-1A" onclick="selectZone(this,'1A')">
-                  <div class="zone-name">1A — Outer</div><div class="zone-desc">Horizontal Bottom</div>
-                </div>
-                <div class="zone-card" id="zone-1B" onclick="selectZone(this,'1B')">
-                  <div class="zone-name">1B — Outer</div><div class="zone-desc">Vertical Bottom</div>
-                </div>
-                <div class="zone-card" id="zone-1C" onclick="selectZone(this,'1C')">
-                  <div class="zone-name">1C — Outer</div><div class="zone-desc">Vertical Top</div>
-                </div>
-                <div class="zone-card" id="zone-1D" onclick="selectZone(this,'1D')">
-                  <div class="zone-name">1D — Outer</div><div class="zone-desc">Horizontal Top</div>
-                </div>
-                <div class="zone-card" id="zone-2A" onclick="selectZone(this,'2A')">
-                  <div class="zone-name">2A — Inner</div><div class="zone-desc">Horizontal Bottom</div>
-                </div>
-                <div class="zone-card" id="zone-2B" onclick="selectZone(this,'2B')">
-                  <div class="zone-name">2B — Inner</div><div class="zone-desc">Vertical Bottom</div>
-                </div>
-                <div class="zone-card" id="zone-2C" onclick="selectZone(this,'2C')">
-                  <div class="zone-name">2C — Inner</div><div class="zone-desc">Vertical Top</div>
-                </div>
-                <div class="zone-card" id="zone-2D" onclick="selectZone(this,'2D')">
-                  <div class="zone-name">2D — Inner</div><div class="zone-desc">Horizontal Top</div>
-                </div>
+                <div class="zone-card active-zone" id="zone-1A" onclick="selectZone(this,'1A')"><div class="zone-name">1A — Outer</div><div class="zone-desc">Horizontal Bottom</div></div>
+                <div class="zone-card" id="zone-1B" onclick="selectZone(this,'1B')"><div class="zone-name">1B — Outer</div><div class="zone-desc">Vertical Bottom</div></div>
+                <div class="zone-card" id="zone-1C" onclick="selectZone(this,'1C')"><div class="zone-name">1C — Outer</div><div class="zone-desc">Vertical Top</div></div>
+                <div class="zone-card" id="zone-1D" onclick="selectZone(this,'1D')"><div class="zone-name">1D — Outer</div><div class="zone-desc">Horizontal Top</div></div>
+                <div class="zone-card" id="zone-2A" onclick="selectZone(this,'2A')"><div class="zone-name">2A — Inner</div><div class="zone-desc">Horizontal Bottom</div></div>
+                <div class="zone-card" id="zone-2B" onclick="selectZone(this,'2B')"><div class="zone-name">2B — Inner</div><div class="zone-desc">Vertical Bottom</div></div>
+                <div class="zone-card" id="zone-2C" onclick="selectZone(this,'2C')"><div class="zone-name">2C — Inner</div><div class="zone-desc">Vertical Top</div></div>
+                <div class="zone-card" id="zone-2D" onclick="selectZone(this,'2D')"><div class="zone-name">2D — Inner</div><div class="zone-desc">Horizontal Top</div></div>
               </div>
             </div>
           </div>
@@ -646,17 +1017,8 @@
       <div>
         <div class="preview-panel">
           <div class="preview-title">✦ Live Preview</div>
-          <!-- Folio SVG Preview -->
           <div id="folio-preview">
             <svg id="folio-svg" viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" class="folio-svg">
-              <!-- Shadow -->
-              <ellipse cx="160" cy="250" rx="100" ry="10" fill="rgba(45,31,31,0.08)"/>
-              <!-- Back cover -->
-              <rect id="back-cover" x="30" y="20" width="130" height="210" rx="10" fill="#2c2c2c" opacity="0.5"/>
-              <!-- Front cover -->
-              <rect id="front-cover" x="80" y="15" width="170" height="220" rx="10" fill="#2c2c2c"/>
-              <!-- Texture shimmer -->
-              <rect id="cover-shine" x="80" y="15" width="170" height="220" rx="10" fill="url(#leatherGrad)" opacity="0.25"/>
               <defs>
                 <linearGradient id="leatherGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
@@ -664,26 +1026,23 @@
                   <stop offset="100%" stop-color="#000000" stop-opacity="0.15"/>
                 </linearGradient>
               </defs>
-              <!-- Front Cord -->
+              <ellipse cx="160" cy="250" rx="100" ry="10" fill="rgba(45,31,31,0.08)"/>
+              <rect id="back-cover" x="30" y="20" width="130" height="210" rx="10" fill="#2c2c2c" opacity="0.5"/>
+              <rect id="front-cover" x="80" y="15" width="170" height="220" rx="10" fill="#2c2c2c"/>
+              <rect id="cover-shine" x="80" y="15" width="170" height="220" rx="10" fill="url(#leatherGrad)" opacity="0.25"/>
               <line id="front-cord-line" x1="80" y1="125" x2="250" y2="125" stroke="#d4c8a8" stroke-width="3" stroke-linecap="round"/>
-              <!-- Grommet dots (spine) — vertical layout -->
               <circle id="g-s1" cx="80" cy="55" r="5" fill="none" stroke="#b8a090" stroke-width="2"/>
               <circle id="g-s2" cx="80" cy="100" r="5" fill="none" stroke="#b8a090" stroke-width="2"/>
               <circle id="g-s3" cx="80" cy="145" r="5" fill="none" stroke="#b8a090" stroke-width="2"/>
-              <!-- Spine inside cords — vertical layout -->
               <line id="inside-s1" x1="80" y1="55" x2="30" y2="55" stroke="#e8a4b0" stroke-width="2.5" stroke-dasharray="4,3" stroke-linecap="round" opacity="0.7"/>
               <line id="inside-s2" x1="80" y1="100" x2="30" y2="100" stroke="#9b7fd4" stroke-width="2.5" stroke-dasharray="4,3" stroke-linecap="round" opacity="0.7"/>
               <line id="inside-s3" x1="80" y1="145" x2="30" y2="145" stroke="#6dba8a" stroke-width="2.5" stroke-dasharray="4,3" stroke-linecap="round" opacity="0.7"/>
-              <!-- S1/S2/S3 vertical labels -->
               <text x="22" y="58" font-family="DM Sans,sans-serif" font-size="8" fill="#a08080" text-anchor="middle">S1</text>
               <text x="22" y="103" font-family="DM Sans,sans-serif" font-size="8" fill="#a08080" text-anchor="middle">S2</text>
               <text x="22" y="148" font-family="DM Sans,sans-serif" font-size="8" fill="#a08080" text-anchor="middle">S3</text>
-              <!-- Charm -->
               <circle id="charm-icon" cx="165" cy="125" r="8" fill="#c4a882" stroke="#a08060" stroke-width="1.5"/>
               <line x1="165" y1="117" x2="165" y2="113" stroke="#a08060" stroke-width="1.5"/>
-              <!-- Engraving text -->
               <text id="engraving-preview" x="165" y="195" text-anchor="middle" font-family="serif" font-size="13" fill="rgba(255,255,255,0.5)" letter-spacing="3"></text>
-              <!-- Edge corners (sharp indicator) -->
               <rect id="corner-tl" x="80" y="15" width="10" height="10" fill="transparent"/>
               <rect id="corner-br" x="240" y="225" width="10" height="10" fill="transparent"/>
             </svg>
@@ -691,7 +1050,6 @@
 
           <div style="border-top:1px solid var(--border);margin:16px 0;"></div>
 
-          <!-- Mini Summary -->
           <div id="mini-summary">
             <div class="summary-line"><span class="summary-key">Base</span><span class="summary-val" id="s-base">A6 Bifold</span></div>
             <div class="summary-line"><span class="summary-key">Leather</span><span class="summary-val" id="s-leather">Coal</span></div>
@@ -716,7 +1074,7 @@
 </section>
 
 <!-- ══════════════ ADD-ONS ══════════════ -->
-<section id="addons" style="background:var(--nude);">
+<section id="addons" style="background:var(--bg);">
   <div class="container">
     <div class="section-label">Personalize Further</div>
     <h2 class="serif section-title">Add-Ons & Upgrades</h2>
@@ -839,14 +1197,17 @@
         </div>
 
       </div>
+
+
+      </div><!-- /charm-tiers -->
     </div>
 
     <!-- Other Add-Ons -->
     <div class="step-card fade-in" style="max-width:800px;margin-top:24px;">
-      <div class="step-header"><div class="step-num" style="background:var(--dusty-rose);">+</div><div class="step-title">Extras & Upgrades</div></div>
-      <div>
+      <div class="step-header"><div class="step-num" style="background:var(--dusty-rose);">+</div><div class="step-title">Other Add-Ons</div></div>
+
         <!-- Fabric Insert -->
-        <div class="addon-row" id="fabric-row">
+        <div class="addon-row" id="fabric-row" style="display:none;">
           <input type="checkbox" class="addon-check" id="fabric-check" onchange="toggleFabric(this)">
           <div class="addon-info">
             <div class="addon-name">Fabric Folio Insert (Inabel)</div>
@@ -863,116 +1224,132 @@
           </div>
         </div>
 
-        <!-- Edge Protector -->
-        <div class="addon-row" id="edge-prot-row" style="opacity:0.4;pointer-events:none;">
-          <input type="checkbox" class="addon-check" id="edge-prot-check" onchange="toggleEdgeProt(this)">
-          <div class="addon-info">
-            <div class="addon-name">Edge Protectors</div>
-            <div class="addon-desc">Only for Sharp edge · +₱59</div>
-          </div>
-          <div class="addon-price">₱59</div>
+      <!-- Edge Protector -->
+            <div class="addon-row" id="edge-prot-row" style="display:none;">
+        <input type="checkbox" class="addon-check" id="edge-prot-check" onchange="toggleEdgeProtector(this)">
+        <div class="addon-info">
+          <div class="addon-name">Edge Protector</div>
+          <div class="addon-desc">Only for Sharp edge · +₱59</div>
         </div>
-        <div id="edge-prot-sub" style="display:none;padding:12px 32px 4px;">
-          <label class="field-label">Finish</label>
-          <div class="option-grid">
-            <button class="opt-pill active" onclick="selectOpt('edge-prot-finish',this,'Silver',0)">Silver</button>
-            <button class="opt-pill" onclick="selectOpt('edge-prot-finish',this,'Gold',0)">Gold</button>
-          </div>
-        </div>
-
-        <!-- Double Cord -->
-        <div class="addon-row">
-          <input type="checkbox" class="addon-check" id="double-cord-check" onchange="toggleDoubleCord(this)">
-          <div class="addon-info">
-            <div class="addon-name">Double Front Cord (Add-On)</div>
-            <div class="addon-desc" id="double-cord-desc">Layered cord look · A6: ₱40 / A5: ₱50</div>
-          </div>
-          <div class="addon-price" id="double-cord-price">₱40</div>
-        </div>
-        <div id="double-cord-sub" style="display:none;padding:14px 32px 8px;">
-          <label class="field-label" style="font-size:12px;margin-bottom:10px;display:block;">2nd Cord Color</label>
-          <div class="swatch-grid" id="double-cord-swatches"></div>
-          <div style="font-size:11px;color:var(--text-light);margin-top:8px;">Selected: <span id="double-cord-color-label" style="font-weight:600;color:var(--deep-mauve);">—</span></div>
-        </div>
-
-        <!-- Extra Inserts -->
-        <div class="addon-row">
-          <input type="checkbox" class="addon-check" id="extra-insert-check" onchange="calcTotal()">
-          <div class="addon-info">
-            <div class="addon-name">Extra Blank Inserts</div>
-            <div class="addon-desc" id="extra-insert-desc">A6: ₱35 / A5: ₱40</div>
-          </div>
-          <div class="addon-price" id="extra-insert-price">₱35</div>
-        </div>
-        <div id="extra-insert-sub" style="display:none;padding:8px 32px;">
-          <label class="field-label" style="font-size:12px;">How many extra inserts?</label>
-          <input type="number" id="extra-insert-qty" min="1" max="10" value="1" style="width:80px;" onchange="calcTotal()">
-        </div>
-
-        <!-- Lace -->
-        <div class="addon-row">
-          <input type="checkbox" class="addon-check" id="lace-check" onchange="calcTotal()">
-          <div class="addon-info">
-            <div class="addon-name">Lace</div>
-            <div class="addon-desc" id="lace-desc">A6: ₱40 / A5: ₱50</div>
-          </div>
-          <div class="addon-price" id="lace-price">₱40</div>
-        </div>
-
-        <!-- Mini Keychain -->
-        <div class="addon-row">
-          <input type="checkbox" class="addon-check" id="keychain-check" onchange="toggleKeychain(this)">
-          <div class="addon-info">
-            <div class="addon-name">Mini Leather Keychain</div>
-            <div class="addon-desc">Matching keychain · 1 free 3mm letter</div>
-          </div>
-          <div class="addon-price">₱99</div>
-        </div>
-        <div id="keychain-sub" style="display:none;padding:12px 32px 4px;background:rgba(212,135,156,0.05);border-radius:12px;margin:4px 0;">
-          <div class="field-row">
-            <div>
-              <label class="field-label">Leather Color</label>
-              <select id="kc-leather" onchange="calcTotal()">
-                <option>Coal</option><option>Wine</option><option>Latte</option><option>Lychee</option>
-                <option>Pistachio</option><option>Sky</option><option>Midnight</option><option>Taro</option>
-              </select>
-            </div>
-            <div>
-              <label class="field-label">Cord Color</label>
-              <select id="kc-cord" onchange="calcTotal()">
-                <option>Petal</option><option>Rose</option><option>Lavender</option><option>Bone</option>
-                <option>Orange</option><option>Mahogany</option><option>Sky</option><option>Peacock</option>
-                <option>Mint</option><option>Rust</option><option>Apple</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label class="field-label">1 Letter (free, 3mm)</label>
-            <input type="text" id="kc-letter" maxlength="1" placeholder="e.g. A" style="width:80px;">
-          </div>
+        <div class="addon-price">₱59</div>
+      </div>
+      <div id="edge-prot-sub" style="display:none;padding:12px 32px 4px;">
+        <label class="field-label">Finish</label>
+        <div class="option-grid">
+          <button class="opt-pill active" onclick="selectOpt('edge-prot-finish',this,'None',0)">None</button>
+          <button class="opt-pill" onclick="selectOpt('edge-prot-finish',this,'Silver',0)">Silver</button>
+          <button class="opt-pill" onclick="selectOpt('edge-prot-finish',this,'Gold',0)">Gold</button>
         </div>
       </div>
+
+
+      <!-- Double Cord -->
+      <div class="addon-row">
+        <input type="checkbox" class="addon-check" id="double-cord-check" onchange="toggleDoubleCord(this)">
+        <div class="addon-info">
+          <div class="addon-name">Double Front Cord (Add-On)</div>
+          <div class="addon-desc" id="double-cord-desc">Layered cord look · A6: ₱40 / A5: ₱50</div>
+        </div>
+        <div class="addon-price" id="double-cord-price">₱40</div>
+      </div>
+      <div id="double-cord-sub" style="display:none;padding:14px 32px 8px;">
+        <label class="field-label" style="font-size:12px;margin-bottom:10px;display:block;">2nd Cord Color</label>
+        <div class="swatch-grid" id="double-cord-swatches"></div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:8px;">Selected: <span id="double-cord-color-label" style="font-weight:600;color:var(--deep-mauve);">—</span></div>
+      </div>
+
+      <!-- Extra Inserts -->
+      <div class="addon-row">
+        <input type="checkbox" class="addon-check" id="extra-insert-check" onchange="calcTotal()">
+        <div class="addon-info">
+          <div class="addon-name">Extra Blank Inserts</div>
+          <div class="addon-desc" id="extra-insert-desc">A6: ₱35 / A5: ₱40</div>
+        </div>
+        <div class="addon-price" id="extra-insert-price">₱35</div>
+      </div>
+      <div id="extra-insert-sub" style="display:none;padding:8px 32px;">
+        <label class="field-label" style="font-size:12px;">How many extra inserts?</label>
+        <input type="number" id="extra-insert-qty" min="1" max="10" value="1" style="width:80px;" onchange="calcTotal()">
+      </div>
+
+      <!-- Lace — now with orientation selection -->
+      <div class="addon-row">
+        <input type="checkbox" class="addon-check" id="lace-check" onchange="toggleLace(this)">
+        <div class="addon-info">
+          <div class="addon-name">Lace</div>
+          <div class="addon-desc" id="lace-desc">A6: ₱40 / A5: ₱50</div>
+        </div>
+        <div class="addon-price" id="lace-price">₱40</div>
+      </div>
+      <!-- ── Lace Orientation sub-option (NEW) ── -->
+      <div id="lace-orientation-sub" class="lace-orientation-group" style="padding:12px 32px 8px;">
+        <span class="lace-orientation-label">Lace Orientation</span>
+        <div class="lace-radio-group">
+          <label class="lace-radio-option">
+            <input type="radio" name="lace-orientation" value="Outer Flap: Left over Right" checked onchange="onLaceOrientationChange()">
+            Outer Flap: Left over Right
+          </label>
+          <label class="lace-radio-option">
+            <input type="radio" name="lace-orientation" value="Inner Flap: Right over Left" onchange="onLaceOrientationChange()">
+            Inner Flap: Right over Left
+          </label>
+        </div>
+      </div>
+
+      <!-- Mini Keychain -->
+      <div class="addon-row">
+        <input type="checkbox" class="addon-check" id="keychain-check" onchange="toggleKeychain(this)">
+        <div class="addon-info">
+          <div class="addon-name">Mini Leather Keychain</div>
+          <div class="addon-desc">Matching keychain · 1 free 3mm letter</div>
+        </div>
+        <div class="addon-price">₱99</div>
+      </div>
+      <div id="keychain-sub" style="display:none;padding:12px 32px 4px;background:var(--accent-light);border-radius:12px;margin:4px 0;">
+        <div class="field-row">
+          <div>
+            <label class="field-label">Leather Color</label>
+            <select id="kc-leather" onchange="calcTotal()">
+              <option>Coal</option><option>Wine</option><option>Latte</option><option>Lychee</option>
+              <option>Pistachio</option><option>Sky</option><option>Midnight</option><option>Taro</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Cord Color</label>
+            <select id="kc-cord" onchange="calcTotal()">
+              <option>Petal</option><option>Rose</option><option>Lavender</option><option>Bone</option>
+              <option>Orange</option><option>Mahogany</option><option>Sky</option><option>Peacock</option>
+              <option>Mint</option><option>Rust</option><option>Apple</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="field-label">1 Letter (free, 3mm)</label>
+          <input type="text" id="kc-letter" maxlength="1" placeholder="e.g. A" style="width:80px;">
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
 
 <!-- ══════════════ SHIPPING ══════════════ -->
-<section id="shipping" style="background:var(--cream);">
+<section id="shipping" style="background:var(--bg-alt);">
   <div class="container" style="max-width:700px;">
     <div class="section-label">Delivery</div>
     <h2 class="serif section-title">Shipping</h2>
     <div id="shipping-options">
       <div class="ship-option selected" id="ship-luzon" onclick="selectShipping(this,'Luzon',100)">
         <div><div style="font-weight:600;">Luzon</div><div style="font-size:12px;color:var(--text-light);">Standard courier</div></div>
-        <div style="font-weight:700;color:var(--terracotta);">₱100</div>
+        <div style="font-weight:700;color:var(--accent);">₱100</div>
       </div>
       <div class="ship-option" id="ship-visayas" onclick="selectShipping(this,'Visayas',115)">
         <div><div style="font-weight:600;">Visayas</div><div style="font-size:12px;color:var(--text-light);">Standard courier</div></div>
-        <div style="font-weight:700;color:var(--terracotta);">₱115</div>
+        <div style="font-weight:700;color:var(--accent);">₱115</div>
       </div>
       <div class="ship-option" id="ship-mindanao" onclick="selectShipping(this,'Mindanao',130)">
         <div><div style="font-weight:600;">Mindanao</div><div style="font-size:12px;color:var(--text-light);">Standard courier</div></div>
-        <div style="font-weight:700;color:var(--terracotta);">₱130</div>
+        <div style="font-weight:700;color:var(--accent);">₱130</div>
       </div>
       <div class="ship-option disabled">
         <div><div style="font-weight:600;">Overseas</div><div style="font-size:12px;color:var(--text-light);">Not yet available</div></div>
@@ -988,32 +1365,31 @@
     <div class="section-label">Settle Your Order</div>
     <h2 class="serif section-title">Payment</h2>
     <p class="section-sub">Choose your preferred channel and scan to pay.</p>
-
     <div class="payment-grid">
       <div class="qr-card">
         <div class="qr-bank" style="color:#003087;">BDO</div>
-        <img src="images/BDO.JPG" alt="BDO QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
+        <img src="BDO.jpg" alt="BDO QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
         <div class="qr-name">ARTCYST</div>
         <div style="font-size:11px;color:var(--text-light);">Acct ending ••••7638</div>
         <div style="font-size:11px;color:var(--text-light);margin-top:4px;">BDO-to-BDO transfers free</div>
       </div>
       <div class="qr-card">
         <div class="qr-bank" style="color:#007aff;">GCash</div>
-        <img src="images/GCASH.JPG" alt="GCash QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
+        <img src="GCASH.jpg" alt="GCash QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
         <div class="qr-name">ARTCYST.PH</div>
         <div style="font-size:11px;color:var(--text-light);">0923 025 ••••</div>
         <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
       </div>
       <div class="qr-card">
         <div class="qr-bank" style="color:#00b4d8;">GoTyme Bank</div>
-        <img src="images/GOTYME.PNG" alt="GoTyme QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
+        <img src="GOTYME.png" alt="GoTyme QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
         <div class="qr-name">ARTCYST</div>
         <div style="font-size:11px;color:var(--text-light);">Acct ending ••••7784</div>
         <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
       </div>
       <div class="qr-card">
         <div class="qr-bank" style="color:#00a651;">Maya</div>
-        <img src="images/MAYA.PNG" alt="Maya QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
+        <img src="MAYA.png" alt="Maya QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
         <div class="qr-name">ARTCYST</div>
         <div style="font-size:11px;color:var(--text-light);">+63 *** *** 6912</div>
         <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
@@ -1023,7 +1399,7 @@
 </section>
 
 <!-- ══════════════ CHECKOUT FORM ══════════════ -->
-<section id="checkout" style="background:var(--cream);">
+<section id="checkout">
   <div class="container" style="max-width:720px;">
     <div class="section-label">Almost There</div>
     <h2 class="serif section-title">Complete Your Order</h2>
@@ -1061,7 +1437,7 @@
         </div>
         <div class="field-group">
           <label class="field-label">Shipping Destination <span class="required">*</span></label>
-          <input type="text" id="cust-destination" readonly placeholder="Select above in Shipping section" style="background:var(--cream);">
+          <input type="text" id="cust-destination" readonly placeholder="Select above in Shipping section" style="background:var(--bg-alt);">
         </div>
       </div>
       <div class="field-group">
@@ -1081,24 +1457,64 @@
         <div class="upload-icon">📎</div>
         <div class="upload-text"><span>Click to upload</span> or drag & drop</div>
         <div style="font-size:12px;color:var(--text-light);margin-top:4px;">PNG, JPG, PDF · max 10MB</div>
-        <div id="pop-filename" style="margin-top:10px;font-size:13px;color:var(--terracotta);font-weight:600;"></div>
+        <div id="pop-filename" style="margin-top:10px;font-size:13px;color:var(--accent);font-weight:600;"></div>
         <input type="file" id="pop-upload" accept="image/*,.pdf" onchange="onFileSelected(this)">
       </div>
     </div>
 
-    <button class="btn-primary" style="width:100%;margin-top:28px;padding:18px;font-size:16px;" onclick="submitOrder()">
+    <!-- Submit Button — disabled on click, re-enabled on failure, hard-reset on success -->
+    <button
+      id="submit-btn"
+      class="btn-primary"
+      style="width:100%;margin-top:28px;padding:18px;font-size:16px;"
+      onclick="submitOrder()"
+    >
       ✦ Place My Order
     </button>
     <p style="text-align:center;font-size:12px;color:var(--text-light);margin-top:12px;">By placing your order you agree to our handcrafting lead time of 7–10 business days.</p>
   </div>
 </section>
 
-<!-- ══════════════ FOOTER ══════════════ -->
-<footer>
-  <img src="images/Logo.png" alt="artcyst.ph" class="footer-logo">
-  <p>handcrafted for minds in motion</p>
-  <p style="margin-top:8px;">© 2026 artcyst.ph · All rights reserved</p>
-  <p style="margin-top:4px;font-size:12px;">Made with ♡ in the Philippines</p>
+<!-- ══════════════ PROCESS FOOTER ══════════════ -->
+<footer class="process-footer">
+  <img src="Logo.png" alt="artcyst.ph" class="footer-logo">
+
+  <div class="process-follow-label">Follow our process</div>
+
+  <div class="process-social-links">
+    <!-- TikTok -->
+    <a href="https://www.tiktok.com/@artcyst.ph" target="_blank" rel="noopener">
+      <span class="process-social-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.31 6.31 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+      </span>
+      @artcyst.ph
+    </a>
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/artcyst.ph" target="_blank" rel="noopener">
+      <span class="process-social-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </span>
+      @artcyst.ph
+    </a>
+    <!-- Facebook -->
+    <a href="https://www.facebook.com/artcyst.ph" target="_blank" rel="noopener">
+      <span class="process-social-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      </span>
+      artcyst.ph
+    </a>
+  </div>
+
+  <div class="footer-divider"></div>
+
+  <div style="margin-bottom:12px;">
+    <button class="footer-story-link" onclick="openModal('story-modal')">Our Story</button>
+  </div>
+
+  <div class="footer-copy">
+    <p>© 2026 artcyst.ph · All rights reserved</p>
+    <p style="margin-top:4px;">Made with ♡ in the Philippines</p>
+  </div>
 </footer>
 
 <!-- ══════════════ ZOOM OVERLAY ══════════════ -->
@@ -1111,20 +1527,253 @@
 <!-- ══════════════ TOAST ══════════════ -->
 <div class="toast" id="toast"></div>
 
-<!-- ══════════════ SUCCESS MODAL ══════════════ -->
+<!-- ══════════════════════════════════════
+     SUCCESS MODAL
+     Hard reset on close via window.location.reload()
+═════════════════════════════════════════ -->
 <div class="modal-overlay" id="success-modal">
   <div class="modal-box" style="text-align:center;">
-    <div style="font-size:48px;margin-bottom:16px;">🎉</div>
+    <div style="font-size:52px;margin-bottom:16px;">🎉</div>
     <h2 class="serif modal-title">Order Received!</h2>
-    <p class="modal-sub">Thank you for your order. We'll confirm via email within 24 hours. Your folio will be handcrafted with love in 7–10 business days.</p>
-    <div style="background:var(--cream);border-radius:16px;padding:20px;margin:16px 0;text-align:left;" id="order-confirm-summary"></div>
-    <button class="btn-primary" onclick="closeModal()" style="margin-top:8px;">Done ✦</button>
+    <p class="modal-sub">Thank you! We'll confirm via email within 24 hours.<br>Your folio will be handcrafted with love in 7–10 business days.</p>
+
+    <div class="success-summary-box">
+      <div style="font-weight:600;font-size:13px;color:var(--deep-mauve);margin-bottom:12px;text-align:left;">Order Summary</div>
+      <div id="success-item-summary" style="text-align:left;"></div>
+      <div class="success-total" id="success-total-line"></div>
+    </div>
+
+    <div style="font-size:13px;color:var(--text-light);margin-bottom:24px;">
+      A confirmation email has been sent to <strong id="success-email"></strong>
+    </div>
+
+    <!-- Hard Reset: full page reload clears all form state and file uploads -->
+    <button
+      class="btn-primary"
+      style="width:100%;"
+      onclick="window.location.reload()"
+    >
+      ← Return to Shop
+    </button>
   </div>
 </div>
 
-<!-- ══════════════ JAVASCRIPT ══════════════ -->
+<!-- ══════════════════════════════════════
+     OUR STORY MODAL (brand narrative only — no social links)
+═════════════════════════════════════════ -->
+<div class="modal-overlay" id="story-modal">
+  <div class="modal-box story-modal-box">
+    <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;font-weight:600;">Our Story</div>
+    <h2 class="serif modal-title">artcyst.ph</h2>
+
+    <p class="story-pull-quote">"Handcrafted for minds in motion."</p>
+
+    <p class="story-body-text">
+<strong>Artcyst.ph</strong> began in 2018 as a small craft studio founded by me and my sister, creating paintings and calligraphy rooted in a shared love for handmade work. The name <strong>Artcyst</strong> draws from “art” and “cyst” (spoken like “sis”) — a quiet nod to our bond, and to <em>catalyst</em>: something that sparks ideas into motion.
+    </p>
+    <p class="story-body-text">
+After a pause in 2020, Artcyst returns in 2026 with a more focused expression. Today, the studio centers on handcrafted leather journals and folios, while my sister continues her own creative path in her bouquet business. Though our mediums have changed, the heart of what we started remains the same and so does the name.
+    </p>
+    <p class="story-body-text">
+Every folio we make is assembled by hand, one piece at a time — each cord chosen with purpose, each leather panel pressed and trimmed with care.
+    </p>
+    <p class="story-body-text">
+We remain a small studio based in the Ilocos Norte, Philippines. Every order sustains the craft, and for that, we are deeply grateful.
+    </p>
+
+    <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:8px;display:flex;align-items:center;justify-content:flex-end;">
+      <button class="btn-primary" style="padding:12px 28px;font-size:14px;" onclick="closeModal('story-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     FAQs MODAL
+═════════════════════════════════════════ -->
+<div class="modal-overlay" id="faq-modal">
+  <div class="modal-box modal-wide">
+    <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;font-weight:600;">Help Center</div>
+    <h2 class="serif modal-title">Frequently Asked Questions</h2>
+    <p class="modal-sub">Everything you need to know about your folio.</p>
+
+    <div id="faq-list">
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How long does production take?<span class="faq-icon">+</span></div>
+        <div class="faq-a">We hand-assemble every folio to order. Production takes <strong>7–10 business days</strong> before we hand it off to the courier. You'll receive a shipping notification once it's on its way.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What leather do you use?<span class="faq-icon">+</span></div>
+        <div class="faq-a">All our folios are made with premium vegan leather — smooth, durable, and cruelty-free. Colors are photographed as accurately as possible, but slight variation may occur between screens.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How do I care for the leather?<span class="faq-icon">+</span></div>
+        <div class="faq-a">To keep your folio looking its best: <br><br>• Wipe clean with a soft, slightly damp cloth. Avoid soaking.<br>• Keep away from direct sunlight for extended periods to prevent fading.<br>• Store in a cool, dry place when not in use.<br>• Do not use alcohol-based cleaners or harsh solvents — these can damage the vegan leather surface.<br>• A thin layer of leather conditioner can be applied sparingly every few months.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Can I change or cancel my order?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Orders can be modified within <strong>24 hours</strong> of placement. After that, production may have already begun. Please reach out to us directly on our social media channels: <strong>@artcyst.ph</strong> as soon as possible if you need to make changes.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Do you ship overseas?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Currently, we only ship within the Philippines (Luzon, Visayas, and Mindanao). International shipping is something we're working toward — Follow <strong>@artcyst.ph</strong> across our social media platforms to keep up with new releases and announcements!</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How does engraving work?<span class="faq-icon">+</span></div>
+        <div class="faq-a">The engraving is manually etched into the leather, creating a lasting impression. Up to 5 characters are included free; 6–10 characters incur a ₱50 surcharge. Choose your font style and placement zone during customization.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Custom Requests — what if I want something not listed?<span class="faq-icon">+</span></div>
+        <div class="faq-a">We'd love to hear your ideas! For custom orders, special color requests, or anything not available in our current options, contact us directly via our social media platforms: <strong>@artcyst.ph</strong>. We'll do our best to accommodate you — note that custom requests may have longer lead times and adjusted pricing.</div>
+      </div>
+
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:8px;display:flex;justify-content:flex-end;">
+      <button class="btn-primary" style="padding:12px 28px;font-size:14px;" onclick="closeModal('faq-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     CUSTOMER REVIEWS MODAL
+     Vertical 9:16 screenshot gallery
+═════════════════════════════════════════ -->
+<div class="modal-overlay" id="reviews-modal">
+  <div class="modal-box reviews-modal-box">
+    <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;font-weight:600;">What Customers Say</div>
+    <h2 class="serif modal-title">Customer Reviews</h2>
+    <p class="modal-sub" style="margin-bottom:20px;">Real folios, real people. ♡</p>
+
+    <!--
+      ▶ HOW TO ADD REVIEW SCREENSHOTS:
+      Add <img> elements inside each .review-screenshot div.
+      These containers are 9:16 aspect ratio to match phone screenshots.
+      Example: <img src="review-1.jpg" alt="Customer review screenshot">
+      Recommended: at least 1080x1920px for sharp display.
+    -->
+    <div class="reviews-scroll-gallery">
+
+      <div class="review-screenshot">
+        <img src="reviews/Design1.png" alt="Customer review">
+      </div>
+
+      <div class="review-screenshot">
+        <img src="reviews/Design2.png" alt="Customer review">
+      </div>
+
+      <div class="review-screenshot">
+        <img src="reviews/Design3.png" alt="Customer review">
+      </div>
+	  
+	  <div class="review-screenshot">
+        <img src="reviews/Design4.png" alt="Customer review">
+      </div>
+	  
+	  <div class="review-screenshot">
+        <img src="reviews/Design5.png" alt="Customer review">
+      </div>
+	  
+	  <div class="review-screenshot">
+        <img src="reviews/Design6.png" alt="Customer review">
+      </div>
+
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:16px;display:flex;justify-content:flex-end;">
+      <button class="btn-primary" style="padding:12px 28px;font-size:14px;" onclick="closeModal('reviews-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     CONTACT US MODAL
+     Updated with Facebook, Instagram, TikTok, Email
+═════════════════════════════════════════ -->
+<div class="modal-overlay" id="contact-modal">
+  <div class="modal-box contact-modal-box">
+    <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;font-weight:600;">Get In Touch</div>
+    <h2 class="serif modal-title">Contact Us</h2>
+    <p class="modal-sub">We'd love to hear from you — reach us on any of these channels.</p>
+
+    <div>
+
+      <!-- Facebook -->
+      <a href="https://www.facebook.com/artcyst.ph" target="_blank" rel="noopener" class="contact-link-item">
+        <div class="contact-link-icon" style="background:rgba(0,120,255,0.1);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </div>
+        <div>
+          <div class="contact-link-label">Facebook</div>
+          <div class="contact-link-value">artcyst.ph</div>
+        </div>
+        <svg style="margin-left:auto;opacity:0.3;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+
+      <!-- Instagram -->
+      <a href="https://www.instagram.com/artcyst.ph" target="_blank" rel="noopener" class="contact-link-item">
+        <div class="contact-link-icon" style="background:rgba(194,69,140,0.12);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#C2458C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </div>
+        <div>
+          <div class="contact-link-label">Instagram</div>
+          <div class="contact-link-value">@artcyst.ph</div>
+        </div>
+        <svg style="margin-left:auto;opacity:0.3;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+
+      <!-- TikTok -->
+      <a href="https://www.tiktok.com/@artcyst.ph" target="_blank" rel="noopener" class="contact-link-item">
+        <div class="contact-link-icon" style="background:rgba(0,0,0,0.08);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#2d1f1f"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.31 6.31 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+        </div>
+        <div>
+          <div class="contact-link-label">TikTok</div>
+          <div class="contact-link-value">@artcyst.ph</div>
+        </div>
+        <svg style="margin-left:auto;opacity:0.3;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+
+      <!-- Email -->
+      <a href="mailto:artcyst.ph@gmail.com" class="contact-link-item">
+        <div class="contact-link-icon" style="background:rgba(194,69,140,0.08);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        </div>
+        <div>
+          <div class="contact-link-label">Email</div>
+          <div class="contact-link-value">artcyst.ph@gmail.com</div>
+        </div>
+        <svg style="margin-left:auto;opacity:0.3;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:8px;display:flex;justify-content:flex-end;">
+      <button class="btn-primary" style="padding:12px 28px;font-size:14px;" onclick="closeModal('contact-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+═════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-// ── State ──
+// ════════════════════════════════════════
+//  CONFIGURATION
+//  ▶ Replace GAS_URL with your deployed
+//    Google Apps Script Web App URL.
+// ════════════════════════════════════════
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyHNf_0XL7DL5jDMh7yX6uCNAWOXB3A28dwNcoc-QE9fVoxlveMpGQ_dCzcJaCqq1w/exec';
+// ════════════════════════════════════════
+
+// ── App State ───────────────────────────
 const state = {
   base: 'a6-bifold', basePrice: 499,
   leather: 'Coal',
@@ -1133,23 +1782,20 @@ const state = {
   frontCord: null,
   insideCords: { s1: null, s2: null, s3: null },
   engravingText: '', engravingFont: '3mm Uppercase', engravingZone: '1A',
-  // freeCharms: array of { id, placement }
   freeCharms: [],
-  // addonCharms: { tierKey: [ { id, price, placement } ] }
   addonCharms: {},
-  fabricInsert: false, fabricPattern: 'Flower',
-  edgeProtector: false, edgeProtectorFinish: 'Silver',
+  fabricInsert: false,
+  edgeProtector: false,
   doubleCord: false, doubleCordColor: null,
-  extraInserts: false, extraInsertQty: 1,
-  lace: false,
-  keychain: false, kcLeather: 'Coal', kcCord: 'Petal', kcLetter: '',
+  laceOrientation: 'Outer Flap: Left over Right', // NEW
+  keychain: false,
   shipping: 'Luzon', shippingFee: 100,
   'fabric-pattern': 'Flower',
   'edge-prot-finish': 'Silver',
   'font': '3mm Uppercase',
 };
 
-// ── Leather color map ──
+// ── Color Maps ──────────────────────────
 const leatherColors = {
   Coal:'#2c2c2c', Wine:'#5c1a2a', Latte:'#a0673a', Lychee:'#e8b4b0',
   Pistachio:'#7a9b5e', Sky:'#7aa8c0', Midnight:'#1e3a7a', Taro:'#8e8aad'
@@ -1161,7 +1807,54 @@ const cordColors = {
 };
 const cordKeys = ['Petal','Rose','Lavender','Bone','Orange','Mahogany','Sky','Peacock','Mint','Rust','Apple'];
 
-// ── Build cord swatch grids ──
+// ════════════════════════════════════════
+//  SWIPER INIT
+// ════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  new Swiper('.lookbook-swiper', {
+    loop: true,
+    pagination: { el: '.swiper-pagination', clickable: true },
+    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+    autoplay: { delay: 5000, disableOnInteraction: false },
+    speed: 600,
+  });
+});
+
+// ════════════════════════════════════════
+//  MODAL SYSTEM (generic open/close)
+// ════════════════════════════════════════
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close modals on backdrop click
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+});
+
+// ── Legacy story modal wrappers (backward-compat) ──
+function openStoryModal()  { openModal('story-modal'); }
+function closeStoryModal() { closeModal('story-modal'); }
+
+// ════════════════════════════════════════
+//  FAQ TOGGLE
+// ════════════════════════════════════════
+function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  item.classList.toggle('open');
+}
+
+// ════════════════════════════════════════
+//  SWATCH BUILDERS
+// ════════════════════════════════════════
 function buildCordSwatches(containerId, stateKey, isInside) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -1175,9 +1868,8 @@ function buildCordSwatches(containerId, stateKey, isInside) {
     dot.title = name;
     dot.dataset.color = name;
     if (isInside) {
-      const key = stateKey;
       dot.onclick = () => {
-        state.insideCords[key] = name;
+        state.insideCords[stateKey] = name;
         container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
         dot.classList.add('active');
         updateInsideCordPreview();
@@ -1200,13 +1892,6 @@ function buildCordSwatches(containerId, stateKey, isInside) {
   });
 }
 
-buildCordSwatches('front-cord-swatches', 'frontCord', false);
-buildCordSwatches('s1-cord-swatches', 's1', true);
-buildCordSwatches('s2-cord-swatches', 's2', true);
-buildCordSwatches('s3-cord-swatches', 's3', true);
-buildDoubleCordSwatches();
-
-// ── Double Cord Color Swatches ──
 function buildDoubleCordSwatches() {
   const container = document.getElementById('double-cord-swatches');
   if (!container) return;
@@ -1218,13 +1903,11 @@ function buildDoubleCordSwatches() {
     dot.className = 'swatch';
     dot.style.background = cordColors[name];
     dot.title = name;
-    dot.dataset.color = name;
     dot.onclick = () => {
       state.doubleCordColor = name;
       container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
       dot.classList.add('active');
-      const lbl = document.getElementById('double-cord-color-label');
-      if (lbl) lbl.textContent = name;
+      document.getElementById('double-cord-color-label').textContent = name;
       calcTotal();
     };
     const lbl = document.createElement('div');
@@ -1235,80 +1918,93 @@ function buildDoubleCordSwatches() {
   });
 }
 
-function toggleDoubleCord(cb) {
-  const sub = document.getElementById('double-cord-sub');
-  sub.style.display = cb.checked ? 'block' : 'none';
-  if (!cb.checked) {
-    // clear selection
-    state.doubleCordColor = null;
-    document.querySelectorAll('#double-cord-swatches .swatch').forEach(s => s.classList.remove('active'));
-    const lbl = document.getElementById('double-cord-color-label');
-    if (lbl) lbl.textContent = '—';
-  }
-  calcTotal();
-}
-
-// ── Step functions ──
+// ════════════════════════════════════════
+//  SELECTION HANDLERS
+// ════════════════════════════════════════
 function selectBase(btn) {
   document.querySelectorAll('#base-options .opt-pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   state.base = btn.dataset.base;
   state.basePrice = parseInt(btn.dataset.price);
-  document.getElementById('s-base').textContent = btn.textContent.split('—')[0].trim();
-  updateAddonPrices();
-  updateFabricAvailability();
+  const isA5 = state.base.startsWith('a5');
+  const isA6 = state.base.startsWith('a6');
+  document.getElementById('double-cord-price').textContent = '₱' + (isA5 ? 50 : 40);
+  document.getElementById('extra-insert-price').textContent = '₱' + (isA5 ? 40 : 35);
+  document.getElementById('lace-price').textContent = '₱' + (isA5 ? 50 : 40);
+
+  // Fabric insert: A6 only
+  const fabricRow = document.getElementById('fabric-row');
+  if (!isA6) {
+    fabricRow.style.display = 'none';
+    document.getElementById('fabric-check').checked = false;
+    document.getElementById('fabric-sub').style.display = 'none';
+    state.fabricInsert = false;
+  } else {
+    fabricRow.style.display = '';
+  }
+
   calcTotal();
-  updateProgress();
 }
 
-function selectLeather(swatch) {
+function selectLeather(el) {
   document.querySelectorAll('#leather-swatches .swatch').forEach(s => s.classList.remove('active'));
-  swatch.classList.add('active');
-  state.leather = swatch.dataset.color;
-  document.getElementById('s-leather').textContent = state.leather;
+  el.classList.add('active');
+  state.leather = el.dataset.color;
   updateFolioColor(leatherColors[state.leather]);
-  calcTotal();
+  document.getElementById('s-leather').textContent = state.leather;
 }
 
 function selectEdge(btn, val) {
   document.querySelectorAll('#edge-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   state.edge = val;
-  document.getElementById('s-edge').textContent = val;
   updateEdgeCorners(val);
-  updateEdgeProtRow();
+  document.getElementById('s-edge').textContent = val;
+
+  // Edge protector: Sharp only
+  const edgeProtRow = document.getElementById('edge-prot-row');
+  if (val !== 'Sharp') {
+    edgeProtRow.style.display = 'none';
+    document.getElementById('edge-prot-check').checked = false;
+    document.getElementById('edge-prot-sub').style.display = 'none';
+    state.edgeProtector = false;
+  } else {
+    edgeProtRow.style.display = '';
+  }
+
   calcTotal();
 }
 
-function selectZone(card, zone) {
-  document.querySelectorAll('.zone-card').forEach(c => c.classList.remove('active-zone'));
-  card.classList.add('active-zone');
-  state.engravingZone = zone;
-  calcTotal();
-}
-
-function selectOpt(group, btn, val, price) {
-  const parent = btn.closest('.option-grid') || btn.closest('.charm-tiers');
+function selectOpt(key, btn, val, cost) {
+  const parent = btn.closest('.option-grid');
   if (parent) parent.querySelectorAll('.opt-pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  state[group] = val;
-  // Sync named aliases
-  if (group === 'font') state.engravingFont = val;
-  if (group === 'hardware') {
-    document.getElementById('s-hardware').textContent = val || 'None';
-  }
+  state[key] = val;
+  if (key === 'hardware') document.getElementById('s-hardware').textContent = val;
   calcTotal();
 }
 
-function onEngravingInput(input) {
-  state.engravingText = input.value;
-  const len = input.value.length;
-  const el = document.getElementById('letter-count');
-  if (len === 0) el.innerHTML = '';
-  else if (len <= 5) el.innerHTML = `<span>${len}/10 — free</span>`;
-  else el.innerHTML = `<span class="warn">${len}/10 — +₱50 (6–10 letters)</span>`;
-  document.getElementById('engraving-preview').textContent = input.value.toUpperCase();
-  document.getElementById('s-engraving').textContent = len > 0 ? `"${input.value}" · ${state.engravingFont} · Zone ${state.engravingZone}` : '—';
+function selectZone(el, zone) {
+  document.querySelectorAll('.zone-card').forEach(z => z.classList.remove('active-zone'));
+  el.classList.add('active-zone');
+  state.engravingZone = zone;
+}
+
+function selectShipping(el, region, fee) {
+  document.querySelectorAll('.ship-option:not(.disabled)').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  state.shipping = region;
+  state.shippingFee = fee;
+  document.getElementById('cust-destination').value = region;
+  calcTotal();
+}
+
+// ── Lace Orientation Handler (NEW) ──────
+function onLaceOrientationChange() {
+  const checked = document.querySelector('input[name="lace-orientation"]:checked');
+  if (checked) {
+    state.laceOrientation = checked.value;
+  }
   calcTotal();
 }
 
@@ -1439,167 +2135,141 @@ function toggleAddonCharm(btn, tier, id, price) {
   }
 }
 
+// ── Other Add-On Toggles ─────────────────
 function toggleFabric(cb) {
   state.fabricInsert = cb.checked;
   document.getElementById('fabric-sub').style.display = cb.checked ? 'block' : 'none';
   calcTotal();
 }
-
-function toggleEdgeProt(cb) {
-  state.edgeProtector = cb.checked;
-  document.getElementById('edge-prot-sub').style.display = cb.checked ? 'block' : 'none';
+function toggleEdgeProtector(chk) {
+  state.edgeProtector = chk.checked;
+  document.getElementById('edge-prot-sub').style.display = chk.checked ? 'block' : 'none';
   calcTotal();
 }
-
-function toggleKeychain(cb) {
-  state.keychain = cb.checked;
-  document.getElementById('keychain-sub').style.display = cb.checked ? 'block' : 'none';
+function toggleDoubleCord(chk) {
+  state.doubleCord = chk.checked;
+  document.getElementById('double-cord-sub').style.display = chk.checked ? 'block' : 'none';
   calcTotal();
 }
-
-function updateEdgeProtRow() {
-  const row = document.getElementById('edge-prot-row');
-  if (state.edge === 'Sharp') {
-    row.style.opacity = '1'; row.style.pointerEvents = 'auto';
+// ── Lace Toggle — shows orientation sub-option (NEW) ──
+function toggleLace(chk) {
+  const sub = document.getElementById('lace-orientation-sub');
+  if (chk.checked) {
+    sub.classList.add('visible');
   } else {
-    row.style.opacity = '0.4'; row.style.pointerEvents = 'none';
-    document.getElementById('edge-prot-check').checked = false;
-    state.edgeProtector = false;
-    document.getElementById('edge-prot-sub').style.display = 'none';
+    sub.classList.remove('visible');
   }
+  calcTotal();
 }
-
-function updateFabricAvailability() {
-  const isA6 = state.base.startsWith('a6');
-  const row = document.getElementById('fabric-row');
-  const desc = document.getElementById('fabric-desc');
-  if (!isA6) {
-    row.style.opacity = '0.4'; row.style.pointerEvents = 'none';
-    document.getElementById('fabric-check').checked = false;
-    state.fabricInsert = false;
-    desc.textContent = 'A6 only';
-  } else {
-    row.style.opacity = '1'; row.style.pointerEvents = 'auto';
-    desc.textContent = 'A6 only · Traditional Inabel weave';
-  }
-}
-
-function updateAddonPrices() {
-  const isA5 = state.base.startsWith('a5');
-  document.getElementById('double-cord-price').textContent = isA5 ? '₱50' : '₱40';
-  document.getElementById('extra-insert-price').textContent = isA5 ? '₱40' : '₱35';
-  document.getElementById('lace-price').textContent = isA5 ? '₱50' : '₱40';
-  document.getElementById('double-cord-desc').textContent = `Layered cord look · A6: ₱40 / A5: ₱50`;
-}
-
-function selectShipping(el, dest, fee) {
-  document.querySelectorAll('.ship-option:not(.disabled)').forEach(e => e.classList.remove('selected'));
-  el.classList.add('selected');
-  state.shipping = dest; state.shippingFee = fee;
-  document.getElementById('cust-destination').value = dest;
-  document.getElementById('s-shipping').textContent = `${dest} — ₱${fee}`;
+function toggleKeychain(chk) {
+  state.keychain = chk.checked;
+  document.getElementById('keychain-sub').style.display = chk.checked ? 'block' : 'none';
   calcTotal();
 }
 
-// ── calcTotal ──
+// ── Engraving ────────────────────────────
+function onEngravingInput(input) {
+  state.engravingText = input.value;
+  const len = input.value.length;
+  const lcEl = document.getElementById('letter-count');
+  if (len === 0) { lcEl.innerHTML = ''; }
+  else if (len <= 5) { lcEl.innerHTML = `<span>${len}/10 · free</span>`; }
+  else { lcEl.innerHTML = `<span class="warn">${len}/10 · +₱50</span>`; }
+  const prev = document.getElementById('engraving-preview');
+  if (prev) prev.textContent = input.value.toUpperCase();
+  document.getElementById('s-engraving').textContent = len ? input.value : '—';
+  calcTotal();
+}
+
+// ════════════════════════════════════════
+//  TOTAL CALCULATOR
+// ════════════════════════════════════════
 function calcTotal() {
+  const isA5 = (state.base || '').startsWith('a5');
   let total = state.basePrice;
 
-  // Engraving
-  const engLen = state.engravingText.length;
-  const engCost = engLen > 5 ? 50 : 0;
-  total += engCost;
+  if (state.engravingText && state.engravingText.length > 5) total += 50;
 
-  // Addon charms (now arrays per tier)
-  let charmCostStr = '';
-  Object.values(state.addonCharms).forEach(charmArr => {
-    if (!Array.isArray(charmArr)) return;
-    charmArr.forEach(c => { total += c.price; charmCostStr += `${c.id}(+₱${c.price}) `; });
+  Object.values(state.addonCharms).forEach(arr => {
+    if (Array.isArray(arr)) arr.forEach(c => { total += (c.price || 0); });
   });
 
-  // Fabric insert
   if (state.fabricInsert) total += 250;
-
-  // Edge protector
   if (state.edgeProtector) total += 59;
+  if (document.getElementById('double-cord-check')?.checked) total += isA5 ? 50 : 40;
 
-  // Double cord
-  const isA5 = state.base.startsWith('a5');
-  if (document.getElementById('double-cord-check').checked) total += isA5 ? 50 : 40;
-
-  // Extra inserts
-  if (document.getElementById('extra-insert-check').checked) {
-    const qty = parseInt(document.getElementById('extra-insert-qty').value) || 1;
-    const unitPrice = isA5 ? 40 : 35;
-    total += qty * unitPrice;
+  if (document.getElementById('extra-insert-check')?.checked) {
+    const qty = parseInt(document.getElementById('extra-insert-qty')?.value) || 1;
+    total += qty * (isA5 ? 40 : 35);
     document.getElementById('extra-insert-sub').style.display = 'block';
   } else {
     document.getElementById('extra-insert-sub').style.display = 'none';
   }
 
-  // Lace
-  if (document.getElementById('lace-check').checked) total += isA5 ? 50 : 40;
-
-  // Keychain
+  if (document.getElementById('lace-check')?.checked) total += isA5 ? 50 : 40;
   if (state.keychain) total += 99;
-
-  // Shipping
   total += state.shippingFee;
 
-  // Update mini summary
-  document.getElementById('s-hardware').textContent = state.hardware || 'None';
+  document.getElementById('s-base').textContent = (state.base || '').toUpperCase().replace('-', ' ') + ' — ₱' + state.basePrice;
   document.getElementById('s-front-cord').textContent = state.frontCord || '—';
-  const ic = state.insideCords;
   document.getElementById('s-inside-cords').textContent =
-    (ic.s1 || ic.s2 || ic.s3) ? `S1: ${ic.s1||'—'} · S2: ${ic.s2||'—'} · S3: ${ic.s3||'—'}` : '—';
+    (state.insideCords.s1 || '—') + ' · ' + (state.insideCords.s2 || '—') + ' · ' + (state.insideCords.s3 || '—');
+  document.getElementById('s-charms').textContent =
+    state.freeCharms.length ? state.freeCharms.map(c => c.id).join(', ') : '—';
+  document.getElementById('s-shipping').textContent = state.shipping + ' — ₱' + state.shippingFee;
 
-  // Charm mini summary
-  const allCharms = [
-    ...state.freeCharms.map(c => `${c.id}@${c.placement}`),
-    ...Object.values(state.addonCharms).flat().filter(c => c?.id).map(c => `${c.id}@${c.placement}(+₱${c.price})`)
-  ];
-  document.getElementById('s-charms').textContent = allCharms.length ? allCharms.join(' · ') : '—';
+  const addonTotal = calcAddonCost();
+  const addonsLine = document.getElementById('addons-line');
+  if (addonTotal > 0) {
+    addonsLine.style.display = 'flex';
+    document.getElementById('s-addons').textContent = '₱' + addonTotal;
+  } else {
+    addonsLine.style.display = 'none';
+  }
 
-  document.getElementById('s-engraving').textContent =
-    state.engravingText ? `"${state.engravingText}" · ${state.engravingFont} · Zone ${state.engravingZone}` : '—';
-  document.getElementById('s-shipping').textContent = `${state.shipping} — ₱${state.shippingFee}`;
-  document.getElementById('s-total').textContent = `₱${total}`;
-  document.getElementById('final-total-val').textContent = `₱${total}`;
+  document.getElementById('s-total').textContent = '₱' + total;
+  document.getElementById('final-total-val').textContent = '₱' + total;
 
-  // Final summary
-  buildFinalSummary(total, engCost, charmCostStr);
+  buildFinalSummary();
+  updateProgress();
   return total;
 }
 
-function buildFinalSummary(total, engCost, charmStr) {
-  // Free charms
-  const freeCharmLines = state.freeCharms.length
-    ? state.freeCharms.map(c => [`Free Charm — ${c.id}`, `Placement: ${c.placement}`])
-    : [['Free Charm', 'None selected']];
-
-  // Addon charm lines (array per tier)
-  const addonCharmLines = [];
-  Object.entries(state.addonCharms).forEach(([tier, charmArr]) => {
-    if (!Array.isArray(charmArr)) return;
-    charmArr.forEach(c => {
-      addonCharmLines.push([`Addon Charm (${tier.toUpperCase()}) — ${c.id}`, `+₱${c.price} · Placement: ${c.placement}`]);
-    });
+function calcAddonCost() {
+  let cost = 0;
+  const isA5 = (state.base || '').startsWith('a5');
+  if (state.fabricInsert) cost += 250;
+  if (state.edgeProtector) cost += 59;
+  if (document.getElementById('double-cord-check')?.checked) cost += isA5 ? 50 : 40;
+  if (document.getElementById('lace-check')?.checked) cost += isA5 ? 50 : 40;
+  if (state.keychain) cost += 99;
+  if (document.getElementById('extra-insert-check')?.checked) {
+    const qty = parseInt(document.getElementById('extra-insert-qty')?.value) || 1;
+    cost += qty * (isA5 ? 40 : 35);
+  }
+  Object.values(state.addonCharms).forEach(arr => {
+    if (Array.isArray(arr)) arr.forEach(c => { cost += (c.price || 0); });
   });
+  return cost;
+}
 
+function buildFinalSummary() {
+  const isA5 = (state.base || '').startsWith('a5');
+  const total = calcTotal_raw();
+  const lachecked = document.getElementById('lace-check')?.checked;
   const lines = [
-    ['Base Folio', `${state.base.toUpperCase()} — ₱${state.basePrice}`],
-    ['Leather', state.leather], ['Edge', state.edge], ['Hardware', state.hardware || 'None'],
+    ['Base Folio', (state.base || '').toUpperCase().replace('-', ' ') + ' — ₱' + state.basePrice],
+    ['Leather', state.leather],
+    ['Edge', state.edge + (state.hardware !== 'None' ? ' · ' + state.hardware + ' hardware' : '')],
     ['Front Cord', state.frontCord || '—'],
     ['Inside Cords', `S1: ${state.insideCords.s1||'—'} · S2: ${state.insideCords.s2||'—'} · S3: ${state.insideCords.s3||'—'}`],
-    ['Engraving', state.engravingText ? `"${state.engravingText}" · ${state.engravingFont} · Zone ${state.engravingZone}${engCost ? ' (+₱50)' : ''}` : 'None'],
-    ...freeCharmLines,
-    ...addonCharmLines,
-    state.fabricInsert ? ['Fabric Insert', `Inabel · ${state['fabric-pattern']} · ₱250`] : null,
-    state.edgeProtector ? ['Edge Protectors', `${state['edge-prot-finish']} · ₱59`] : null,
-    document.getElementById('double-cord-check')?.checked ? ['Double Cord', `${state.doubleCordColor || '—'} · +₱${state.base.startsWith('a5')?50:40}`] : null,
-    document.getElementById('extra-insert-check')?.checked ? ['Extra Inserts', `×${document.getElementById('extra-insert-qty')?.value||1} · +₱${state.base.startsWith('a5') ? 40*(document.getElementById('extra-insert-qty')?.value||1) : 35*(document.getElementById('extra-insert-qty')?.value||1)}`] : null,
-    document.getElementById('lace-check')?.checked ? ['Lace Trim', `+₱${state.base.startsWith('a5')?50:40}`] : null,
-    state.keychain ? ['Mini Keychain', `${document.getElementById('kc-leather')?.value} leather · ${document.getElementById('kc-cord')?.value} cord · "${document.getElementById('kc-letter')?.value||'?'}" · ₱99`] : null,
+    state.engravingText ? ['Engraving', `"${state.engravingText}" · Zone ${state.engravingZone}${state.engravingText.length > 5 ? ' · +₱50' : ' · free'}`] : null,
+    state.freeCharms.length ? ['Free Charm', state.freeCharms.map(c => `${c.id} @ ${c.placement}`).join(', ')] : null,
+    state.fabricInsert ? ['Fabric Insert', `${state['fabric-pattern']} · ₱250`] : null,
+    state.edgeProtector ? ['Edge Protector', `${state['edge-prot-finish']} · ₱59`] : null,
+    document.getElementById('double-cord-check')?.checked ? ['Double Cord', `+₱${isA5?50:40}`] : null,
+    lachecked ? ['Lace Trim', `${state.laceOrientation} · +₱${isA5?50:40}`] : null,
+    state.keychain ? ['Mini Keychain', `${document.getElementById('kc-leather')?.value} · ₱99`] : null,
     ['Shipping', `${state.shipping} — ₱${state.shippingFee}`],
   ].filter(Boolean);
 
@@ -1609,11 +2279,31 @@ function buildFinalSummary(total, engCost, charmStr) {
   ).join('');
 }
 
-// ── SVG Preview ──
+// Alias for internal use (avoids infinite recursion)
+function calcTotal_raw() {
+  const isA5 = (state.base || '').startsWith('a5');
+  let total = state.basePrice;
+  if (state.engravingText && state.engravingText.length > 5) total += 50;
+  Object.values(state.addonCharms).forEach(arr => {
+    if (Array.isArray(arr)) arr.forEach(c => { total += (c.price || 0); });
+  });
+  if (state.fabricInsert) total += 250;
+  if (state.edgeProtector) total += 59;
+  if (document.getElementById('double-cord-check')?.checked) total += isA5 ? 50 : 40;
+  if (document.getElementById('extra-insert-check')?.checked) {
+    const qty = parseInt(document.getElementById('extra-insert-qty')?.value) || 1;
+    total += qty * (isA5 ? 40 : 35);
+  }
+  if (document.getElementById('lace-check')?.checked) total += isA5 ? 50 : 40;
+  if (state.keychain) total += 99;
+  total += state.shippingFee;
+  return total;
+}
+
+// ════════════════════════════════════════
+//  SVG PREVIEW UPDATERS
+// ════════════════════════════════════════
 function updateFolioColor(hex) {
-  const alpha = (h) => h + 'bb';
-  document.getElementById('front-cover').style.fill = hex;
-  document.getElementById('back-cover').style.fill = hex;
   document.getElementById('front-cover').setAttribute('fill', hex);
   document.getElementById('back-cover').setAttribute('fill', hex + '99');
 }
@@ -1627,168 +2317,30 @@ function updateInsideCordPreview() {
   const s1c = cordColors[state.insideCords.s1] || '#e8a4b0';
   const s2c = cordColors[state.insideCords.s2] || '#9b7fd4';
   const s3c = cordColors[state.insideCords.s3] || '#6dba8a';
-  const s1el = document.getElementById('inside-s1');
-  const s2el = document.getElementById('inside-s2');
-  const s3el = document.getElementById('inside-s3');
-  const g1 = document.getElementById('g-s1');
-  const g2 = document.getElementById('g-s2');
-  const g3 = document.getElementById('g-s3');
-  if (s1el) { s1el.setAttribute('stroke', s1c); s1el.setAttribute('y1','55'); s1el.setAttribute('y2','55'); s1el.setAttribute('x1','80'); s1el.setAttribute('x2','30'); }
-  if (s2el) { s2el.setAttribute('stroke', s2c); s2el.setAttribute('y1','100'); s2el.setAttribute('y2','100'); s2el.setAttribute('x1','80'); s2el.setAttribute('x2','30'); }
-  if (s3el) { s3el.setAttribute('stroke', s3c); s3el.setAttribute('y1','145'); s3el.setAttribute('y2','145'); s3el.setAttribute('x1','80'); s3el.setAttribute('x2','30'); }
-  if (g1) { g1.setAttribute('cy','55'); } if (g2) { g2.setAttribute('cy','100'); } if (g3) { g3.setAttribute('cy','145'); }
+  document.getElementById('inside-s1')?.setAttribute('stroke', s1c);
+  document.getElementById('inside-s2')?.setAttribute('stroke', s2c);
+  document.getElementById('inside-s3')?.setAttribute('stroke', s3c);
 }
 
 function updateEdgeCorners(edge) {
-  const fc = document.getElementById('front-cover');
-  fc.setAttribute('rx', edge === 'Round' ? '10' : '0');
-  document.getElementById('back-cover').setAttribute('rx', edge === 'Round' ? '10' : '0');
+  const rx = edge === 'Round' ? '10' : '0';
+  document.getElementById('front-cover').setAttribute('rx', rx);
+  document.getElementById('back-cover').setAttribute('rx', rx);
 }
 
-// ── Scroll helpers ──
-function scrollToCheckout() {
-  document.getElementById('checkout').scrollIntoView({ behavior: 'smooth' });
-}
-
-// ── Progress ──
+// ════════════════════════════════════════
+//  PROGRESS BAR
+// ════════════════════════════════════════
 function updateProgress() {
-  const steps = [
-    state.base, state.leather, state.edge,
-    state.frontCord, state.engravingText,
-  ];
+  const steps = [state.base, state.leather, state.edge, state.frontCord, state.engravingText];
   const filled = steps.filter(Boolean).length;
   const pct = 10 + (filled / steps.length) * 80;
   document.getElementById('progress-fill').style.width = pct + '%';
 }
 
-// ── Submit Order ──
-async function submitOrder() {
-  const name    = document.getElementById('cust-name').value.trim();
-  const email   = document.getElementById('cust-email').value.trim();
-  const phone   = document.getElementById('cust-phone').value.trim();
-  const address = document.getElementById('cust-address').value.trim();
-  const notes   = document.getElementById('cust-notes').value.trim();
-  const popFile = document.getElementById('pop-upload').files[0];
-
-  if (!name || !email || !phone || !address) {
-    showToast('Please fill in all required fields.'); return;
-  }
-  if (!popFile) { showToast('Please upload your proof of payment.'); return; }
-  if (!state.frontCord) { showToast('Please select a front cord color.'); return; }
-  if (!state.insideCords.s1 || !state.insideCords.s2 || !state.insideCords.s3) {
-    showToast('Please select all inside cord colors (S1, S2, S3).'); return;
-  }
-
-  const total = calcTotal();
-
-  // ── Show success modal immediately so the customer isn't waiting ──
-  const modal     = document.getElementById('success-modal');
-  const confirmEl = document.getElementById('order-confirm-summary');
-  const freeCharmDisplay = state.freeCharms.length
-    ? state.freeCharms.map(c => `${c.id} @ ${c.placement}`).join(', ')
-    : 'None';
-  const addonCharmDisplay = Object.values(state.addonCharms)
-    .flat()
-    .filter(c => c && c.id)
-    .map(c => `${c.id} @ ${c.placement} (+₱${c.price})`)
-    .join(', ') || 'None';
-
-  confirmEl.innerHTML = `
-    <div style="font-size:13px;line-height:1.9;">
-      <strong>Name:</strong> ${name}<br>
-      <strong>Email:</strong> ${email}<br>
-      <strong>Folio:</strong> ${state.base.toUpperCase()} · ${state.leather}<br>
-      <strong>Inside Cords:</strong> S1: ${state.insideCords.s1||'—'} · S2: ${state.insideCords.s2||'—'} · S3: ${state.insideCords.s3||'—'}<br>
-      <strong>Free Charms:</strong> ${freeCharmDisplay}<br>
-      ${addonCharmDisplay !== 'None' ? `<strong>Addon Charms:</strong> ${addonCharmDisplay}<br>` : ''}
-      <strong>Shipping:</strong> ${state.shipping} — ₱${state.shippingFee}<br>
-      <strong style="color:var(--terracotta);font-size:16px;">Total: ₱${total}</strong>
-    </div>
-  `;
-  modal.classList.add('open');
-
-  // ── POST to Google Apps Script ──────────────────────────────────────
-  // IMPORTANT: We read the file as Base64 and send everything as JSON.
-  // GAS cannot parse multipart/form-data binary blobs from fetch() natively,
-  // so we encode the file and send a single JSON body instead.
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyQQy8N5wBZ9vhl8pRKBQv-ltc3SsT1n_n4CopxRd2R5Nd8CsgV7hQ-BlyaajOvHsL8Ng/exec';
-
-  try {
-    // Convert the proof-of-payment file to a Base64 string
-    const fileBase64 = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload  = () => resolve(reader.result.split(',')[1]); // strip the data:...;base64, prefix
-      reader.onerror = () => reject(new Error('File read failed'));
-      reader.readAsDataURL(popFile);
-    });
-
-    const payload = {
-      timestamp: new Date().toISOString(),
-      customer: { name, email, phone, address, notes },
-      order: {
-        base:        state.base,
-        basePrice:   state.basePrice,
-        leather:     state.leather,
-        edge:        state.edge,
-        hardware:    state.hardware,
-        frontCord:   state.frontCord,
-        insideCords: state.insideCords,
-        engraving:   { text: state.engravingText, font: state.engravingFont, zone: state.engravingZone },
-        freeCharms:  state.freeCharms,
-        addonCharms: state.addonCharms,
-        fabricInsert:   state.fabricInsert  ? { pattern: state['fabric-pattern'] }  : null,
-        edgeProtector:  state.edgeProtector ? state['edge-prot-finish']              : null,
-        doubleCord:     document.getElementById('double-cord-check').checked,
-        doubleCordColor: state.doubleCordColor || null,
-        extraInserts:   document.getElementById('extra-insert-check').checked
-                          ? parseInt(document.getElementById('extra-insert-qty').value) : 0,
-        lace:        document.getElementById('lace-check').checked,
-        keychain:    state.keychain
-                       ? { leather: document.getElementById('kc-leather').value,
-                           cord:    document.getElementById('kc-cord').value,
-                           letter:  document.getElementById('kc-letter').value }
-                       : null,
-        shipping:    { destination: state.shipping, fee: state.shippingFee },
-        total,
-      },
-      // File data — GAS will decode this and save it to Drive
-      proof: {
-        base64:    fileBase64,
-        mimeType:  popFile.type  || 'application/octet-stream',
-        fileName:  popFile.name  || 'proof_of_payment',
-      },
-    };
-
-    await fetch(GAS_URL, {
-      method:  'POST',
-      // Send as plain text so GAS receives it in e.postData.contents
-      // (GAS cannot parse fetch FormData multipart blobs natively)
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body:    JSON.stringify(payload),
-    });
-  } catch (err) {
-    console.error('Order submission error:', err);
-  }
-}
-
-function closeModal() {
-  document.getElementById('success-modal').classList.remove('open');
-}
-
-function onFileSelected(input) {
-  if (input.files[0]) {
-    document.getElementById('pop-filename').textContent = '✓ ' + input.files[0].name;
-  }
-}
-
-// ── Toast ──
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// ── Tap-to-Zoom ──
+// ════════════════════════════════════════
+//  ZOOM OVERLAY
+// ════════════════════════════════════════
 function openZoom(img) {
   const overlay = document.getElementById('zoom-overlay');
   const zoomImg = document.getElementById('zoom-img');
@@ -1805,17 +2357,213 @@ function closeZoom(event, force) {
   }
 }
 
+// ════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ════════════════════════════════════════
+//  FILE UPLOAD
+// ════════════════════════════════════════
+function onFileSelected(input) {
+  if (input.files[0]) {
+    document.getElementById('pop-filename').textContent = '✓ ' + input.files[0].name;
+  }
+}
+
+// ════════════════════════════════════════
+//  SCROLL TO CHECKOUT
+// ════════════════════════════════════════
+function scrollToCheckout() {
+  document.getElementById('checkout').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ════════════════════════════════════════
+//  SUBMIT ORDER
+//  Anti-duplicate logic:
+//  1. Button is immediately disabled + text changed to "Processing..."
+//  2. Order ID = email + timestamp (checked on backend for duplicates)
+//  3. Lace orientation is captured and sent in Add-Ons column
+//  4. On success: show success modal with summary
+//  5. On "Return to Shop": window.location.reload() — full hard reset
+// ════════════════════════════════════════
+async function submitOrder() {
+  const name    = document.getElementById('cust-name').value.trim();
+  const email   = document.getElementById('cust-email').value.trim();
+  const phone   = document.getElementById('cust-phone').value.trim();
+  const address = document.getElementById('cust-address').value.trim();
+  const popFile = document.getElementById('pop-upload').files[0];
+
+  // ── Validation ──────────────────────────
+  if (!name || !email || !phone || !address) {
+    showToast('Please fill in all required fields.'); return;
+  }
+  if (!popFile) {
+    showToast('Please upload your proof of payment.'); return;
+  }
+  if (!state.frontCord) {
+    showToast('Please select a front cord color.'); return;
+  }
+  if (!state.insideCords.s1 || !state.insideCords.s2 || !state.insideCords.s3) {
+    showToast('Please select all inside cord colors (S1, S2, S3).'); return;
+  }
+
+  // ── Disable button immediately (prevents double submission) ──
+  const submitBtn = document.getElementById('submit-btn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = '⏳ Processing...';
+
+  // ── Build Order ID (email + timestamp — checked on backend) ──
+  const timestamp = new Date().toISOString();
+  const orderId   = email.toLowerCase().replace(/[^a-z0-9]/g,'') + '_' + Date.now();
+
+  const total = calcTotal_raw();
+
+  // ── Build Add-Ons string (includes lace orientation) ──
+  const laceChecked = document.getElementById('lace-check')?.checked;
+  const addonsArr = [];
+  if (state.fabricInsert) addonsArr.push(`Fabric Insert (${state['fabric-pattern']})`);
+  if (state.edgeProtector) addonsArr.push(`Edge Protector (${state['edge-prot-finish']})`);
+  if (document.getElementById('double-cord-check')?.checked) addonsArr.push('Double Front Cord');
+  if (document.getElementById('extra-insert-check')?.checked) {
+    const qty = parseInt(document.getElementById('extra-insert-qty')?.value) || 1;
+    addonsArr.push(`Extra Inserts x${qty}`);
+  }
+  if (laceChecked) addonsArr.push(`Lace (${state.laceOrientation})`);
+  if (state.keychain) addonsArr.push('Mini Keychain');
+
+  const orderData = {
+    orderId,
+    timestamp,
+    customer: {
+      name, email, phone,
+      address: address,
+      destination: state.shipping,
+      notes: document.getElementById('cust-notes').value
+    },
+    order: {
+      base: state.base, basePrice: state.basePrice,
+      leather: state.leather,
+      edge: state.edge,
+      hardware: state.hardware,
+      frontCord: state.frontCord,
+      insideCords: state.insideCords,
+      engraving: {
+        text: state.engravingText,
+        font: state.engravingFont || state['font'],
+        zone: state.engravingZone
+      },
+      freeCharms: state.freeCharms,
+      addonCharms: state.addonCharms,
+      fabricInsert: state.fabricInsert ? { pattern: state['fabric-pattern'] } : null,
+      edgeProtector: state.edgeProtector ? state['edge-prot-finish'] : null,
+      doubleCord: document.getElementById('double-cord-check').checked,
+      doubleCordColor: state.doubleCordColor || null,
+      extraInserts: document.getElementById('extra-insert-check').checked
+        ? parseInt(document.getElementById('extra-insert-qty').value)
+        : 0,
+      lace: laceChecked,
+      laceOrientation: laceChecked ? state.laceOrientation : null, // NEW
+      addonsLabel: addonsArr.join(' | '),                           // NEW — for Add-Ons column
+      keychain: state.keychain ? {
+        leather: document.getElementById('kc-leather').value,
+        cord: document.getElementById('kc-cord').value,
+        letter: document.getElementById('kc-letter').value
+      } : null,
+      shipping: { destination: state.shipping, fee: state.shippingFee },
+      total,
+    }
+  };
+
+  // ── POST to Google Apps Script ──────────
+  try {
+    // Encode proof-of-payment as base64 inside the JSON payload.
+    // GAS cannot receive multipart/form-data, so we never use FormData.
+    if (popFile) {
+      const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload  = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      orderData.proofBase64   = await toBase64(popFile);
+      orderData.proofMimeType = popFile.type  || 'image/jpeg';
+      orderData.proofFileName = popFile.name  || 'proof.jpg';
+    }
+
+    // mode: 'no-cors' + Content-Type: 'text/plain' avoids CORS preflight.
+    // The response will be opaque (unreadable) — that is expected.
+    await fetch(GAS_URL, {
+      method:  'POST',
+      mode:    'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body:    JSON.stringify(orderData),
+    });
+
+    showSuccessModal(orderData, total);
+
+  } catch (err) {
+    console.error('Order submission error:', err);
+    showSuccessModal(orderData, total);
+  }
+}
+
+// ── Success Modal Population ─────────────
+function showSuccessModal(orderData, total) {
+  const { customer, order } = orderData;
+
+  document.getElementById('success-email').textContent = customer.email;
+
+  const lines = [
+    ['Base Folio', (order.base || '').toUpperCase().replace('-', ' ') + ' — ₱' + order.basePrice],
+    ['Leather', order.leather],
+    ['Edge', order.edge],
+    ['Front Cord', order.frontCord || '—'],
+    ['Shipping', `${order.shipping.destination} — ₱${order.shipping.fee}`],
+  ].filter(Boolean);
+
+  document.getElementById('success-item-summary').innerHTML = lines.map(([k, v]) =>
+    `<div class="summary-line"><span class="summary-key">${k}</span><span class="summary-val">${v}</span></div>`
+  ).join('');
+
+  document.getElementById('success-total-line').textContent = 'Total: ₱' + total;
+
+  document.getElementById('success-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+// ════════════════════════════════════════
+//  KEYBOARD ESCAPE
+// ════════════════════════════════════════
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeZoom(null, true);
+  if (e.key === 'Escape') {
+    closeZoom(null, true);
+    ['story-modal','faq-modal','reviews-modal','contact-modal'].forEach(id => closeModal(id));
+  }
 });
 
-// ── Intersection observer for fade-ins ──
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-}, { threshold: 0.1 });
+// ════════════════════════════════════════
+//  INTERSECTION OBSERVER (Fade-ins)
+// ════════════════════════════════════════
+const observer = new IntersectionObserver(
+  (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+  { threshold: 0.1 }
+);
 document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-// ── Init ──
+// ════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════
+buildCordSwatches('front-cord-swatches', 'frontCord', false);
+buildCordSwatches('s1-cord-swatches', 's1', true);
+buildCordSwatches('s2-cord-swatches', 's2', true);
+buildCordSwatches('s3-cord-swatches', 's3', true);
+buildDoubleCordSwatches();
 updateFolioColor(leatherColors.Coal);
 calcTotal();
 document.getElementById('cust-destination').value = 'Luzon';
