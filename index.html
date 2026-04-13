@@ -571,24 +571,29 @@
   .faq-item.open .faq-a { display: block; }
 
   /* ── Reviews Modal ── */
-  .reviews-modal-box { max-width: 420px; }
+  .reviews-modal-box { max-width: 390px; }
   .reviews-scroll-gallery {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-height: 60vh;
+    max-height: 72vh;
     overflow-y: auto;
     padding-right: 4px;
+    scroll-snap-type: y mandatory;
   }
   .review-screenshot {
     border-radius: 16px;
     overflow: hidden;
     border: 1px solid var(--border);
+    scroll-snap-align: start;
+    flex-shrink: 0;
   }
   .review-screenshot img {
     width: 100%;
     height: auto;
     display: block;
+    aspect-ratio: 9 / 16;
+    object-fit: cover;
   }
 
   /* ── Contact Modal ── */
