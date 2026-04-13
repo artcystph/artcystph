@@ -581,18 +581,17 @@
     padding-right: 4px;
   }
   .review-screenshot {
-    /* 9:16 aspect ratio container */
-    aspect-ratio: 9/16;
     background: var(--bg-alt);
     border-radius: 16px;
     overflow: hidden;
     border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--text-light); font-size: 13px;
     position: relative;
   }
   .review-screenshot img {
-    width: 100%; height: 100%; object-fit: cover; border-radius: 16px;
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 16px;
   }
   .review-screenshot .review-placeholder {
     text-align: center; padding: 24px;
@@ -744,7 +743,7 @@
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav>
-  <img src="Logo.png" alt="artcyst.ph" class="nav-logo">
+  <img src="images/Logo.png" alt="artcyst.ph" class="nav-logo">
   <div class="nav-links">
     <a href="#inspiration">Gallery</a>
     <a href="#customizer">Customize</a>
@@ -757,7 +756,7 @@
 <!-- ══════════════ HERO ══════════════ -->
 <section class="hero" id="home">
   <div style="position:relative;z-index:1;">
-    <img src="Logo.png" alt="artcyst.ph" class="hero-logo">
+    <img src="images/Logo.png" alt="artcyst.ph" class="hero-logo">
     <p class="section-label">artcyst.ph</p>
     <h1 class="serif">Build Your<br><em class="italic-serif">Own</em> Folio</h1>
     <p class="hero-sub">Handcrafted for minds in motion</p>
@@ -1368,28 +1367,28 @@
     <div class="payment-grid">
       <div class="qr-card">
         <div class="qr-bank" style="color:#003087;">BDO</div>
-        <img src="BDO.JPG" alt="BDO QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
+        <img src="images/BDO.JPG" alt="BDO QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
         <div class="qr-name">ARTCYST</div>
         <div style="font-size:11px;color:var(--text-light);">Acct ending ••••7638</div>
         <div style="font-size:11px;color:var(--text-light);margin-top:4px;">BDO-to-BDO transfers free</div>
       </div>
       <div class="qr-card">
         <div class="qr-bank" style="color:#007aff;">GCash</div>
-        <img src="GCASH.JPG" alt="GCash QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
+        <img src="images/GCASH.JPG" alt="GCash QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
         <div class="qr-name">ARTCYST.PH</div>
         <div style="font-size:11px;color:var(--text-light);">0923 025 ••••</div>
         <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
       </div>
       <div class="qr-card">
         <div class="qr-bank" style="color:#00b4d8;">GoTyme Bank</div>
-        <img src="GOTYME.PNG" alt="GoTyme QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
+        <img src="images/GOTYME.PNG" alt="GoTyme QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
         <div class="qr-name">ARTCYST</div>
         <div style="font-size:11px;color:var(--text-light);">Acct ending ••••7784</div>
         <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
       </div>
       <div class="qr-card">
         <div class="qr-bank" style="color:#00a651;">Maya</div>
-        <img src="MAYA.PNG" alt="Maya QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
+        <img src="images/MAYA.PNG" alt="Maya QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
         <div class="qr-name">ARTCYST</div>
         <div style="font-size:11px;color:var(--text-light);">+63 *** *** 6912</div>
         <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
@@ -1477,7 +1476,7 @@
 
 <!-- ══════════════ PROCESS FOOTER ══════════════ -->
 <footer class="process-footer">
-  <img src="Logo.png" alt="artcyst.ph" class="footer-logo">
+  <img src="images/Logo.png" alt="artcyst.ph" class="footer-logo">
 
   <div class="process-follow-label">Follow our process</div>
 
