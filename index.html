@@ -586,11 +586,13 @@
     overflow: hidden;
     border: 1px solid var(--border);
     position: relative;
+    aspect-ratio: 9/16;
   }
   .review-screenshot img {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
+    object-fit: contain;
     border-radius: 16px;
   }
   .review-screenshot .review-placeholder {
