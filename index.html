@@ -185,6 +185,7 @@
     display: block;
     border-radius: 20px;
   }
+  }
 
   /* Vertical 9:16 video slide */
   .lookbook-slide-video {
@@ -469,6 +470,12 @@
   .addon-name { font-size: 14px; font-weight: 500; color: var(--text-dark); }
   .addon-desc { font-size: 12px; color: var(--text-light); }
   .addon-price { font-size: 14px; font-weight: 600; color: var(--accent); }
+  .addon-row.addon-disabled { opacity: 0.5; pointer-events: none; cursor: not-allowed; }
+  .addon-row.addon-disabled .addon-check { cursor: not-allowed; }
+  .addon-row.addon-disabled .addon-name { color: #c4a0b0; }
+  .addon-row.addon-disabled .addon-price { color: #c4a0b0; }
+  .addon-disabled-note { display: none; font-size: 11px; font-style: italic; color: #b07090; margin-top: 3px; }
+  .addon-row.addon-disabled .addon-disabled-note { display: block; }
 
   /* ── Shipping ── */
   .ship-option {
@@ -593,7 +600,7 @@
     width: 100%;
     height: auto;
     display: block;
-    object-fit: contain;
+    object-fit: cover;
   }
 
   /* ── Contact Modal ── */
@@ -993,7 +1000,7 @@
             <div class="field-group">
               <label class="field-label">Placement Zone</label>
               <div style="font-size:12px;color:var(--text-light);margin-bottom:10px;">Outer Flap: "Left over Right" (1A–1D) · Inner Flap: "Right over Left" (2A–2D)</div>
-              <img src="images/The Engraving - Placement.png" alt="Engraving Placement Reference" class="zoomable" style="margin:10px 0 6px;height:80px;width:auto;object-fit:contain;display:block;" onclick="openZoom(this)" title="Tap to zoom">
+              <img src=images/"The Engraving - Placement.png" alt="Engraving Placement Reference" class="zoomable" style="margin:10px 0 6px;height:80px;width:auto;object-fit:contain;display:block;" onclick="openZoom(this)" title="Tap to zoom">
               <div class="engraving-zone-grid">
                 <div class="zone-card active-zone" id="zone-1A" onclick="selectZone(this,'1A')"><div class="zone-name">1A — Outer</div><div class="zone-desc">Horizontal Bottom</div></div>
                 <div class="zone-card" id="zone-1B" onclick="selectZone(this,'1B')"><div class="zone-name">1B — Outer</div><div class="zone-desc">Vertical Bottom</div></div>
@@ -1204,11 +1211,12 @@
       <div class="step-header"><div class="step-num" style="background:var(--dusty-rose);">+</div><div class="step-title">Other Add-Ons</div></div>
 
         <!-- Fabric Insert -->
-        <div class="addon-row" id="fabric-row" style="display:none;">
+        <div class="addon-row addon-disabled" id="fabric-row">
           <input type="checkbox" class="addon-check" id="fabric-check" onchange="toggleFabric(this)">
           <div class="addon-info">
             <div class="addon-name">Fabric Folio Insert (Inabel)</div>
             <div class="addon-desc" id="fabric-desc">A6 only · Traditional Inabel weave</div>
+            <div class="addon-disabled-note">Available for A6 only</div>
             <img src="images/Inabel.png" alt="Inabel Fabric Reference" class="nav-logo zoomable" style="margin-top:6px;height:80px;width:auto;object-fit:contain;" onclick="openZoom(this)" title="Tap to zoom">
           </div>
           <div class="addon-price">₱250</div>
@@ -1222,11 +1230,12 @@
         </div>
 
       <!-- Edge Protector -->
-            <div class="addon-row" id="edge-prot-row" style="display:none;">
+            <div class="addon-row addon-disabled" id="edge-prot-row">
         <input type="checkbox" class="addon-check" id="edge-prot-check" onchange="toggleEdgeProtector(this)">
         <div class="addon-info">
           <div class="addon-name">Edge Protector</div>
-          <div class="addon-desc">Only for Sharp edge · +₱59</div>
+          <div class="addon-desc">Sharp Edge only · +₱59</div>
+          <div class="addon-disabled-note">Requires Sharp Edge selection</div>
         </div>
         <div class="addon-price">₱59</div>
       </div>
@@ -1929,15 +1938,15 @@ function selectBase(btn) {
   document.getElementById('extra-insert-price').textContent = '₱' + (isA5 ? 40 : 35);
   document.getElementById('lace-price').textContent = '₱' + (isA5 ? 50 : 40);
 
-  // Fabric insert: A6 only
+  // Fabric insert: A6 only — always visible, disabled when not A6
   const fabricRow = document.getElementById('fabric-row');
   if (!isA6) {
-    fabricRow.style.display = 'none';
+    fabricRow.classList.add('addon-disabled');
     document.getElementById('fabric-check').checked = false;
     document.getElementById('fabric-sub').style.display = 'none';
     state.fabricInsert = false;
   } else {
-    fabricRow.style.display = '';
+    fabricRow.classList.remove('addon-disabled');
   }
 
   calcTotal();
@@ -1958,15 +1967,15 @@ function selectEdge(btn, val) {
   updateEdgeCorners(val);
   document.getElementById('s-edge').textContent = val;
 
-  // Edge protector: Sharp only
+  // Edge protector: Sharp only — always visible, disabled when not Sharp
   const edgeProtRow = document.getElementById('edge-prot-row');
   if (val !== 'Sharp') {
-    edgeProtRow.style.display = 'none';
+    edgeProtRow.classList.add('addon-disabled');
     document.getElementById('edge-prot-check').checked = false;
     document.getElementById('edge-prot-sub').style.display = 'none';
     state.edgeProtector = false;
   } else {
-    edgeProtRow.style.display = '';
+    edgeProtRow.classList.remove('addon-disabled');
   }
 
   calcTotal();
