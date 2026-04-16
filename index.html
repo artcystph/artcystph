@@ -2690,6 +2690,30 @@ async function submitOrder() {
       orderData.proofFileName = popFile.name  || 'proof.jpg';
     }
 
+    // ── Step 1: Final capacity check right before submitting ──────
+    // If the batch filled up while the customer was building their
+    // order, abort and show the Batch Full card — never show a
+    // false "Order Received" for a rejected submission.
+    try {
+      const capRes  = await fetch(GAS_URL, { method: 'GET' });
+      const capData = await capRes.json();
+
+      if (capData.isFull) {
+        submitBtn.disabled    = false;
+        submitBtn.textContent = '✦ Place My Order';
+        document.getElementById('order-form-sections').style.display = 'none';
+        document.getElementById('batch-full-msg').style.display      = 'block';
+        const countDisplay = document.getElementById('batch-count-display');
+        if (countDisplay) countDisplay.textContent = capData.activeCount;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return; // ← stop here, do NOT submit
+      }
+    } catch (capErr) {
+      // Network hiccup on capacity check — fail open, proceed to submit
+      console.warn('Pre-submit capacity check failed, proceeding:', capErr);
+    }
+
+    // ── Step 2: Slot confirmed — submit the order ────────────────
     // mode: 'no-cors' + Content-Type: 'text/plain' avoids CORS preflight.
     // The response will be opaque (unreadable) — that is expected.
     await fetch(GAS_URL, {
