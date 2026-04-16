@@ -2083,14 +2083,14 @@ const batchFullMsg = document.getElementById('batch-full-msg');
 
 // ════════════════════════════════════════
 //  BACKGROUND CAPACITY RECHECK
-//  Silently polls every 2 minutes while the
+//  Silently polls every 1 minute while the
 //  page is open. If the batch fills up mid-
 //  customization, the form is swapped out
 //  for the Batch Full card automatically —
 //  without the customer needing to reload.
 // ════════════════════════════════════════
 (function startCapacityPoller() {
-  const POLL_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+  const POLL_INTERVAL_MS = 1 * 60 * 1000; // 1 minute
 
   async function pollCapacity() {
     // Don't poll if the batch-full card is already showing —
