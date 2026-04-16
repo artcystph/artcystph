@@ -1965,6 +1965,56 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbyHNf_0XL7DL5jDMh7yX6uC
     formSections.style.display = 'block';
   }
 })();
+
+// ════════════════════════════════════════
+//  BACKGROUND CAPACITY RECHECK
+//  Silently polls every 2 minutes while the
+//  page is open. If the batch fills up mid-
+//  customization, the form is swapped out
+//  for the Batch Full card automatically —
+//  without the customer needing to reload.
+// ════════════════════════════════════════
+(function startCapacityPoller() {
+  const POLL_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+
+  async function pollCapacity() {
+    // Don't poll if the batch-full card is already showing —
+    // no point rechecking when the page is already gated.
+    const formSections = document.getElementById('order-form-sections');
+    const batchFullMsg = document.getElementById('batch-full-msg');
+    if (batchFullMsg && batchFullMsg.style.display === 'block') return;
+
+    try {
+      const res  = await fetch(GAS_URL, { method: 'GET' });
+      const data = await res.json();
+
+      if (data.isFull) {
+        // Batch just filled up — swap the UI silently
+        if (formSections) formSections.style.display = 'none';
+        if (batchFullMsg) {
+          batchFullMsg.style.display = 'block';
+          const countDisplay = document.getElementById('batch-count-display');
+          if (countDisplay) countDisplay.textContent = data.activeCount;
+        }
+        // Scroll to top only if customer hasn't started filling in details
+        const emailField = document.getElementById('cust-email');
+        const emailFilled = emailField && emailField.value.trim().length > 0;
+        if (!emailFilled) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+      // If not full, do nothing — form stays visible as-is
+    } catch (pollErr) {
+      // Silent fail — don't disrupt the customer's session
+      console.warn('Background capacity poll failed:', pollErr);
+    }
+  }
+
+  // Start polling after the initial page-load check has settled
+  setTimeout(function() {
+    setInterval(pollCapacity, POLL_INTERVAL_MS);
+  }, POLL_INTERVAL_MS);
+})();
 // ════════════════════════════════════════
 
 // ── App State ───────────────────────────
