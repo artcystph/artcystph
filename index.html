@@ -2032,8 +2032,10 @@ function updateStatusIndicator(state, activeCount, batchLimit) {
 // ════════════════════════════════════════
 (async function checkBatchCapacity() {
   const loader       = document.getElementById('capacity-loader');
-  const batchFullMsg = document.getElementById('batch-full-msg');
+const batchFullMsg = document.getElementById('batch-full-msg');
   const formSections = document.getElementById('order-form-sections');
+  const paymentSection  = document.getElementById('payment');
+  const checkoutSection = document.getElementById('checkout');
   const countDisplay = document.getElementById('batch-count-display');
 
   // Show loader, hide both outcomes while fetching
@@ -2051,13 +2053,17 @@ function updateStatusIndicator(state, activeCount, batchLimit) {
     if (data.isFull) {
       // ── BATCH FULL ───────────────────────────────────────────────
       if (countDisplay) countDisplay.textContent = data.activeCount;
-      batchFullMsg.style.display = 'block';
-      formSections.style.display = 'none';
+      batchFullMsg.style.display    = 'block';
+      formSections.style.display    = 'none';
+      paymentSection.style.display  = 'none';
+      checkoutSection.style.display = 'none';
       updateStatusIndicator('full', data.activeCount, data.batchLimit);
     } else {
       // ── SLOTS AVAILABLE — show form as normal ────────────────────
-      batchFullMsg.style.display = 'none';
-      formSections.style.display = 'block';
+      batchFullMsg.style.display    = 'none';
+      formSections.style.display    = 'block';
+      paymentSection.style.display  = 'block';
+      checkoutSection.style.display = 'block';
       updateStatusIndicator('available', data.activeCount, data.batchLimit);
     }
   } catch (err) {
@@ -2089,8 +2095,10 @@ function updateStatusIndicator(state, activeCount, batchLimit) {
   async function pollCapacity() {
     // Don't poll if the batch-full card is already showing —
     // no point rechecking when the page is already gated.
-    const formSections = document.getElementById('order-form-sections');
-    const batchFullMsg = document.getElementById('batch-full-msg');
+    const formSections    = document.getElementById('order-form-sections');
+    const batchFullMsg    = document.getElementById('batch-full-msg');
+    const paymentSection  = document.getElementById('payment');
+    const checkoutSection = document.getElementById('checkout');
     if (batchFullMsg && batchFullMsg.style.display === 'block') return;
 
     try {
@@ -2099,7 +2107,9 @@ function updateStatusIndicator(state, activeCount, batchLimit) {
 
       if (data.isFull) {
         // Batch just filled up — swap the UI silently
-        if (formSections) formSections.style.display = 'none';
+        if (formSections)    formSections.style.display    = 'none';
+        if (paymentSection)  paymentSection.style.display  = 'none';
+        if (checkoutSection) checkoutSection.style.display = 'none';
         if (batchFullMsg) {
           batchFullMsg.style.display = 'block';
           const countDisplay = document.getElementById('batch-count-display');
@@ -2864,6 +2874,8 @@ async function submitOrder() {
         submitBtn.disabled    = false;
         submitBtn.textContent = '✦ Place My Order';
         document.getElementById('order-form-sections').style.display = 'none';
+        document.getElementById('payment').style.display             = 'none';
+        document.getElementById('checkout').style.display            = 'none';
         document.getElementById('batch-full-msg').style.display      = 'block';
         const countDisplay = document.getElementById('batch-count-display');
         if (countDisplay) countDisplay.textContent = capData.activeCount;
