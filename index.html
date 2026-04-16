@@ -759,6 +759,106 @@
 
   /* Modal wide override */
   .modal-wide { max-width: 680px; }
+
+  /* ══════════════════════════════════
+     BATCH FULL — Capacity Gate
+     ══════════════════════════════════ */
+  #batch-full-msg {
+    display: none; /* shown by JS when batch is full */
+    text-align: center;
+    padding: 80px 24px 100px;
+  }
+  .batch-full-card {
+    display: inline-block;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    padding: 56px 48px 48px;
+    max-width: 540px;
+    width: 100%;
+    box-shadow: 0 12px 48px rgba(194,69,140,0.10);
+    position: relative;
+    overflow: hidden;
+  }
+  .batch-full-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--dusty-rose) 100%);
+  }
+  .batch-full-icon {
+    font-size: 52px;
+    margin-bottom: 20px;
+    display: block;
+  }
+  .batch-full-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+  }
+  .batch-full-card p {
+    font-size: 15px;
+    color: var(--text-mid);
+    line-height: 1.7;
+    margin-bottom: 10px;
+  }
+  .batch-full-pill {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 28px;
+  }
+  .batch-full-notify-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 14px 32px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    margin-top: 8px;
+  }
+  .batch-full-notify-btn:hover {
+    background: var(--accent-dark);
+    transform: translateY(-2px);
+  }
+  .batch-counter-badge {
+    margin-top: 28px;
+    font-size: 12px;
+    color: var(--text-light);
+  }
+  .batch-counter-badge strong { color: var(--accent); }
+
+  /* Capacity check loading state */
+  #capacity-loader {
+    text-align: center;
+    padding: 60px 24px;
+    font-size: 14px;
+    color: var(--text-light);
+    letter-spacing: 0.04em;
+  }
+  #capacity-loader .loader-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin: 0 3px;
+    animation: dotPulse 1.2s infinite ease-in-out;
+  }
+  #capacity-loader .loader-dot:nth-child(2) { animation-delay: 0.2s; }
+  #capacity-loader .loader-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotPulse {
+    0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+    40%           { opacity: 1;   transform: scale(1); }
+  }
 </style>
 </head>
 <body>
@@ -786,6 +886,35 @@
     <p style="margin-top:20px;font-size:13px;color:var(--text-light);">Premium vegan leather · Made to order · 7–10 business days</p>
   </div>
 </section>
+
+<!-- ══════════════ CAPACITY GATE ══════════════ -->
+<!-- Shown during the capacity fetch; hidden once result arrives -->
+<div id="capacity-loader">
+  <span class="loader-dot"></span>
+  <span class="loader-dot"></span>
+  <span class="loader-dot"></span>
+</div>
+
+<!-- Shown when batch is full (≥ 30 active orders) -->
+<div id="batch-full-msg">
+  <div class="batch-full-card">
+    <span class="batch-full-icon">🧵</span>
+    <span class="batch-full-pill">Batch Full</span>
+    <h2>We're Fully Booked</h2>
+    <p>Our current batch of handcrafted folios has reached capacity.<br>
+    We cap each batch at <strong>30 active orders</strong> to make sure every piece gets the attention it deserves.</p>
+    <p>Slots open automatically as orders are completed — check back soon, or follow us to be the first to know when a new batch opens.</p>
+    <a href="https://www.instagram.com/artcyst.ph" target="_blank" class="batch-full-notify-btn">
+      ✦ Follow @artcyst.ph for Updates
+    </a>
+    <div class="batch-counter-badge">
+      Batch slots used: <strong id="batch-count-display">—</strong> / 30
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ ORDER FORM SECTIONS (wrapped for capacity toggling) ══════════════ -->
+<div id="order-form-sections">
 
 <!-- ══════════════ VISUAL INSPIRATION / LOOKBOOK ══════════════ -->
 <section id="inspiration">
@@ -827,7 +956,7 @@
           <div class="swiper-slide lookbook-slide-video">
             <div class="lookbook-video-inner">
               <video
-                src="gallery/Lookbook.mp4"
+                src="gallery/lookbook-video.mp4"
                 playsinline
                 controls
                 loop
@@ -1783,6 +1912,8 @@ We remain a small studio based in the Ilocos Norte, Philippines. Every order sus
   </div>
 </div>
 
+</div><!-- /#order-form-sections -->
+
 <!-- ══════════════════════════════════════
      JAVASCRIPT
 ═════════════════════════════════════════ -->
@@ -1794,6 +1925,46 @@ We remain a small studio based in the Ilocos Norte, Philippines. Every order sus
 //    Google Apps Script Web App URL.
 // ════════════════════════════════════════
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyHNf_0XL7DL5jDMh7yX6uCNAWOXB3A28dwNcoc-QE9fVoxlveMpGQ_dCzcJaCqq1w/exec';
+// ════════════════════════════════════════
+
+// ════════════════════════════════════════
+//  BATCH CAPACITY CHECK — runs on page load
+// ════════════════════════════════════════
+(async function checkBatchCapacity() {
+  const loader       = document.getElementById('capacity-loader');
+  const batchFullMsg = document.getElementById('batch-full-msg');
+  const formSections = document.getElementById('order-form-sections');
+  const countDisplay = document.getElementById('batch-count-display');
+
+  // Show loader, hide both outcomes while fetching
+  loader.style.display       = 'block';
+  batchFullMsg.style.display = 'none';
+  formSections.style.display = 'none';
+
+  try {
+    const res  = await fetch(GAS_URL, { method: 'GET' });
+    const data = await res.json();
+
+    loader.style.display = 'none';
+
+    if (data.isFull) {
+      // ── BATCH FULL ───────────────────────────────────────────────
+      if (countDisplay) countDisplay.textContent = data.activeCount;
+      batchFullMsg.style.display = 'block';
+      formSections.style.display = 'none';
+    } else {
+      // ── SLOTS AVAILABLE — show form as normal ────────────────────
+      batchFullMsg.style.display = 'none';
+      formSections.style.display = 'block';
+    }
+  } catch (err) {
+    // Network error / GAS unreachable — fail open so no orders are lost
+    console.warn('Capacity check failed, showing form:', err);
+    loader.style.display       = 'none';
+    batchFullMsg.style.display = 'none';
+    formSections.style.display = 'block';
+  }
+})();
 // ════════════════════════════════════════
 
 // ── App State ───────────────────────────
