@@ -1196,8 +1196,8 @@
           </div>
           <div class="step-body">
             <div class="field-group">
-              <label class="field-label">Your Text <span id="letter-count"></span></label>
-              <input type="text" id="engraving-text" maxlength="10" placeholder="e.g. artcyst ♡" oninput="onEngravingInput(this)" style="letter-spacing:0.1em;">
+              <label class="field-label">Your Text (Available Special Characters:♡☆♪) <span id="letter-count"></span></label>
+              <input type="text" id="engraving-text" placeholder="e.g. artcyst ♡ ☆ ♪" oninput="onEngravingInput(this)" style="letter-spacing:0.1em;">
             </div>
             <div class="field-group">
               <label class="field-label">Font Style</label>
@@ -2545,12 +2545,46 @@ function toggleKeychain(chk) {
 
 // ── Engraving ────────────────────────────
 function onEngravingInput(input) {
+// ── Strip disallowed characters ──────────────────────────────────
+  // Allowed: letters (a-z, A-Z), digits (0-9), ♡ ☆ ♪, and spaces.
+  // Spaces are FREE — they never count toward the 10-character limit
+  // and can always be typed even when the limit is reached.
+  const allowed = /[a-zA-Z0-9♡☆♪ ]/g;
+  const cleaned = (input.value.match(allowed) || []).join('');
+
+  // Build enforced string: spaces always pass through,
+  // non-space characters are accepted only up to 10.
+  let enforced = '';
+  let nonSpaceCount = 0;
+  for (const char of cleaned) {
+    if (char === ' ') {
+      enforced += ' ';                    // spaces always allowed
+    } else if (nonSpaceCount < 10) {
+      enforced += char;
+      nonSpaceCount++;                    // counts toward the 10 limit
+    }
+    // non-space chars beyond 10 are silently dropped
+  }
+
+  // Only update DOM value if something changed (preserves cursor position)
+  if (input.value !== enforced) {
+    const cursor = input.selectionStart - (input.value.length - enforced.length);
+    input.value = enforced;
+    input.setSelectionRange(Math.max(0, cursor), Math.max(0, cursor));
+  }
+
   state.engravingText = input.value;
-  const len = input.value.length;
+  const nonSpaceLen = input.value.replace(/ /g, '').length;
   const lcEl = document.getElementById('letter-count');
-  if (len === 0) { lcEl.innerHTML = ''; }
-  else if (len <= 5) { lcEl.innerHTML = `<span>${len}/10 · free</span>`; }
-  else { lcEl.innerHTML = `<span class="warn">${len}/10 · +₱50</span>`; }
+
+  if (nonSpaceLen === 0) {
+    lcEl.innerHTML = '<span style="color:var(--text-light);">letters, digits & ♡ ☆ ♪ · spaces don\'t count · max 10</span>';
+  } else if (nonSpaceLen <= 5) {
+    lcEl.innerHTML = `<span>${nonSpaceLen}/10 · free</span>`;
+  } else {
+    lcEl.innerHTML = `<span class="warn">${nonSpaceLen}/10 · +₱50</span>`;
+  }
+
   const prev = document.getElementById('engraving-preview');
   if (prev) prev.textContent = input.value.toUpperCase();
   document.getElementById('s-engraving').textContent = len ? input.value : '—';
