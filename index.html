@@ -104,24 +104,19 @@
      ══════════════════════════════════ */
   .hero {
     min-height: 100vh;
-    background: linear-gradient(155deg, #fdf6f0 0%, #f5e5e0 45%, #f0d8d5 100%);
+    background-image: url('gallery/The_Journals01.jpg');
+    background-size: cover;
+    background-position: center;
     display: flex; align-items: center; justify-content: center;
     text-align: center; padding: 120px 24px 80px;
     position: relative; overflow: hidden;
   }
-  .hero::before {
-    content: '';
-    position: absolute; top: -60px; right: -80px;
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(194,69,140,0.07) 0%, transparent 70%);
-    border-radius: 50%; pointer-events: none;
+  .hero-overlay {
+    position: absolute; inset: 0;
+    background: rgba(249, 235, 235, 0.72);
+    z-index: 0;
   }
-  .hero::after {
-    content: '';
-    position: absolute; bottom: -40px; left: -60px;
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(212,135,156,0.09) 0%, transparent 70%);
-    border-radius: 50%; pointer-events: none;
+  .hero-content { position: relative; z-index: 1;
   }
   .hero-logo { height: 110px; margin: 0 auto 32px; filter: drop-shadow(0 4px 20px rgba(139,77,99,0.15)); display: block; }
   .hero h1 { font-size: clamp(42px,7vw,80px); color: var(--deep-mauve); line-height: 1.05; margin-bottom: 16px; }
@@ -496,7 +491,7 @@
   /* ── Add-Ons ── */
   .addon-row {
     display: flex; align-items: center; gap: 12px;
-    padding: 12px 0; border-bottom: 1px solid var(--border);
+    padding: 12px 0 12px 46px; border-bottom: 1px solid var(--border);
   }
   .addon-row:last-child { border-bottom: none; }
   .addon-check { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
@@ -1052,6 +1047,7 @@
 
 <!-- ══════════════ HERO ══════════════ -->
 <section class="hero" id="home">
+  <div class="hero-overlay"></div>
   <div style="position:relative;z-index:1;">
     <img src="images/Logo.png" alt="artcyst.ph" class="hero-logo">
     <p class="section-label">artcyst.ph</p>
@@ -1427,7 +1423,6 @@
         </div>
       </div>
     </div>
-  </div>
 </section>
 
 <!-- ══════════════ ADD-ONS ══════════════ -->
@@ -1437,7 +1432,6 @@
     <h2 class="serif section-title">Add-Ons & Upgrades</h2>
 
     <!-- Charms -->
-    <div class="step-card fade-in" style="max-width:800px;">
     <div class="step-card fade-in" style="max-width:800px;">
       <div class="step-header"><div class="step-num" style="background:var(--dusty-rose);">★</div><div class="step-title">Charms</div></div>
 
@@ -1556,14 +1550,12 @@
 
       </div>
 
-
       </div><!-- /charm-tiers -->
     </div>
-
-    <!-- Other Add-Ons -->
-    <div class="step-card fade-in" style="max-width:800px;margin-top:24px;">
-      <div class="step-header"><div class="step-num" style="background:var(--dusty-rose);">+</div><div class="step-title">Other Add-Ons</div></div>
-
+    <!-- ══════════════ Other Add-Ons ══════════════ -->
+    <div class="container">
+    <div class="step-card fade-in" style="max-width:800px;">
+      <div class="<!-- ══════════════ Other Add-Ons ══════════════ -->step-header"><div class="step-num" style="background:var(--dusty-rose);">+</div><div class="step-title">Other Add-Ons</div></div>
         <!-- Fabric Insert -->
         <div class="addon-row addon-disabled" id="fabric-row">
           <input type="checkbox" class="addon-check" id="fabric-check" onchange="toggleFabric(this)">
@@ -1688,9 +1680,10 @@
           <input type="text" id="kc-letter" maxlength="1" placeholder="e.g. A" style="width:80px;">
         </div>
       </div>
-
+      </div>
     </div><!-- /step-card Other Add-Ons -->
   </div>
+  </div><!-- /container -->
 </section>
 
 <!-- ══════════════ YOUR DETAILS ══════════════ -->
@@ -1951,8 +1944,9 @@
 
   <div class="footer-divider"></div>
 
-  <div style="margin-bottom:12px;">
+  <div style="margin-bottom:12px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap;">
     <button class="footer-story-link" onclick="openModal('story-modal')">Our Story</button>
+    <button class="footer-story-link" onclick="openTrackModal()">📦 Track My Order</button>
   </div>
 
   <div class="footer-copy">
@@ -2601,6 +2595,12 @@ const SHIPPING_RATES = {
 };
 
 function getShippingFee(region) {
+  // ── Ilocos Norte + Meet-up override: always free ──────────────────
+  const addrVal = (document.getElementById('cust-address')?.value || '').toLowerCase();
+  const isIlocosNorte = addrVal.includes('ilocos norte');
+  const isMeetup = (state.shipping || '').startsWith('Meet-up');
+  if (isIlocosNorte && isMeetup) return 0;
+  // ─────────────────────────────────────────────────────────────────
   const isA5 = (state.base || '').startsWith('a5');
   const rates = SHIPPING_RATES[region] || SHIPPING_RATES['Luzon'];
   return isA5 ? rates.a5 : rates.standard;
@@ -2631,17 +2631,17 @@ function selectShipping(el, region, fee) {
 function onIlocosModeChange(radio) {
   const locationsDiv = document.getElementById('meetup-locations');
   if (radio.value === 'meetup') {
-    // Show location choices, set fee to 0
+    // Show location choices, set fee to 0 (Ilocos Norte meet-up is always free)
     if (locationsDiv) locationsDiv.style.display = 'block';
     const selectedLoc = document.querySelector('input[name="meetup-location"]:checked');
     const location    = selectedLoc ? selectedLoc.value : 'Laoag City';
     state.shippingFee = 0;
     state.shipping    = 'Meet-up — ' + location;
   } else {
-    // Hide location choices, apply standard Luzon courier rate
+    // Hide location choices, apply size-aware Luzon courier rate
     if (locationsDiv) locationsDiv.style.display = 'none';
-    state.shippingFee = 100;
     state.shipping    = 'Luzon';
+    state.shippingFee = getShippingFee('Luzon');
   }
   document.getElementById('cust-destination').value = state.shipping;
   calcTotal();
@@ -2699,13 +2699,16 @@ async function submitTrackOrder() {
       const badgeClass  = statusLower === 'complete' ? 'complete'
                         : statusLower.includes('craft') ? 'crafting' : 'pending';
       result.className = 'found';
+      result.style.display = '';
       result.innerHTML = `Order <strong>${data.orderId}</strong> — Status: <span class="status-badge ${badgeClass}">${data.status}</span>`;
     } else {
       result.className = 'not-found';
+      result.style.display = '';
       result.innerHTML = data.error || 'Order not found.';
     }
   } catch (err) {
     result.className = 'not-found';
+    result.style.display = '';
     result.innerHTML = 'Unable to reach the server. Please try again.';
   } finally {
     btn.disabled    = false;
@@ -2974,7 +2977,11 @@ function calcTotal() {
   total += state.shippingFee;
 
 updateShippingPriceLabels();
-  state.shippingFee = state.shipping ? getShippingFee(state.shipping.replace(' (Meet-up)', '')) : 0;
+  if (state.shipping && !state.shipping.startsWith('Meet-up')) {
+  state.shippingFee = getShippingFee(state.shipping);
+} else if (!state.shipping) {
+  state.shippingFee = 0;
+}
   document.getElementById('s-base').textContent = (state.base || '').toUpperCase().replace('-', ' ') + ' — ₱' + state.basePrice;
   document.getElementById('s-front-cord').textContent = state.frontCord || '—';
   document.getElementById('s-inside-cords').textContent =
