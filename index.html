@@ -197,7 +197,6 @@
     display: block;
     border-radius: 20px;
   }
-  }
 
   /* Vertical 9:16 video slide */
   .lookbook-slide-video {
@@ -514,17 +513,6 @@
   }
   .ship-option.selected { border-color: var(--accent); background: var(--accent-light); }
   .ship-option.disabled { opacity: 0.4; cursor: not-allowed; }
-
-  /* ── Payment ── */
-  #payment { background: var(--bg); transition: background 0.6s ease; }
-  .payment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-  .qr-card {
-    background: var(--bg-card); border-radius: 20px; padding: 20px; text-align: center;
-    border: 1.5px solid var(--border); box-shadow: 0 2px 12px rgba(139,77,99,0.05);
-  }
-  .qr-card img { width: 140px; height: 140px; object-fit: contain; margin: 12px auto; display: block; cursor: zoom-in; }
-  .qr-bank { font-weight: 700; font-size: 14px; color: var(--deep-mauve); }
-  .qr-name { font-size: 12px; color: var(--text-light); margin-top: 4px; }
 
   /* ── Upload Box ── */
   .upload-box {
@@ -1040,7 +1028,6 @@
     <a href="#inspiration">Gallery</a>
     <a href="#customizer">Customize</a>
     <a href="#addons">Add-Ons</a>
-    <a href="#payment">Payment</a>
     <a href="#checkout">Order</a>
   </div>
 </nav>
@@ -1611,11 +1598,12 @@
       </div>
 
       <!-- Extra Inserts -->
-      <div class="addon-row">
+      <div class="addon-row" id="extra-insert-row">
         <input type="checkbox" class="addon-check" id="extra-insert-check" onchange="calcTotal()">
         <div class="addon-info">
           <div class="addon-name">Extra Blank Inserts</div>
           <div class="addon-desc" id="extra-insert-desc">A6: ₱35 / A5: ₱40</div>
+          <div class="addon-disabled-note">Available for A6 and A5 only</div>
         </div>
         <div class="addon-price" id="extra-insert-price">₱35</div>
       </div>
@@ -1779,9 +1767,14 @@
       <!-- Meet-up location choices — only visible when Meet-up is selected -->
       <div id="meetup-locations" style="margin-top:8px;">
         <p style="font-size:12px;color:#6b4a4a;margin-bottom:8px;font-weight:500;">Select meet-up location:</p>
+        <div style="margin-bottom:6px;">
+          <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#a08080;cursor:default;">
+            <input type="radio" name="meetup-location" value="" disabled selected> — Select a Location —
+          </label>
+        </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
           <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#6b4a4a;cursor:pointer;">
-            <input type="radio" name="meetup-location" value="Laoag City" onchange="onMeetupLocationChange(this)" checked>
+            <input type="radio" name="meetup-location" value="Laoag City" onchange="onMeetupLocationChange(this)">
             Laoag City
           </label>
           <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#6b4a4a;cursor:pointer;">
@@ -1818,84 +1811,6 @@
       </div>
       <div style="text-align:center;margin-top:8px;">
         <span id="dispatch-badge">🗓 <strong id="dispatch-date-label"></strong></span>
-      </div>
-    </div>
-
-<!-- ══════════════ PAYMENT ══════════════ -->
-<section id="payment">
-  <div class="container">
-    <div class="section-label">Settle Your Order</div>
-    <h2 class="serif section-title">Payment</h2>
-    <p class="section-sub">Choose your preferred channel and scan to pay.</p>
-
-    <!-- Payment method selector pills -->
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;" id="payment-method-btns">
-      <button class="opt-pill" onclick="selectPaymentMethod(this,'gcash')">GCash</button>
-      <button class="opt-pill" onclick="selectPaymentMethod(this,'maya')">Maya</button>
-      <button class="opt-pill" onclick="selectPaymentMethod(this,'bdo')">BDO</button>
-      <button class="opt-pill" onclick="selectPaymentMethod(this,'gotyme')">GoTyme Bank</button>
-    </div>
-
-    <!-- GCash (hidden by default) -->
-    <div class="payment-grid" id="qr-gcash" style="display:none;">
-      <div class="qr-card">
-        <div class="qr-bank" style="color:#007aff;">GCash</div>
-        <img src="images/GCASH.JPG" alt="GCash QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
-        <div class="qr-name">ARTCYST.PH</div>
-        <div style="font-size:11px;color:var(--text-light);">0923 025 ••••</div>
-        <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
-        <div style="font-size:12px;font-weight:600;color:var(--accent);margin-top:8px;">Total: <span id="qr-total-gcash">₱0</span></div>
-      </div>
-    </div>
-
-    <!-- Maya (hidden by default) -->
-    <div class="payment-grid" id="qr-maya" style="display:none;">
-      <div class="qr-card">
-        <div class="qr-bank" style="color:#00a651;">Maya</div>
-        <img src="images/MAYA.PNG" alt="Maya QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
-        <div class="qr-name">ARTCYST</div>
-        <div style="font-size:11px;color:var(--text-light);">+63 *** *** 6912</div>
-        <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
-        <div style="font-size:12px;font-weight:600;color:var(--accent);margin-top:8px;">Total: <span id="qr-total-maya">₱0</span></div>
-      </div>
-    </div>
-
-    <!-- BDO (hidden by default) -->
-    <div class="payment-grid" id="qr-bdo" style="display:none;">
-      <div class="qr-card">
-        <div class="qr-bank" style="color:#003087;">BDO</div>
-        <img src="images/BDO.JPG" alt="BDO QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
-        <div class="qr-name">ARTCYST</div>
-        <div style="font-size:11px;color:var(--text-light);">Acct ending ••••7638</div>
-        <div style="font-size:11px;color:var(--text-light);margin-top:4px;">BDO-to-BDO transfers free</div>
-        <div style="font-size:12px;font-weight:600;color:var(--accent);margin-top:8px;">Total: <span id="qr-total-bdo">₱0</span></div>
-      </div>
-    </div>
-
-    <!-- GoTyme (hidden by default) -->
-    <div class="payment-grid" id="qr-gotyme" style="display:none;">
-      <div class="qr-card">
-        <div class="qr-bank" style="color:#00b4d8;">GoTyme Bank</div>
-        <img src="images/GOTYME.PNG" alt="GoTyme QR" class="zoomable" onclick="openZoom(this)" title="Tap to zoom">
-        <div class="qr-name">ARTCYST</div>
-        <div style="font-size:11px;color:var(--text-light);">Acct ending ••••7784</div>
-        <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
-        <div style="font-size:12px;font-weight:600;color:var(--accent);margin-top:8px;">Total: <span id="qr-total-gotyme">₱0</span></div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-        <!-- Proof of Payment -->
-    <div class="step-card" style="margin-top:20px;">
-      <div style="font-weight:700;font-size:15px;color:var(--deep-mauve);margin-bottom:16px;">Proof of Payment <span class="required">*</span></div>
-      <div class="upload-box" onclick="document.getElementById('pop-upload').click()">
-        <div class="upload-icon">📎</div>
-        <div class="upload-text"><span>Click to upload</span> or drag & drop</div>
-        <div style="font-size:12px;color:var(--text-light);margin-top:4px;">PNG, JPG, PDF · max 10MB</div>
-        <div id="pop-filename" style="margin-top:10px;font-size:13px;color:var(--accent);font-weight:600;"></div>
-        <input type="file" id="pop-upload" accept="image/*,.pdf" onchange="onFileSelected(this)">
       </div>
     </div>
 
@@ -2258,7 +2173,6 @@ function updateStatusIndicator(state, activeCount, batchLimit) {
   const loader       = document.getElementById('capacity-loader');
 const batchFullMsg = document.getElementById('batch-full-msg');
   const formSections = document.getElementById('order-form-sections');
-  const paymentSection  = document.getElementById('payment');
   const checkoutSection = document.getElementById('checkout');
   const countDisplay = document.getElementById('batch-count-display');
 
@@ -2279,14 +2193,12 @@ const batchFullMsg = document.getElementById('batch-full-msg');
       if (countDisplay) countDisplay.textContent = data.activeCount;
       batchFullMsg.style.display    = 'block';
       formSections.style.display    = 'none';
-      paymentSection.style.display  = 'none';
       checkoutSection.style.display = 'none';
       updateStatusIndicator('full', data.activeCount, data.batchLimit);
     } else {
       // ── SLOTS AVAILABLE — show form as normal ────────────────────
       batchFullMsg.style.display    = 'none';
       formSections.style.display    = 'block';
-      paymentSection.style.display  = 'block';
       checkoutSection.style.display = 'block';
       updateStatusIndicator('available', data.activeCount, data.batchLimit);
     }
@@ -2321,7 +2233,6 @@ const batchFullMsg = document.getElementById('batch-full-msg');
     // no point rechecking when the page is already gated.
     const formSections    = document.getElementById('order-form-sections');
     const batchFullMsg    = document.getElementById('batch-full-msg');
-    const paymentSection  = document.getElementById('payment');
     const checkoutSection = document.getElementById('checkout');
     if (batchFullMsg && batchFullMsg.style.display === 'block') return;
 
@@ -2332,7 +2243,6 @@ const batchFullMsg = document.getElementById('batch-full-msg');
       if (data.isFull) {
         // Batch just filled up — swap the UI silently
         if (formSections)    formSections.style.display    = 'none';
-        if (paymentSection)  paymentSection.style.display  = 'none';
         if (checkoutSection) checkoutSection.style.display = 'none';
         if (batchFullMsg) {
           batchFullMsg.style.display = 'block';
@@ -2525,9 +2435,20 @@ function selectBase(btn) {
   state.basePrice = parseInt(btn.dataset.price);
   const isA5 = state.base.startsWith('a5');
   const isA6 = state.base.startsWith('a6');
+  const isPP = state.base.startsWith('pp');
   document.getElementById('double-cord-price').textContent = '₱' + (isA5 ? 50 : 40);
   document.getElementById('extra-insert-price').textContent = '₱' + (isA5 ? 40 : 35);
   document.getElementById('lace-price').textContent = '₱' + (isA5 ? 50 : 40);
+
+  // Extra Blank Inserts: A6 / A5 only — disable for Passport Trifold
+  const extraInsertRow = document.getElementById('extra-insert-row');
+  if (isPP) {
+    extraInsertRow.classList.add('addon-disabled');
+    document.getElementById('extra-insert-check').checked = false;
+    document.getElementById('extra-insert-sub').style.display = 'none';
+  } else {
+    extraInsertRow.classList.remove('addon-disabled');
+  }
 
   // Fabric insert: A6 only — always visible, disabled when not A6
   const fabricRow = document.getElementById('fabric-row');
@@ -2943,7 +2864,7 @@ function onEngravingInput(input) {
 
   const prev = document.getElementById('engraving-preview');
   if (prev) prev.textContent = input.value.toUpperCase();
-  document.getElementById('s-engraving').textContent = len ? input.value : '—';
+  document.getElementById('s-engraving').textContent = nonSpaceLen ? input.value : '—';
   calcTotal();
 }
 
@@ -2974,14 +2895,22 @@ function calcTotal() {
 
   if (document.getElementById('lace-check')?.checked) total += isA5 ? 50 : 40;
   if (state.keychain) total += 99;
-  total += state.shippingFee;
+  // ── Meetup override: shipping is always free ──────────────────
+  const deliveryMethod = (state.shipping || '');
+  let shippingCost;
+  if (deliveryMethod.startsWith('Meet-up')) {
+    shippingCost = 0;
+    state.shippingFee = 0;
+  } else if (deliveryMethod) {
+    shippingCost = getShippingFee(deliveryMethod);
+    state.shippingFee = shippingCost;
+  } else {
+    shippingCost = 0;
+    state.shippingFee = 0;
+  }
+  total += shippingCost;
 
-updateShippingPriceLabels();
-  if (state.shipping && !state.shipping.startsWith('Meet-up')) {
-  state.shippingFee = getShippingFee(state.shipping);
-} else if (!state.shipping) {
-  state.shippingFee = 0;
-}
+  updateShippingPriceLabels();
   document.getElementById('s-base').textContent = (state.base || '').toUpperCase().replace('-', ' ') + ' — ₱' + state.basePrice;
   document.getElementById('s-front-cord').textContent = state.frontCord || '—';
   document.getElementById('s-inside-cords').textContent =
@@ -3068,7 +2997,9 @@ function calcTotal_raw() {
   }
   if (document.getElementById('lace-check')?.checked) total += isA5 ? 50 : 40;
   if (state.keychain) total += 99;
-  total += state.shippingFee;
+  // Meetup = no shipping charge
+  const fee = (state.shipping || '').startsWith('Meet-up') ? 0 : state.shippingFee;
+  total += fee;
   return total;
 }
 
@@ -3143,15 +3074,6 @@ function showToast(msg) {
 }
 
 // ════════════════════════════════════════
-//  FILE UPLOAD
-// ════════════════════════════════════════
-function onFileSelected(input) {
-  if (input.files[0]) {
-    document.getElementById('pop-filename').textContent = '✓ ' + input.files[0].name;
-  }
-}
-
-// ════════════════════════════════════════
 //  SCROLL TO CHECKOUT
 // ════════════════════════════════════════
 function scrollToCheckout() {
@@ -3172,15 +3094,12 @@ async function submitOrder() {
   const email   = document.getElementById('cust-email').value.trim();
   const phone   = document.getElementById('cust-phone').value.trim();
   const address = document.getElementById('cust-address').value.trim();
-  const popFile = document.getElementById('pop-upload').files[0];
 
   // ── Validation ──────────────────────────
   if (!name || !email || !phone || !address) {
     showToast('Please fill in all required fields.'); return;
   }
-  if (!popFile) {
-    showToast('Please upload your proof of payment.'); return;
-  }
+  
   if (!state.frontCord) {
     showToast('Please select a front cord color.'); return;
   }
@@ -3193,9 +3112,9 @@ async function submitOrder() {
   submitBtn.disabled = true;
   submitBtn.textContent = '⏳ Processing...';
 
-  // ── Build Order ID (email + timestamp — checked on backend) ──
+ // ── Build dedup key (anti-duplicate guard only — canonical ID comes from backend) ──
   const timestamp = new Date().toISOString();
-  const orderId   = email.toLowerCase().replace(/[^a-z0-9]/g,'') + '_' + Date.now();
+  const dedupKey  = email.toLowerCase().replace(/[^a-z0-9]/g,'') + '_' + Date.now();
 
   const total = calcTotal_raw();
 
@@ -3213,7 +3132,7 @@ async function submitOrder() {
   if (state.keychain) addonsArr.push('Mini Keychain');
 
   const orderData = {
-    orderId,
+    orderId: dedupKey,
     timestamp,
     customer: {
       name, email, phone,
@@ -3257,19 +3176,6 @@ async function submitOrder() {
 
   // ── POST to Google Apps Script ──────────
   try {
-    // Encode proof-of-payment as base64 inside the JSON payload.
-    // GAS cannot receive multipart/form-data, so we never use FormData.
-    if (popFile) {
-      const toBase64 = file => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload  = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-      orderData.proofBase64   = await toBase64(popFile);
-      orderData.proofMimeType = popFile.type  || 'image/jpeg';
-      orderData.proofFileName = popFile.name  || 'proof.jpg';
-    }
 
     // ── Step 1: Final capacity check right before submitting ──────
     // If the batch filled up while the customer was building their
@@ -3283,7 +3189,6 @@ async function submitOrder() {
         submitBtn.disabled    = false;
         submitBtn.textContent = '✦ Place My Order';
         document.getElementById('order-form-sections').style.display = 'none';
-        document.getElementById('payment').style.display             = 'none';
         document.getElementById('checkout').style.display            = 'none';
         document.getElementById('batch-full-msg').style.display      = 'block';
         const countDisplay = document.getElementById('batch-count-display');
@@ -3297,20 +3202,33 @@ async function submitOrder() {
     }
 
     // ── Step 2: Slot confirmed — submit the order ────────────────
-    // mode: 'no-cors' + Content-Type: 'text/plain' avoids CORS preflight.
-    // The response will be opaque (unreadable) — that is expected.
-    await fetch(GAS_URL, {
+    // no-cors removed: GAS web apps support CORS for simple POST (text/plain).
+    // We now read json.orderId (the server-generated ORD-XXXX) for the redirect.
+    const res        = await fetch(GAS_URL, {
       method:  'POST',
-      mode:    'no-cors',
       headers: { 'Content-Type': 'text/plain' },
       body:    JSON.stringify(orderData),
     });
+    const json       = await res.json().catch(() => ({}));
+    const finalOrderId = json.orderId || orderData.orderId; // fallback to dedupKey if parse fails
 
-    showSuccessModal(orderData, total);
+    // ── Redirect to payment portal with server-confirmed ORD-XXXX ─
+    const params = new URLSearchParams({
+      orderId: finalOrderId,
+      total:   String(total),
+      email:   orderData.customer.email,
+    });
+    window.location.href = 'payment-portal.html?' + params.toString();
 
   } catch (err) {
     console.error('Order submission error:', err);
-    showSuccessModal(orderData, total);
+    // Fallback: backend still processed the order; dedup key is better than nothing
+    const params = new URLSearchParams({
+      orderId: orderData.orderId,
+      total:   String(total),
+      email:   orderData.customer.email,
+    });
+    window.location.href = 'payment-portal.html?' + params.toString();
   }
 }
 
@@ -3365,7 +3283,6 @@ const sectionTints = {
   'details':     'rgba(242,237,245,0.92)',
   'shipping':    'rgba(245,240,237,0.92)',
   'checkout':    'rgba(249,244,242,0.90)',
-  'payment':     'rgba(242,240,248,0.92)',
 };
 const bodyOverlay = document.querySelector('body::before') || null;
 const bgObserver = new IntersectionObserver((entries) => {
@@ -3387,25 +3304,7 @@ Object.keys(sectionTints).forEach(id => {
 // ════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════
-// ════════════════════════════════════════
-//  PAYMENT METHOD SELECTOR
-// ════════════════════════════════════════
-function selectPaymentMethod(btn, method) {
-  document.querySelectorAll('#payment-method-btns .opt-pill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  ['gcash','maya','bdo','gotyme'].forEach(m => {
-    const el = document.getElementById('qr-' + m);
-    if (el) el.style.display = 'none';
-  });
-  const panel = document.getElementById('qr-' + method);
-  if (panel) panel.style.display = '';
-  const totalEl = document.getElementById('qr-total-' + method);
-  if (totalEl) {
-    const total = document.getElementById('final-total-val');
-    totalEl.textContent = total ? total.textContent : '₱0';
-  }
-  state.paymentMethod = method;
-}
+
 buildCordSwatches('front-cord-swatches', 'frontCord', false);
 buildCordSwatches('s1-cord-swatches', 's1', true);
 buildCordSwatches('s2-cord-swatches', 's2', true);
