@@ -2538,7 +2538,7 @@ function selectShipping(el, region, fee) {
   document.querySelectorAll('.ship-option:not(.disabled)').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   state.shipping    = region;
-  state.shippingFee = fee;
+  state.shippingFee = getShippingFee(region);
   document.getElementById('cust-destination').value = region;
 
   // Show Ilocos toggle only when Luzon is selected AND address has 'ilocos norte'
@@ -2875,13 +2875,15 @@ function calcTotal() {
   const isA5 = (state.base || '').startsWith('a5');
   let total = state.basePrice;
 
-  if (state.engravingText && state.engravingText.length > 5) total += 50;
+  if (state.engravingText && state.engravingText.replace(/ /g, '').length > 5) total += 50;
 
   Object.values(state.addonCharms).forEach(arr => {
     if (Array.isArray(arr)) arr.forEach(c => { total += (c.price || 0); });
   });
 
+ state.fabricInsert = document.getElementById('fabric-check')?.checked || false;
   if (state.fabricInsert) total += 250;
+  state.edgeProtector = document.getElementById('edge-prot-check')?.checked || false;
   if (state.edgeProtector) total += 59;
   if (document.getElementById('double-cord-check')?.checked) total += isA5 ? 50 : 40;
 
@@ -2894,6 +2896,7 @@ function calcTotal() {
   }
 
   if (document.getElementById('lace-check')?.checked) total += isA5 ? 50 : 40;
+  state.keychain = document.getElementById('keychain-check')?.checked || false;
   if (state.keychain) total += 99;
   // ── Meetup override: shipping is always free ──────────────────
   const deliveryMethod = (state.shipping || '');
@@ -2939,15 +2942,21 @@ function calcTotal() {
 function calcAddonCost() {
   let cost = 0;
   const isA5 = (state.base || '').startsWith('a5');
-  if (state.fabricInsert) cost += 250;
-  if (state.edgeProtector) cost += 59;
+  // ✅ Engraving surcharge (>5 non-space chars)
+  if (state.engravingText && state.engravingText.replace(/ /g, '').length > 5) cost += 50;
+  const fabricChecked = document.getElementById('fabric-check')?.checked || false;
+  if (fabricChecked) cost += 250;
+  const edgeProtChecked = document.getElementById('edge-prot-check')?.checked || false;
+  if (edgeProtChecked) cost += 59;
   if (document.getElementById('double-cord-check')?.checked) cost += isA5 ? 50 : 40;
   if (document.getElementById('lace-check')?.checked) cost += isA5 ? 50 : 40;
-  if (state.keychain) cost += 99;
+  const keychainChecked = document.getElementById('keychain-check')?.checked || false;
+  if (keychainChecked) cost += 99;
   if (document.getElementById('extra-insert-check')?.checked) {
     const qty = parseInt(document.getElementById('extra-insert-qty')?.value) || 1;
     cost += qty * (isA5 ? 40 : 35);
   }
+  // ✅ Addon charm costs (already in calcTotal, now included here for accurate display)
   Object.values(state.addonCharms).forEach(arr => {
     if (Array.isArray(arr)) arr.forEach(c => { cost += (c.price || 0); });
   });
@@ -2964,13 +2973,15 @@ function buildFinalSummary() {
     ['Edge', state.edge + (state.hardware !== 'None' ? ' · ' + state.hardware + ' hardware' : '')],
     ['Front Cord', state.frontCord || '—'],
     ['Inside Cords', `S1: ${state.insideCords.s1||'—'} · S2: ${state.insideCords.s2||'—'} · S3: ${state.insideCords.s3||'—'}`],
-    state.engravingText ? ['Engraving', `"${state.engravingText}" · Zone ${state.engravingZone}${state.engravingText.length > 5 ? ' · +₱50' : ' · free'}`] : null,
+    state.engravingText ? ['Engraving', `"${state.engravingText}" · Zone ${state.engravingZone}${state.engravingText.replace(/ /g, '').length > 5 ? ' · +₱50' : ' · free'}`] : null,
     state.freeCharms.length ? ['Free Charm', state.freeCharms.map(c => `${c.id} @ ${c.placement}`).join(', ')] : null,
-    state.fabricInsert ? ['Fabric Insert', `${state['fabric-pattern']} · ₱250`] : null,
-    state.edgeProtector ? ['Edge Protector', `${state['edge-prot-finish']} · ₱59`] : null,
+   (() => { const parts = []; Object.entries(state.addonCharms).forEach(([tier, arr]) => { if (Array.isArray(arr)) arr.forEach(c => parts.push(`${c.id} (${tier.toUpperCase()}) · ₱${c.price}`)); }); return parts.length ? ['Add-On Charms', parts.join(', ')] : null; })(),
+    document.getElementById('fabric-check')?.checked ? ['Fabric Insert', `${state['fabric-pattern']} · ₱250`] : null,
+    document.getElementById('edge-prot-check')?.checked ? ['Edge Protector', `${state['edge-prot-finish']} · ₱59`] : null,
     document.getElementById('double-cord-check')?.checked ? ['Double Cord', `+₱${isA5?50:40}`] : null,
+    (() => { const ec = document.getElementById('extra-insert-check'); const eq = document.getElementById('extra-insert-qty'); return ec?.checked ? ['Extra Inserts', `x${parseInt(eq?.value)||1} · +₱${(parseInt(eq?.value)||1) * (isA5?40:35)}`] : null; })(),
     lachecked ? ['Lace Trim', `${state.laceOrientation} · +₱${isA5?50:40}`] : null,
-    state.keychain ? ['Mini Keychain', `${document.getElementById('kc-leather')?.value} · ₱99`] : null,
+    document.getElementById('keychain-check')?.checked ? ['Mini Keychain', `${document.getElementById('kc-leather')?.value} · ₱99`] : null,
     ['Shipping', `${state.shipping} — ₱${state.shippingFee}`],
   ].filter(Boolean);
 
@@ -2984,21 +2995,24 @@ function buildFinalSummary() {
 function calcTotal_raw() {
   const isA5 = (state.base || '').startsWith('a5');
   let total = state.basePrice;
-  if (state.engravingText && state.engravingText.length > 5) total += 50;
+  if (state.engravingText && state.engravingText.replace(/ /g, '').length > 5) total += 50;
   Object.values(state.addonCharms).forEach(arr => {
     if (Array.isArray(arr)) arr.forEach(c => { total += (c.price || 0); });
   });
-  if (state.fabricInsert) total += 250;
-  if (state.edgeProtector) total += 59;
+ const fabricChecked = document.getElementById('fabric-check')?.checked || false;
+  if (fabricChecked) total += 250;
+  const edgeProtChecked = document.getElementById('edge-prot-check')?.checked || false;
+  if (edgeProtChecked) total += 59;
   if (document.getElementById('double-cord-check')?.checked) total += isA5 ? 50 : 40;
   if (document.getElementById('extra-insert-check')?.checked) {
     const qty = parseInt(document.getElementById('extra-insert-qty')?.value) || 1;
     total += qty * (isA5 ? 40 : 35);
   }
   if (document.getElementById('lace-check')?.checked) total += isA5 ? 50 : 40;
-  if (state.keychain) total += 99;
-  // Meetup = no shipping charge
-  const fee = (state.shipping || '').startsWith('Meet-up') ? 0 : state.shippingFee;
+  const keychainChecked = document.getElementById('keychain-check')?.checked || false;
+  if (keychainChecked) total += 99;
+ // Meetup = no shipping charge
+  const fee = (state.shipping || '').startsWith('Meet-up') ? 0 : getShippingFee(state.shipping);
   total += fee;
   return total;
 }
@@ -3106,6 +3120,9 @@ async function submitOrder() {
   if (!state.insideCords.s1 || !state.insideCords.s2 || !state.insideCords.s3) {
     showToast('Please select all inside cord colors (S1, S2, S3).'); return;
   }
+  if (!state.shipping) {
+    showToast('Please select a shipping method.'); return;
+  }
 
   // ── Disable button immediately (prevents double submission) ──
   const submitBtn = document.getElementById('submit-btn');
@@ -3121,15 +3138,18 @@ async function submitOrder() {
   // ── Build Add-Ons string (includes lace orientation) ──
   const laceChecked = document.getElementById('lace-check')?.checked;
   const addonsArr = [];
-  if (state.fabricInsert) addonsArr.push(`Fabric Insert (${state['fabric-pattern']})`);
-  if (state.edgeProtector) addonsArr.push(`Edge Protector (${state['edge-prot-finish']})`);
+  const _fabricChk = document.getElementById('fabric-check')?.checked || false;
+  const _edgeProtChk = document.getElementById('edge-prot-check')?.checked || false;
+  const _keychainChk = document.getElementById('keychain-check')?.checked || false;
+  if (_fabricChk) addonsArr.push(`Fabric Insert (${state['fabric-pattern']})`);
+  if (_edgeProtChk) addonsArr.push(`Edge Protector (${state['edge-prot-finish']})`);
   if (document.getElementById('double-cord-check')?.checked) addonsArr.push('Double Front Cord');
   if (document.getElementById('extra-insert-check')?.checked) {
     const qty = parseInt(document.getElementById('extra-insert-qty')?.value) || 1;
     addonsArr.push(`Extra Inserts x${qty}`);
   }
   if (laceChecked) addonsArr.push(`Lace (${state.laceOrientation})`);
-  if (state.keychain) addonsArr.push('Mini Keychain');
+  if (_keychainChk) addonsArr.push('Mini Keychain');
 
   const orderData = {
     orderId: dedupKey,
@@ -3154,8 +3174,8 @@ async function submitOrder() {
       },
       freeCharms: state.freeCharms,
       addonCharms: state.addonCharms,
-      fabricInsert: state.fabricInsert ? { pattern: state['fabric-pattern'] } : null,
-      edgeProtector: state.edgeProtector ? state['edge-prot-finish'] : null,
+      fabricInsert: _fabricChk ? { pattern: state['fabric-pattern'] } : null,
+      edgeProtector: _edgeProtChk ? state['edge-prot-finish'] : null,
       doubleCord: document.getElementById('double-cord-check').checked,
       doubleCordColor: state.doubleCordColor || null,
       extraInserts: document.getElementById('extra-insert-check').checked
@@ -3164,7 +3184,7 @@ async function submitOrder() {
       lace: laceChecked,
       laceOrientation: laceChecked ? state.laceOrientation : null, // NEW
       addonsLabel: addonsArr.join(' | '),                           // NEW — for Add-Ons column
-      keychain: state.keychain ? {
+      keychain: _keychainChk ? {
         leather: document.getElementById('kc-leather').value,
         cord: document.getElementById('kc-cord').value,
         letter: document.getElementById('kc-letter').value
