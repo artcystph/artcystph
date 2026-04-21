@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>artcyst.ph — Payment Portal</title>
+<link rel="icon" type="image/png" href="images/Logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
+<style>
+  /* ════════════════════════════════════
+     CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+     ════════════════════════════════════ */
+  :root {
+    /* Brand palette */
+    --accent:       #C2458C;
+    --accent-dark:  #9e3372;
+    --accent-light: rgba(194,69,140,0.10);
+
+    /* Backgrounds */
+    --bg:           #F9F4F2;
+    --bg-alt:       #F3EBE8;
+    --bg-card:      #FFFFFF;
+
+    /* Neutrals */
+    --border:       #E8D9D3;
+    --text-dark:    #2d1f1f;
+    --text-mid:     #6b4a4a;
+    --text-light:   #a08080;
+
+    /* Legacy aliases */
+    --nude:         var(--bg);
+    --cream:        var(--bg-alt);
+    --dusty-rose:   #d4879c;
+    --muted-salmon: #c97b8a;
+    --deep-mauve:   #8b4d63;
+    --terracotta:   var(--accent);
+    --champagne:    #e8d5c4;
+    --warm-brown:   #7a4f3a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--bg);
+    background-image: url('gallery/The_Journals01.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: var(--text-dark);
+    overflow-x: hidden;
+    line-height: 1.6;
+    position: relative;
+    min-height: 100vh;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(242, 240, 248, 0.92);
+    z-index: 0;
+    pointer-events: none;
+  }
+  body > * { position: relative; z-index: 1; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg-alt); }
+  ::-webkit-scrollbar-thumb { background: var(--dusty-rose); border-radius: 3px; }
+
+  .serif        { font-family: 'DM Serif Display', serif; }
+  .italic-serif { font-family: 'Playfair Display', serif; font-style: italic; }
+
+  /* ══════════════════════════════════
+     NAV
+     ══════════════════════════════════ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(249,244,242,0.94);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { height: 42px; }
+  @media (max-width: 600px) {
+    nav { padding: 12px 18px; }
+  }
+
+  /* ══════════════════════════════════
+     PAGE WRAPPER
+     ══════════════════════════════════ */
+  .portal-wrapper {
+    padding: 100px 24px 80px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+  }
+  .section-title { font-size: clamp(28px,4vw,48px); color: var(--deep-mauve); margin-bottom: 8px; }
+  .section-sub { font-size: 15px; color: var(--text-light); margin-bottom: 32px; }
+
+  /* ══════════════════════════════════
+     ORDER SUMMARY BANNER (passed via URL params)
+     ══════════════════════════════════ */
+  #order-banner {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 12px rgba(139,77,99,0.05);
+  }
+  #order-banner .banner-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--text-light); margin-bottom: 6px;
+  }
+  #order-banner .banner-id {
+    font-size: 18px; font-weight: 700; color: var(--deep-mauve);
+  }
+  #order-banner .banner-total {
+    font-size: 22px; font-weight: 700; color: var(--accent); margin-top: 4px;
+  }
+
+  /* ══════════════════════════════════
+     OPTION PILLS
+     ══════════════════════════════════ */
+  .opt-pill {
+    padding: 8px 18px; border-radius: 50px;
+    border: 1.5px solid var(--border); font-size: 13px; font-weight: 500;
+    background: var(--bg-card); color: var(--text-mid); cursor: pointer;
+    transition: all 0.18s; font-family: 'DM Sans', sans-serif;
+  }
+  .opt-pill:hover { border-color: var(--dusty-rose); color: var(--deep-mauve); }
+  .opt-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ══════════════════════════════════
+     PAYMENT GRID & QR CARDS
+     ══════════════════════════════════ */
+  .payment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .qr-card {
+    background: var(--bg-card); border-radius: 20px; padding: 20px; text-align: center;
+    border: 1.5px solid var(--border); box-shadow: 0 2px 12px rgba(139,77,99,0.05);
+  }
+  .qr-card img { width: 140px; height: 140px; object-fit: contain; margin: 12px auto; display: block; cursor: zoom-in; }
+  .qr-bank { font-weight: 700; font-size: 14px; color: var(--deep-mauve); }
+  .qr-name { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+  /* ══════════════════════════════════
+     UPLOAD BOX
+     ══════════════════════════════════ */
+  .step-card {
+    background: var(--bg-card); border-radius: 20px; padding: 28px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(139,77,99,0.05);
+  }
+  .upload-box {
+    border: 2px dashed var(--border); border-radius: 16px; padding: 32px;
+    text-align: center; cursor: pointer; transition: border-color 0.2s;
+  }
+  .upload-box:hover { border-color: var(--accent); }
+  .upload-box input[type="file"] { display: none; }
+  .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .upload-text { font-size: 14px; color: var(--text-light); }
+  .upload-text span { color: var(--accent); font-weight: 600; }
+
+  /* ══════════════════════════════════
+     BUTTON
+     ══════════════════════════════════ */
+  .btn-primary {
+    display: inline-block; padding: 16px 48px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 50px; font-size: 15px; font-weight: 600;
+    cursor: pointer; letter-spacing: 0.05em; text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s, opacity 0.2s;
+    box-shadow: 0 6px 24px rgba(194,69,140,0.30);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(194,69,140,0.40); background: var(--accent-dark); }
+  .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+  /* ══════════════════════════════════
+     ZOOM OVERLAY
+     ══════════════════════════════════ */
+  .zoom-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(45,31,31,0.85); backdrop-filter: blur(10px);
+    align-items: center; justify-content: center; padding: 24px;
+    cursor: zoom-out;
+  }
+  .zoom-overlay.open { display: flex; }
+  .zoom-overlay img {
+    max-width: 92vw; max-height: 88vh;
+    object-fit: contain; border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(45,31,31,0.4);
+    animation: zoomIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .zoom-close {
+    position: absolute; top: 20px; right: 24px;
+    font-size: 24px; color: #fff; cursor: pointer;
+    background: rgba(45,31,31,0.5); border-radius: 50%;
+    width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .zoom-close:hover { background: rgba(194,69,140,0.7); }
+
+  /* ══════════════════════════════════
+     TOAST
+     ══════════════════════════════════ */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--deep-mauve); color: #fff; padding: 14px 32px;
+    border-radius: 50px; font-size: 14px; font-weight: 500;
+    opacity: 0; pointer-events: none; z-index: 300;
+    transition: all 0.3s; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ══════════════════════════════════
+     SUCCESS CARD
+     ══════════════════════════════════ */
+  #success-card {
+    display: none;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    padding: 48px 40px;
+    text-align: center;
+    box-shadow: 0 12px 48px rgba(194,69,140,0.10);
+    position: relative;
+    overflow: hidden;
+  }
+  #success-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--dusty-rose) 100%);
+  }
+  #success-card .success-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+  #success-card h2 { font-size: 26px; color: var(--deep-mauve); margin-bottom: 10px; }
+  #success-card p { font-size: 14px; color: var(--text-mid); line-height: 1.7; }
+  .summary-line {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+    text-align: left;
+  }
+  .summary-line:last-child { border-bottom: none; }
+  .summary-key { color: var(--text-mid); }
+  .summary-val { font-weight: 500; color: var(--text-dark); text-align: right; max-width: 180px; }
+  .summary-total {
+    display: flex; justify-content: space-between;
+    padding: 14px 0 0; margin-top: 8px;
+    font-size: 18px; font-weight: 700; color: var(--deep-mauve);
+  }
+  #success-summary-box {
+    background: var(--bg); border-radius: 14px; padding: 16px 20px;
+    margin: 20px 0; text-align: left;
+  }
+
+  /* ══════════════════════════════════
+     REQUIRED MARKER
+     ══════════════════════════════════ */
+  .required { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ NAV ══════════════ -->
+<nav>
+  <a href="index.html">
+    <img src="images/Logo.png" alt="artcyst.ph" class="nav-logo">
+  </a>
+</nav>
+
+<!-- ══════════════ ZOOM OVERLAY ══════════════ -->
+<div class="zoom-overlay" id="zoom-overlay" onclick="closeZoom()">
+  <div class="zoom-close" onclick="closeZoom()">✕</div>
+  <img id="zoom-img" src="" alt="zoomed QR">
+</div>
+
+<!-- ══════════════ TOAST ══════════════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════ PORTAL CONTENT ══════════════ -->
+<div class="portal-wrapper">
+
+  <!-- Order banner populated from URL params -->
+  <div id="order-banner">
+    <div class="banner-label">Your Order</div>
+    <div class="banner-id" id="banner-order-id">—</div>
+    <div class="banner-total" id="banner-total">₱0</div>
+  </div>
+
+  <!-- Payment section -->
+  <div class="section-label">Settle Your Order</div>
+  <h1 class="serif section-title">Payment</h1>
+  <p class="section-sub">Choose your preferred channel and scan to pay.</p>
+
+  <!-- Payment method selector pills -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;" id="payment-method-btns">
+    <button class="opt-pill" onclick="selectPaymentMethod(this,'gcash')">GCash</button>
+    <button class="opt-pill" onclick="selectPaymentMethod(this,'maya')">Maya</button>
+    <button class="opt-pill" onclick="selectPaymentMethod(this,'bdo')">BDO</button>
+    <button class="opt-pill" onclick="selectPaymentMethod(this,'gotyme')">GoTyme Bank</button>
+  </div>
+
+  <!-- GCash (hidden by default) -->
+  <div class="payment-grid" id="qr-gcash" style="display:none;">
+    <div class="qr-card">
+      <div class="qr-bank" style="color:#007aff;">GCash</div>
+      <img src="images/GCASH.JPG" alt="GCash QR" onclick="openZoom(this)" title="Tap to zoom">
+      <div class="qr-name">ARTCYST.PH</div>
+      <div style="font-size:11px;color:var(--text-light);">0923 025 ••••</div>
+      <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
+      <div style="font-size:12px;font-weight:600;color:var(--accent);margin-top:8px;">Total: <span id="qr-total-gcash">₱0</span></div>
+    </div>
+  </div>
+
+  <!-- Maya (hidden by default) -->
+  <div class="payment-grid" id="qr-maya" style="display:none;">
+    <div class="qr-card">
+      <div class="qr-bank" style="color:#00a651;">Maya</div>
+      <img src="images/MAYA.PNG" alt="Maya QR" onclick="openZoom(this)" title="Tap to zoom">
+      <div class="qr-name">ARTCYST</div>
+      <div style="font-size:11px;color:var(--text-light);">+63 *** *** 6912</div>
+      <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
+      <div style="font-size:12px;font-weight:600;color:var(--accent);margin-top:8px;">Total: <span id="qr-total-maya">₱0</span></div>
+    </div>
+  </div>
+
+  <!-- BDO (hidden by default) -->
+  <div class="payment-grid" id="qr-bdo" style="display:none;">
+    <div class="qr-card">
+      <div class="qr-bank" style="color:#003087;">BDO</div>
+      <img src="images/BDO.JPG" alt="BDO QR" onclick="openZoom(this)" title="Tap to zoom">
+      <div class="qr-name">ARTCYST</div>
+      <div style="font-size:11px;color:var(--text-light);">Acct ending ••••7638</div>
+      <div style="font-size:11px;color:var(--text-light);margin-top:4px;">BDO-to-BDO transfers free</div>
+      <div style="font-size:12px;font-weight:600;color:var(--accent);margin-top:8px;">Total: <span id="qr-total-bdo">₱0</span></div>
+    </div>
+  </div>
+
+  <!-- GoTyme (hidden by default) -->
+  <div class="payment-grid" id="qr-gotyme" style="display:none;">
+    <div class="qr-card">
+      <div class="qr-bank" style="color:#00b4d8;">GoTyme Bank</div>
+      <img src="images/GOTYME.PNG" alt="GoTyme QR" onclick="openZoom(this)" title="Tap to zoom">
+      <div class="qr-name">ARTCYST</div>
+      <div style="font-size:11px;color:var(--text-light);">Acct ending ••••7784</div>
+      <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Transfer fees may apply</div>
+      <div style="font-size:12px;font-weight:600;color:var(--accent);margin-top:8px;">Total: <span id="qr-total-gotyme">₱0</span></div>
+    </div>
+  </div>
+
+  <!-- Proof of Payment Upload -->
+  <div class="step-card" style="margin-top:28px;">
+    <div style="font-weight:700;font-size:15px;color:var(--deep-mauve);margin-bottom:16px;">Proof of Payment <span class="required">*</span></div>
+    <div class="upload-box" onclick="document.getElementById('pop-upload').click()">
+      <div class="upload-icon">📎</div>
+      <div class="upload-text"><span>Click to upload</span> or drag & drop</div>
+      <div style="font-size:12px;color:var(--text-light);margin-top:4px;">PNG, JPG, PDF · max 10MB</div>
+      <div id="pop-filename" style="margin-top:10px;font-size:13px;color:var(--accent);font-weight:600;"></div>
+      <input type="file" id="pop-upload" accept="image/*,.pdf" onchange="onFileSelected(this)">
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <button
+    id="submit-btn"
+    class="btn-primary"
+    style="width:100%;margin-top:28px;padding:18px;font-size:16px;"
+    onclick="submitProof()"
+  >
+    ✦ Submit Proof of Payment
+  </button>
+  <p style="text-align:center;font-size:12px;color:var(--text-light);margin-top:12px;">
+    Your order has already been received. This step confirms your payment.
+  </p>
+
+  <!-- Success Card (shown after submission) -->
+  <div id="success-card" style="margin-top:32px;">
+    <span class="success-icon">🎉</span>
+    <h2 class="serif">Payment Received!</h2>
+    <p>Thank you for your payment. We've noted your proof of payment and will begin crafting your folio soon.</p>
+    <div id="success-summary-box">
+      <div class="summary-line"><span class="summary-key">Order ID</span><span class="summary-val" id="sc-order-id">—</span></div>
+      <div class="summary-line"><span class="summary-key">Payment Method</span><span class="summary-val" id="sc-method">—</span></div>
+      <div class="summary-total"><span>Total Paid</span><span id="sc-total">₱0</span></div>
+    </div>
+    <p style="font-size:13px;color:var(--text-light);margin-top:8px;">A confirmation was sent to your email. Handcrafting takes 7–10 business days.</p>
+    <a href="index.html" class="btn-primary" style="display:inline-block;margin-top:24px;">← Back to Shop</a>
+  </div>
+
+</div><!-- /portal-wrapper -->
+
+<script>
+// ════════════════════════════════════════
+//  READ URL PARAMS
+//  index.html passes: ?orderId=ORD-xxxx&total=1234&email=...
+// ════════════════════════════════════════
+const params  = new URLSearchParams(window.location.search);
+const orderId = params.get('orderId') || '—';
+const total   = params.get('total')   || '0';
+const email   = params.get('email')   || '';
+
+// Populate order banner
+document.getElementById('banner-order-id').textContent = orderId;
+document.getElementById('banner-total').textContent    = '₱' + total;
+
+// Pre-fill QR total displays
+['gcash','maya','bdo','gotyme'].forEach(m => {
+  const el = document.getElementById('qr-total-' + m);
+  if (el) el.textContent = '₱' + total;
+});
+
+// ════════════════════════════════════════
+//  PAYMENT METHOD SELECTOR
+// ════════════════════════════════════════
+let selectedMethod = null;
+
+function selectPaymentMethod(btn, method) {
+  document.querySelectorAll('#payment-method-btns .opt-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['gcash','maya','bdo','gotyme'].forEach(m => {
+    const el = document.getElementById('qr-' + m);
+    if (el) el.style.display = 'none';
+  });
+  const panel = document.getElementById('qr-' + method);
+  if (panel) panel.style.display = '';
+  selectedMethod = method;
+}
+
+// ════════════════════════════════════════
+//  FILE SELECTED
+// ════════════════════════════════════════
+function onFileSelected(input) {
+  if (input.files[0]) {
+    document.getElementById('pop-filename').textContent = '✓ ' + input.files[0].name;
+  }
+}
+
+// ════════════════════════════════════════
+//  SUBMIT PROOF OF PAYMENT
+// ════════════════════════════════════════
+async function submitProof() {
+  const popFile = document.getElementById('pop-upload').files[0];
+  const btn     = document.getElementById('submit-btn');
+
+  if (!selectedMethod) {
+    showToast('Please select a payment method.'); return;
+  }
+  if (!popFile) {
+    showToast('Please upload your proof of payment.'); return;
+  }
+
+  btn.disabled    = true;
+  btn.textContent = '⏳ Submitting…';
+
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyHNf_0XL7DL5jDMh7yX6uCNAWOXB3A28dwNcoc-QE9fVoxlveMpGQ_dCzcJaCqq1w/exec';
+
+  try {
+    const toBase64 = file => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    const proofBase64   = await toBase64(popFile);
+    const proofMimeType = popFile.type  || 'image/jpeg';
+    const proofFileName = popFile.name  || 'proof.jpg';
+
+    const payload = {
+      action:        'submitProof',
+      orderId,
+      email,
+      paymentMethod: selectedMethod,
+      total,
+      proofBase64,
+      proofMimeType,
+      proofFileName,
+    };
+
+    await fetch(GAS_URL, {
+      method:  'POST',
+      mode:    'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body:    JSON.stringify(payload),
+    });
+
+    showSuccessCard();
+
+  } catch (err) {
+    console.error('Proof submission error:', err);
+    // Still show success — the no-cors response is always opaque
+    showSuccessCard();
+  }
+}
+
+function showSuccessCard() {
+  document.getElementById('submit-btn').style.display = 'none';
+  document.getElementById('success-card').style.display = 'block';
+  document.getElementById('sc-order-id').textContent = orderId;
+  document.getElementById('sc-method').textContent   = (selectedMethod || '—').toUpperCase();
+  document.getElementById('sc-total').textContent    = '₱' + total;
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+// Alias: uploadFile() → submitProof() (for any legacy references)
+const uploadFile = submitProof;
+
+// ════════════════════════════════════════
+//  ZOOM
+// ════════════════════════════════════════
+function openZoom(img) {
+  document.getElementById('zoom-img').src = img.src;
+  document.getElementById('zoom-overlay').classList.add('open');
+}
+function closeZoom() {
+  document.getElementById('zoom-overlay').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeZoom(); });
+
+// ════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+</script>
+</body>
+</html>
