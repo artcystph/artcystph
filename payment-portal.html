@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://script.google.com; img-src 'self' data: blob:; frame-src 'none'; object-src 'none';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>artcyst.ph — Payment Portal</title>
 <link rel="icon" type="image/png" href="images/Logo.png">
@@ -362,9 +363,9 @@
     <div class="upload-box" onclick="document.getElementById('pop-upload').click()">
       <div class="upload-icon">📎</div>
       <div class="upload-text"><span>Click to upload</span> or drag & drop</div>
-      <div style="font-size:12px;color:var(--text-light);margin-top:4px;">PNG, JPG, PDF · max 10MB</div>
+      <div style="font-size:12px;color:var(--text-light);margin-top:4px;">PNG or JPG only · max 10MB</div>
       <div id="pop-filename" style="margin-top:10px;font-size:13px;color:var(--accent);font-weight:600;"></div>
-      <input type="file" id="pop-upload" accept="image/*,.pdf" onchange="onFileSelected(this)">
+      <input type="file" id="pop-upload" accept="image/png,image/jpeg,.png,.jpg,.jpeg" onchange="onFileSelected(this)">
     </div>
   </div>
 
@@ -379,6 +380,13 @@
   </button>
   <p style="text-align:center;font-size:12px;color:var(--text-light);margin-top:12px;">
     Your order has already been received. This step confirms your payment.
+  </p>
+  <p style="text-align:center;font-size:11px;color:var(--text-light);margin-top:8px;">
+    Your name, email, and phone number are used only to process and fulfil your order.
+    We do not sell your data to third parties. Uploaded receipts are stored securely in
+    Google Drive and removed once your order ships.
+    <a href="mailto:artcyst.ph@gmail.com" style="color:var(--accent);">Contact us</a>
+    to request data deletion.
   </p>
 
   <!-- Success Card (shown after submission) -->
@@ -455,6 +463,22 @@ async function submitProof() {
   }
   if (!popFile) {
     showToast('Please upload your proof of payment.'); return;
+  }
+
+// ── File type & size validation ──
+  const ALLOWED_TYPES = ['image/png', 'image/jpeg'];
+  const ALLOWED_EXTS  = /\.(png|jpg|jpeg)$/i;
+  if (!ALLOWED_TYPES.includes(popFile.type) || !ALLOWED_EXTS.test(popFile.name)) {
+    showToast('Only PNG or JPG images are accepted.');
+    document.getElementById('pop-upload').value = '';
+    document.getElementById('pop-filename').textContent = '';
+    return;
+  }
+  if (popFile.size > 10 * 1024 * 1024) {
+    showToast('File is too large. Please upload an image under 10 MB.');
+    document.getElementById('pop-upload').value = '';
+    document.getElementById('pop-filename').textContent = '';
+    return;
   }
 
   btn.disabled    = true;
