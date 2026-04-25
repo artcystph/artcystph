@@ -3281,7 +3281,7 @@ async function submitOrder() {
       email:   orderData.customer.email,
       key:     sessionKey,              // ← SessionKey for proof upload validation
     });
-    window.location.href = 'https://paymentportal.artcystph.com/payment-portal.html?' + params.toString();
+    window.location.href = '/paymentportal?' + params.toString();
 
  } catch (err) {
     console.error('Order submission error:', err);
@@ -3291,7 +3291,7 @@ async function submitOrder() {
       email:   orderData.customer.email,
       key:     '',   // key unavailable on network error; server skips validation gracefully
     });
-    window.location.href = 'https://paymentportal.artcystph.com/payment-portal.html?' + params.toString();
+    window.location.href = '/paymentportal?' + params.toString();
   }
 }
 
