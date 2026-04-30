@@ -3,7 +3,7 @@
 
   <!-- Main shop page -->
   <url>
-    <loc>https://artcyst.ph/index.html</loc>
+    <loc>https://artcystph.com/index.html</loc>
     <lastmod>2026-05-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -11,7 +11,7 @@
 
   <!-- Privacy Policy -->
   <url>
-    <loc>https://artcyst.ph/privacy.html</loc>
+    <loc>https://artcystph.com/privacy.html</loc>
     <lastmod>2026-05-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
