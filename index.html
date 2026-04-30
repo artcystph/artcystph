@@ -18,8 +18,44 @@
 <!-- ↑ form-action 'none' blocks any <form> submissions (your app uses fetch, not forms) -->
 <!-- ↑ Added base-uri 'self' to prevent base tag injection attacks                       -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>artcyst.ph — handcrafted for minds in motion</title>
-<link rel="icon" type="image/png" href="images/Logo.png">
+<title>artcyst.ph — Custom Handcrafted Leather Folios & Journals</title>
+
+<!-- ══ SEO Meta ══════════════════════════════════════════════════ -->
+<meta name="description"
+  content="artcyst.ph handcrafts made-to-order leather folios, journals, and accessories in the Philippines. Fully customizable — choose your size, leather color, cord, charms, and engraving. Ships nationwide.">
+<meta name="keywords"
+  content="handcrafted leather folio Philippines, custom journal Philippines, leather notebook cover, artcyst, vegan leather journal, A5 folio, A6 folio, passport folio">
+<meta name="author" content="artcyst.ph">
+<link rel="canonical" href="https://artcyst.ph/">
+
+<!-- ══ Open Graph (Facebook, Viber, iMessage, Discord) ══════════ -->
+<!-- ▶ Replace the og:image URL with a real 1200×630 product photo -->
+<meta property="og:type"        content="website">
+<meta property="og:site_name"   content="artcyst.ph">
+<meta property="og:url"         content="https://artcyst.ph/">
+<meta property="og:title"       content="artcyst.ph — Custom Handcrafted Leather Folios">
+<meta property="og:description"
+  content="Made-to-order leather folios & journals, handcrafted in Ilocos Norte, Philippines. Choose your size, leather, cord colors, charms & engraving. Ships nationwide.">
+<meta property="og:image"       content="https://artcyst.ph/images/preview.png">
+<meta property="og:image:width"  content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt"    content="artcyst.ph handcrafted leather folio on a flat-lay surface">
+<meta property="og:locale"       content="en_PH">
+
+<!-- ══ Twitter / X Card ═════════════════════════════════════════ -->
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="artcyst.ph — Custom Handcrafted Leather Folios">
+<meta name="twitter:description"
+  content="Made-to-order leather folios & journals from Ilocos Norte, Philippines. Fully customizable. Ships nationwide.">
+<meta name="twitter:image"       content="https://artcyst.ph/images/preview.png">
+<meta name="twitter:image:alt"   content="artcyst.ph handcrafted leather folio">
+
+<!-- ══ Favicon ══════════════════════════════════════════════════ -->
+<link rel="icon"             type="image/png" sizes="32x32"  href="images/Logo.png">
+<link rel="icon"             type="image/png" sizes="16x16"  href="images/Logo.png">
+<link rel="apple-touch-icon"                  sizes="180x180" href="images/Logo.png">
+<link rel="manifest"         href="manifest.json">
+<meta name="theme-color"     content="#C2458C">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
@@ -1032,6 +1068,82 @@
     border-radius: 999px; font-size: 12px; color: var(--text-mid);
   }
   #dispatch-badge strong { color: var(--accent); }
+    /* ════════════════════════════════════
+     COOKIE CONSENT BANNER
+     ════════════════════════════════════ */
+  #cookie-banner {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: calc(100% - 32px);
+    max-width: 640px;
+    background: var(--text-dark);
+    border-radius: 18px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 8px 40px rgba(45,31,31,0.35);
+    animation: bannerSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  #cookie-banner.hidden {
+    animation: bannerSlideDown 0.35s ease forwards;
+    pointer-events: none;
+  }
+  @keyframes bannerSlideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(24px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes bannerSlideDown {
+    from { opacity: 1; transform: translateX(-50%) translateY(0); }
+    to   { opacity: 0; transform: translateX(-50%) translateY(24px); }
+  }
+  .cookie-text {
+    flex: 1;
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.6;
+  }
+  .cookie-text strong { color: rgba(255,255,255,0.9); }
+  .cookie-text a { color: var(--dusty-rose); text-decoration: none; }
+  .cookie-text a:hover { text-decoration: underline; }
+  .cookie-actions {
+    display: flex; gap: 8px; flex-shrink: 0; align-items: center;
+  }
+  .cookie-btn-accept {
+    background: var(--accent);
+    color: #fff; font-size: 13px; font-weight: 600;
+    padding: 9px 20px; border-radius: 50px; border: none;
+    cursor: pointer; transition: background 0.2s;
+    white-space: nowrap; font-family: 'DM Sans', sans-serif;
+  }
+  .cookie-btn-accept:hover { background: var(--accent-dark); }
+  .cookie-btn-decline {
+    background: transparent; color: rgba(255,255,255,0.45);
+    font-size: 12px; font-weight: 500;
+    padding: 9px 14px; border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.12);
+    cursor: pointer; transition: all 0.2s;
+    white-space: nowrap; font-family: 'DM Sans', sans-serif;
+  }
+  .cookie-btn-decline:hover { color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.3); }
+  /* Enhanced SVG preview */
+  .folio-svg {
+    filter: drop-shadow(0 4px 20px rgba(45,31,31,0.12));
+    transition: filter 0.3s;
+  }
+  #folio-preview:hover .folio-svg {
+    filter: drop-shadow(0 8px 32px rgba(45,31,31,0.18));
+  }
+  /* Hide placeholder once a leather is selected */
+  #folio-preview.leather-selected #preview-placeholder { display: none; }
+  @media (max-width: 600px) {
+    #cookie-banner { flex-direction: column; align-items: flex-start; gap: 14px; padding: 18px 18px; }
+    .cookie-actions { align-self: stretch; }
+    .cookie-btn-accept { flex: 1; text-align: center; }
+  }
 </style>
 </head>
 <body>
@@ -1373,34 +1485,108 @@
         <div class="preview-panel">
           <div class="preview-title">✦ Live Preview</div>
           <div id="folio-preview">
-            <svg id="folio-svg" viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" class="folio-svg">
-              <defs>
-                <linearGradient id="leatherGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
-                  <stop offset="50%" stop-color="#ffffff" stop-opacity="0"/>
-                  <stop offset="100%" stop-color="#000000" stop-opacity="0.15"/>
-                </linearGradient>
-              </defs>
-              <ellipse cx="160" cy="250" rx="100" ry="10" fill="rgba(45,31,31,0.08)"/>
-              <rect id="back-cover" x="30" y="20" width="130" height="210" rx="10" fill="#2c2c2c" opacity="0.5"/>
-              <rect id="front-cover" x="80" y="15" width="170" height="220" rx="10" fill="#2c2c2c"/>
-              <rect id="cover-shine" x="80" y="15" width="170" height="220" rx="10" fill="url(#leatherGrad)" opacity="0.25"/>
-              <line id="front-cord-line" x1="80" y1="125" x2="250" y2="125" stroke="#d4c8a8" stroke-width="3" stroke-linecap="round"/>
-              <circle id="g-s1" cx="80" cy="55" r="5" fill="none" stroke="#b8a090" stroke-width="2"/>
-              <circle id="g-s2" cx="80" cy="100" r="5" fill="none" stroke="#b8a090" stroke-width="2"/>
-              <circle id="g-s3" cx="80" cy="145" r="5" fill="none" stroke="#b8a090" stroke-width="2"/>
-              <line id="inside-s1" x1="80" y1="55" x2="30" y2="55" stroke="#e8a4b0" stroke-width="2.5" stroke-dasharray="4,3" stroke-linecap="round" opacity="0.7"/>
-              <line id="inside-s2" x1="80" y1="100" x2="30" y2="100" stroke="#9b7fd4" stroke-width="2.5" stroke-dasharray="4,3" stroke-linecap="round" opacity="0.7"/>
-              <line id="inside-s3" x1="80" y1="145" x2="30" y2="145" stroke="#6dba8a" stroke-width="2.5" stroke-dasharray="4,3" stroke-linecap="round" opacity="0.7"/>
-              <text x="22" y="58" font-family="DM Sans,sans-serif" font-size="8" fill="#a08080" text-anchor="middle">S1</text>
-              <text x="22" y="103" font-family="DM Sans,sans-serif" font-size="8" fill="#a08080" text-anchor="middle">S2</text>
-              <text x="22" y="148" font-family="DM Sans,sans-serif" font-size="8" fill="#a08080" text-anchor="middle">S3</text>
-              <circle id="charm-icon" cx="165" cy="125" r="8" fill="#c4a882" stroke="#a08060" stroke-width="1.5"/>
-              <line x1="165" y1="117" x2="165" y2="113" stroke="#a08060" stroke-width="1.5"/>
-              <text id="engraving-preview" x="165" y="195" text-anchor="middle" font-family="serif" font-size="13" fill="rgba(255,255,255,0.5)" letter-spacing="3"></text>
-              <rect id="corner-tl" x="80" y="15" width="10" height="10" fill="transparent"/>
-              <rect id="corner-br" x="240" y="225" width="10" height="10" fill="transparent"/>
-            </svg>
+            <svg id="folio-svg" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg" class="folio-svg">
+  <defs>
+    <!-- Leather sheen: top-left bright highlight, bottom-right dark shadow -->
+    <linearGradient id="leatherSheen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="40%"  stop-color="#ffffff" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.22"/>
+    </linearGradient>
+    <!-- Leather texture grain -->
+    <pattern id="grainPat" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="2" x2="4" y2="2" stroke="rgba(255,255,255,0.035)" stroke-width="0.8"/>
+      <line x1="2" y1="0" x2="2" y2="4" stroke="rgba(0,0,0,0.025)" stroke-width="0.6"/>
+    </pattern>
+    <!-- Spine crease shadow -->
+    <linearGradient id="spineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#000000" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Drop shadow — front cover -->
+    <filter id="cardShadow" x="-10%" y="-5%" width="125%" height="120%">
+      <feDropShadow dx="3" dy="6" stdDeviation="10" flood-color="rgba(45,31,31,0.28)"/>
+    </filter>
+    <!-- Drop shadow — back cover -->
+    <filter id="backShadow" x="-5%" y="-5%" width="120%" height="115%">
+      <feDropShadow dx="2" dy="4" stdDeviation="6" flood-color="rgba(45,31,31,0.18)"/>
+    </filter>
+    <!-- Cord glow -->
+    <filter id="cordGlow" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Ground shadow -->
+  <ellipse cx="162" cy="268" rx="108" ry="8" fill="rgba(45,31,31,0.10)"/>
+
+  <!-- Back cover -->
+  <rect id="back-cover" x="22" y="26" width="138" height="218" rx="11"
+    fill="#2c2c2c" opacity="0.55" filter="url(#backShadow)"/>
+  <rect x="22" y="26" width="138" height="218" rx="11"
+    fill="url(#leatherSheen)" opacity="0.18"/>
+
+  <!-- Front cover -->
+  <rect id="front-cover" x="78" y="18" width="178" height="228" rx="11"
+    fill="#2c2c2c" filter="url(#cardShadow)"/>
+  <rect x="78" y="18" width="178" height="228" rx="11"
+    fill="url(#grainPat)" opacity="0.9"/>
+  <rect id="cover-shine" x="78" y="18" width="178" height="228" rx="11"
+    fill="url(#leatherSheen)" opacity="0.9"/>
+  <!-- Spine crease -->
+  <rect x="78" y="18" width="14" height="228" rx="11"
+    fill="url(#spineGrad)" opacity="0.6"/>
+  <!-- Inner border relief -->
+  <rect x="78" y="18" width="178" height="228" rx="11"
+    fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+  <!-- Grommets (S1, S2, S3) -->
+  <circle id="g-s1" cx="80" cy="62"  r="5.5" fill="rgba(30,20,20,0.8)" stroke="#d4c0b0" stroke-width="1.5"/>
+  <circle cx="80" cy="62"  r="2.5" fill="none" stroke="#d4c0b0" stroke-width="1"/>
+  <circle id="g-s2" cx="80" cy="110" r="5.5" fill="rgba(30,20,20,0.8)" stroke="#d4c0b0" stroke-width="1.5"/>
+  <circle cx="80" cy="110" r="2.5" fill="none" stroke="#d4c0b0" stroke-width="1"/>
+  <circle id="g-s3" cx="80" cy="158" r="5.5" fill="rgba(30,20,20,0.8)" stroke="#d4c0b0" stroke-width="1.5"/>
+  <circle cx="80" cy="158" r="2.5" fill="none" stroke="#d4c0b0" stroke-width="1"/>
+
+  <!-- Inside cords (left) -->
+  <line id="inside-s1" x1="80" y1="62"  x2="22" y2="62"
+    stroke="#e8a4b0" stroke-width="3" stroke-linecap="round" opacity="0.85" filter="url(#cordGlow)"/>
+  <line id="inside-s2" x1="80" y1="110" x2="22" y2="110"
+    stroke="#9b7fd4" stroke-width="3" stroke-linecap="round" opacity="0.85" filter="url(#cordGlow)"/>
+  <line id="inside-s3" x1="80" y1="158" x2="22" y2="158"
+    stroke="#6dba8a" stroke-width="3" stroke-linecap="round" opacity="0.85" filter="url(#cordGlow)"/>
+
+  <!-- S-labels -->
+  <text x="14" y="65"  font-family="DM Sans,sans-serif" font-size="7.5" fill="#a08080" text-anchor="middle" font-weight="600">S1</text>
+  <text x="14" y="113" font-family="DM Sans,sans-serif" font-size="7.5" fill="#a08080" text-anchor="middle" font-weight="600">S2</text>
+  <text x="14" y="161" font-family="DM Sans,sans-serif" font-size="7.5" fill="#a08080" text-anchor="middle" font-weight="600">S3</text>
+
+  <!-- Front cord (with shadow + glow) -->
+  <line id="front-cord-shadow" x1="80" y1="134" x2="256" y2="134"
+    stroke="rgba(0,0,0,0.25)" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+  <line id="front-cord-line" x1="80" y1="132" x2="256" y2="132"
+    stroke="#d4c8a8" stroke-width="4" stroke-linecap="round" filter="url(#cordGlow)"/>
+  <line x1="80" y1="130" x2="256" y2="130"
+    stroke="rgba(255,255,255,0.3)" stroke-width="1.2" stroke-linecap="round" id="front-cord-highlight"/>
+
+  <!-- Charm -->
+  <line x1="167" y1="124" x2="167" y2="119" stroke="#b8a090" stroke-width="1.8"/>
+  <circle id="charm-icon" cx="167" cy="132" r="9" fill="#c4a882" stroke="#a08060" stroke-width="1.5"/>
+  <circle cx="167" cy="132" r="5" fill="rgba(255,255,255,0.12)"/>
+
+  <!-- Engraving text preview -->
+  <text id="engraving-preview"
+    x="167" y="205" text-anchor="middle"
+    font-family="Georgia, serif" font-size="11"
+    fill="rgba(255,255,255,0.45)" letter-spacing="3.5"></text>
+
+  <!-- Leather-not-selected placeholder -->
+  <text id="preview-placeholder"
+    x="167" y="138" text-anchor="middle"
+    font-family="DM Sans, sans-serif" font-size="9"
+    fill="rgba(255,255,255,0.2)" letter-spacing="0.05em">select a leather color</text>
+</svg>
           </div>
 
           <div style="border-top:1px solid var(--border);margin:16px 0;"></div>
@@ -1807,6 +1993,108 @@
   </div>
 </section>
 
+<!-- ══════════════ SIZE GUIDE ══════════════ -->
+<section id="size-guide" style="background:var(--bg);">
+  <div class="container" style="max-width:700px;">
+    <div class="section-label">Reference</div>
+    <h2 class="serif section-title">Size Guide</h2>
+    <p style="font-size:14px;color:var(--text-mid);margin-bottom:28px;">
+      Not sure which size fits your needs? Every folio is crafted to hold standard insert sheets
+      for its respective size. Use the table below to compare.
+    </p>
+
+    <!-- Size comparison table -->
+    <div style="overflow-x:auto;border-radius:14px;border:1.5px solid var(--border);">
+      <table style="width:100%;border-collapse:collapse;font-size:13.5px;background:var(--bg-card);">
+        <thead>
+          <tr style="background:var(--accent);color:#fff;">
+            <th style="padding:14px 18px;text-align:left;font-weight:700;border-radius:12px 0 0 0;">Size</th>
+            <th style="padding:14px 18px;text-align:center;font-weight:700;">Folio Dimensions</th>
+            <th style="padding:14px 18px;text-align:center;font-weight:700;">Insert Sheet</th>
+            <th style="padding:14px 18px;text-align:left;font-weight:700;border-radius:0 12px 0 0;">Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:16px 18px;">
+              <div style="font-weight:700;color:var(--accent);font-size:15px;">Passport</div>
+              <div style="font-size:12px;color:var(--text-light);margin-top:2px;">pp-trifold · ₱399</div>
+            </td>
+            <td style="padding:16px 18px;text-align:center;">
+              <div style="font-weight:600;">10 × 14.5 cm</div>
+              <div style="font-size:11px;color:var(--text-light);margin-top:3px;">(100 × 145 mm closed)</div>
+            </td>
+            <td style="padding:16px 18px;text-align:center;">
+              <div style="font-weight:600;">9.5 × 13.5 cm</div>
+              <div style="font-size:11px;color:var(--text-light);margin-top:3px;">Passport booklet size</div>
+            </td>
+            <td style="padding:16px 18px;color:var(--text-mid);font-size:13px;">
+              Travel documents, passports, cards, pocket-sized journaling
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);background:#fdf9f8;">
+            <td style="padding:16px 18px;">
+              <div style="font-weight:700;color:var(--accent);font-size:15px;">A6</div>
+              <div style="font-size:12px;color:var(--text-light);margin-top:2px;">a6-bifold / a6-trifold · ₱499</div>
+            </td>
+            <td style="padding:16px 18px;text-align:center;">
+              <div style="font-weight:600;">11 × 16 cm</div>
+              <div style="font-size:11px;color:var(--text-light);margin-top:3px;">(110 × 160 mm closed)</div>
+            </td>
+            <td style="padding:16px 18px;text-align:center;">
+              <div style="font-weight:600;">10.5 × 14.8 cm</div>
+              <div style="font-size:11px;color:var(--text-light);margin-top:3px;">Standard A6 sheets</div>
+            </td>
+            <td style="padding:16px 18px;color:var(--text-mid);font-size:13px;">
+              Daily planner, pocket journal, bullet journaling, TN inserts
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 18px;">
+              <div style="font-weight:700;color:var(--accent);font-size:15px;">A5</div>
+              <div style="font-size:12px;color:var(--text-light);margin-top:2px;">a5-bifold / a5-trifold · ₱699</div>
+            </td>
+            <td style="padding:16px 18px;text-align:center;">
+              <div style="font-weight:600;">16 × 23 cm</div>
+              <div style="font-size:11px;color:var(--text-light);margin-top:3px;">(160 × 230 mm closed)</div>
+            </td>
+            <td style="padding:16px 18px;text-align:center;">
+              <div style="font-weight:600;">14.8 × 21 cm</div>
+              <div style="font-size:11px;color:var(--text-light);margin-top:3px;">Standard A5 sheets</div>
+            </td>
+            <td style="padding:16px 18px;color:var(--text-mid);font-size:13px;">
+              Full-size journaling, sketchbooks, art journal, desk planner
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Real-world comparison row -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px;">
+      <div style="background:var(--bg-card);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">🛂</div>
+        <div style="font-weight:700;font-size:13px;color:var(--deep-mauve);">Passport</div>
+        <div style="font-size:12px;color:var(--text-light);margin-top:4px;line-height:1.5;">Slightly larger than a Philippine passport booklet</div>
+      </div>
+      <div style="background:var(--bg-card);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">📱</div>
+        <div style="font-weight:700;font-size:13px;color:var(--deep-mauve);">A6</div>
+        <div style="font-size:12px;color:var(--text-light);margin-top:4px;line-height:1.5;">About the size of a standard smartphone (slightly taller)</div>
+      </div>
+      <div style="background:var(--bg-card);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">📓</div>
+        <div style="font-weight:700;font-size:13px;color:var(--deep-mauve);">A5</div>
+        <div style="font-size:12px;color:var(--text-light);margin-top:4px;line-height:1.5;">Half the size of a standard A4 sheet — classic journal size</div>
+      </div>
+    </div>
+
+    <p style="font-size:12px;color:var(--text-light);margin-top:14px;text-align:center;">
+      ✦ All measurements are approximate. Finished dimensions may vary ±3 mm due to the handcrafted nature of each folio.
+    </p>
+  </div>
+</section>
+
 <!-- ══════════════ CHECKOUT FORM ══════════════ -->
 <section id="checkout">
   <div class="container" style="max-width:720px;">
@@ -1839,16 +2127,43 @@
       autocomplete="off" tabindex="-1" aria-hidden="true">
     <input type="hidden" id="page_load_time" name="page_load_time">
 
-    <!-- Submit Button — disabled on click, re-enabled on failure, hard-reset on success -->
+      <!-- ── Terms & Conditions Agreement Checkbox ────────────────────── -->
+    <label id="terms-gate-label"
+      style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-top:24px;
+             padding:14px 16px;background:var(--bg-alt);border:1.5px solid var(--border);
+             border-radius:12px;font-size:13px;color:var(--text-mid);line-height:1.6;">
+      <input
+        type="checkbox"
+        id="terms-agree-chk"
+        onchange="onTermsToggle(this)"
+        style="margin-top:2px;flex-shrink:0;accent-color:var(--accent);width:16px;height:16px;cursor:pointer;">
+      <span>
+        I have read and agree to the
+        <button type="button"
+          onclick="openModal('terms-modal')"
+          style="background:none;border:none;padding:0;color:var(--accent);font-weight:600;
+                 font-size:13px;cursor:pointer;text-decoration:underline;">
+          Terms & Conditions
+        </button>
+        of artcyst.ph, including the no-return policy on custom orders, the 7–10 business day
+        production lead time, and the payment verification requirement.
+      </span>
+    </label>
+
+    <!-- Submit Button — stays disabled until T&C checkbox is checked -->
     <button
       id="submit-btn"
       class="btn-primary"
-      style="width:100%;margin-top:28px;padding:18px;font-size:16px;"
+      style="width:100%;margin-top:16px;padding:18px;font-size:16px;opacity:0.45;cursor:not-allowed;transition:opacity 0.2s;"
       onclick="submitOrder()"
+      disabled
     >
       ✦ Place My Order
     </button>
-    <p style="text-align:center;font-size:12px;color:var(--text-light);margin-top:12px;">By placing your order you agree to our handcrafting lead time of 7–10 business days.</p>
+    <p id="terms-hint"
+      style="text-align:center;font-size:12px;color:var(--text-light);margin-top:10px;transition:opacity 0.2s;">
+      Please read and agree to the Terms & Conditions above to continue.
+    </p>
   </div>
 </section>
 
@@ -1887,17 +2202,21 @@
   <div style="margin-bottom:12px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap;">
     <button class="footer-story-link" onclick="openModal('story-modal')">Our Story</button>
     <button class="footer-story-link" onclick="openTrackModal()">📦 Track My Order</button>
+    <a href="/privacy" class="footer-story-link"
+      style="text-decoration:underline;text-underline-offset:3px;">Privacy Policy</a>
+    <button class="footer-story-link" onclick="openModal('terms-modal')">Terms &amp; Conditions</button>
   </div>
 
   <div class="footer-copy">
-    <p>© 2026 artcyst.ph · All rights reserved</p>
-    <p style="margin-top:4px;">Made with ♡ in the Philippines</p>
+    <p>© 2026 artcyst.ph · All rights reserved · Made with ♡ in the Philippines</p>
     <p style="margin-top:10px;font-size:11px;color:rgba(255,255,255,0.25);max-width:480px;margin-left:auto;margin-right:auto;line-height:1.7;">
       We collect your name, email, and phone number solely to process and fulfil your order.
-      Proof-of-payment images are stored securely in Google Drive and deleted after your order ships.
       We never sell your data.
       <a href="#" data-social="em" style="color:rgba(194,69,140,0.7);">Contact us</a>
-      to request access or deletion.
+      to request access or deletion. ·
+      <a href="privacy.html" style="color:var(--dusty-rose);text-decoration:underline;text-underline-offset:2px;">
+        Read our full Privacy Policy →
+      </a>
     </p>
   </div>
 </footer>
@@ -3055,6 +3374,8 @@ function calcTotal_raw() {
 function updateFolioColor(hex) {
   document.getElementById('front-cover').setAttribute('fill', hex);
   document.getElementById('back-cover').setAttribute('fill', hex + '99');
+  // Show engraving preview area + hide placeholder once a leather is chosen
+  document.getElementById('folio-preview').classList.add('leather-selected');
 }
 
 function updateFrontCordPreview() {
@@ -3165,8 +3486,17 @@ async function submitOrder() {
 
   // ── Disable button immediately (prevents double submission) ──
   const submitBtn = document.getElementById('submit-btn');
+  // ── Terms & Conditions guard — belt-and-suspenders check ──
+  const termsChk = document.getElementById('terms-agree-chk');
+  if (!termsChk || !termsChk.checked) {
+    showToast('Please agree to the Terms & Conditions before placing your order.');
+    const label = document.getElementById('terms-gate-label');
+    if (label) label.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
   submitBtn.disabled = true;
-  submitBtn.textContent = '⏳ Processing...';
+  submitBtn.textContent = 'Placing Order...⏳';
 
  // ── Build dedup key (anti-duplicate guard only — canonical ID comes from backend) ──
   const timestamp = new Date().toISOString();
@@ -3195,6 +3525,7 @@ async function submitOrder() {
     timestamp,
     hp_field:       (document.getElementById('hp_field')       || {}).value || '',
     page_load_time: (document.getElementById('page_load_time') || {}).value || '',
+    termsAccepted:  !!(document.getElementById('terms-agree-chk')?.checked),
     customer: {
       name, email, phone,
       address: address,
@@ -3368,6 +3699,46 @@ Object.keys(sectionTints).forEach(id => {
 //  INIT
 // ════════════════════════════════════════
 
+// ════════════════════════════════════════
+//  TERMS & CONDITIONS GATE
+// ════════════════════════════════════════
+
+/**
+ * Called when the T&C checkbox changes.
+ * Enables or disables the submit button to match.
+ */
+function onTermsToggle(chk) {
+  const btn  = document.getElementById('submit-btn');
+  const hint = document.getElementById('terms-hint');
+  if (chk.checked) {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor  = 'pointer';
+    if (hint) hint.style.opacity = '0';
+  } else {
+    btn.disabled = true;
+    btn.style.opacity = '0.45';
+    btn.style.cursor  = 'not-allowed';
+    if (hint) hint.style.opacity = '1';
+  }
+}
+
+/**
+ * Called by the "I Agree" button inside the T&C modal.
+ * Programmatically checks the checkbox, enables submit, and closes modal.
+ */
+function acceptTerms() {
+  const chk = document.getElementById('terms-agree-chk');
+  if (chk) {
+    chk.checked = true;
+    onTermsToggle(chk);
+  }
+  closeModal('terms-modal');
+  // Scroll the checkbox into view so the customer sees it's been checked
+  const label = document.getElementById('terms-gate-label');
+  if (label) label.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 buildCordSwatches('front-cord-swatches', 'frontCord', false);
 buildCordSwatches('s1-cord-swatches', 's1', true);
 buildCordSwatches('s2-cord-swatches', 's2', true);
@@ -3377,6 +3748,99 @@ updateFolioColor('#c8b89a'); // neutral placeholder — no leather selected
 calcTotal();
 document.getElementById('cust-destination').value = '';
 updateProgress();</script>
+
+<!-- ══════════════════════════════════════════════
+     TERMS & CONDITIONS MODAL
+     Opened by the T&C checkbox link in the checkout section.
+     Uses the existing openModal() / closeModal() functions.
+═══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="terms-modal">
+  <div class="modal-box modal-wide" style="max-height:90vh;display:flex;flex-direction:column;">
+
+    <div style="flex-shrink:0;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:16px;">
+      <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;font-weight:600;">Legal</div>
+      <h2 class="serif modal-title" style="margin-bottom:4px;">Terms & Conditions</h2>
+      <p style="font-size:12px;color:var(--text-light);">Effective Date: May 2026 · artcyst.ph · Ilocos Norte, Philippines</p>
+    </div>
+
+    <!-- Scrollable body -->
+    <div style="overflow-y:auto;flex:1;padding-right:8px;font-size:13px;color:var(--text-mid);line-height:1.8;">
+
+      <p style="margin-bottom:16px;"><strong>1. Acceptance of Terms</strong><br>
+      By placing an order on artcyst.ph, you confirm that you have read, understood, and agreed to these Terms and Conditions in full. If you do not agree, please do not place an order.</p>
+
+      <p style="margin-bottom:16px;"><strong>2. About Our Products</strong><br>
+      All folios and accessories sold by artcyst.ph are handcrafted to order. Because each item is made individually by hand, there will be natural minor variations in stitching, cord tension, leather texture, and finish. These are not defects — they are characteristics of handmade work. Product images on our website are representative. Leather color may vary slightly between screens and batches due to monitor calibration and material dye lots.</p>
+
+      <p style="margin-bottom:8px;"><strong>3. Ordering & Payment</strong></p>
+      <p style="margin-bottom:8px;"><em>3.1 How Orders Work</em><br>Orders are placed through our online customizer. Submission of the order form constitutes an intent to purchase. Your order is only confirmed once proof of payment has been received and verified by artcyst.ph.</p>
+      <p style="margin-bottom:8px;"><em>3.2 Payment Method</em><br>We accept payment via GCash, Maya, BDO, and GoTyme Bank. All payments are made manually by the customer through the provided account numbers or QR codes. artcyst.ph does not process card payments and is not responsible for transfer fees charged by your payment provider.</p>
+      <p style="margin-bottom:8px;"><em>3.3 Proof of Payment</em><br>You are required to upload a screenshot or photo of your payment confirmation through our Payment Portal. Accepted file formats are PNG and JPG, maximum 10 MB. Orders without a verified proof of payment will not be processed.</p>
+      <p style="margin-bottom:8px;"><em>3.4 Pricing</em><br>All prices are listed in Philippine Pesos (₱) and are final at the time of checkout. artcyst.ph reserves the right to correct pricing errors at any time. If a pricing error affects your order, we will contact you before proceeding.</p>
+      <p style="margin-bottom:16px;"><em>3.5 Batch Capacity</em><br>We cap each production batch at 30 active orders to maintain quality. If the batch is full at the time of your submission, your order will not be accepted. We are not liable for any inconvenience caused by batch unavailability.</p>
+
+      <p style="margin-bottom:8px;"><strong>4. Production & Lead Time</strong></p>
+      <p style="margin-bottom:8px;"><em>4.1 Lead Time</em><br>All orders are subject to a production lead time of 7–10 business days from the date payment is verified. This is the time required to handcraft your folio before it is handed to the courier — it is not the total delivery time.</p>
+      <p style="margin-bottom:8px;"><em>4.2 Delays</em><br>Lead times are estimates. artcyst.ph will not be held liable for delays caused by high order volume, material sourcing issues, courier delays, natural events, or other circumstances beyond our control. We will notify you of significant delays via email.</p>
+      <p style="margin-bottom:16px;"><em>4.3 Production Start</em><br>Production begins after payment verification. Once production has started, your order specifications are locked and cannot be changed.</p>
+
+      <p style="margin-bottom:8px;"><strong>5. Customization & Specifications</strong></p>
+      <p style="margin-bottom:8px;"><em>5.1 Your Responsibility</em><br>You are responsible for reviewing all customization choices (size, leather color, cord colors, engraving text, add-ons, and shipping region) before submitting your order. artcyst.ph will produce the folio exactly as specified in the order.</p>
+      <p style="margin-bottom:8px;"><em>5.2 Engraving</em><br>Engraving is permanent and cannot be corrected after production. Please double-check spelling, font, and placement zone. artcyst.ph is not liable for errors in engraving text that were submitted by the customer.</p>
+      <p style="margin-bottom:16px;"><em>5.3 Charm Availability</em><br>Certain charms are marked as subject to availability or limited pieces. If a charm you selected is unavailable at the time of production, we will contact you to offer a substitute or a partial refund for that item only.</p>
+
+      <p style="margin-bottom:8px;"><strong>6. Shipping & Delivery</strong></p>
+      <p style="margin-bottom:8px;"><em>6.1 Courier</em><br>We ship via standard Philippine couriers to Luzon, Visayas, and Mindanao. International shipping is not currently available.</p>
+      <p style="margin-bottom:8px;"><em>6.2 Shipping Fees</em><br>Shipping fees are calculated at checkout based on your region and folio size. These fees are non-refundable once your order has been dispatched.</p>
+      <p style="margin-bottom:8px;"><em>6.3 Local Meet-Up (Ilocos Norte)</em><br>Customers in Ilocos Norte may arrange a free local meet-up. Meet-up location and schedule are subject to mutual agreement. artcyst.ph is not liable for items once they have been handed over at the agreed meet-up point.</p>
+      <p style="margin-bottom:16px;"><em>6.4 Lost or Damaged Shipments</em><br>Once your order has been handed to the courier, risk of loss or damage passes to the courier. artcyst.ph will assist in filing a claim with the courier where possible but cannot guarantee reimbursement for lost or damaged shipments.</p>
+
+      <p style="margin-bottom:8px;"><strong>7. Cancellations & Modifications</strong></p>
+      <p style="margin-bottom:8px;"><em>7.1 Cancellation Window</em><br>Orders may be cancelled within 24 hours of placement, provided production has not yet started. To cancel, contact us directly at artcyst.ph@gmail.com or via our social media channels (@artcyst.ph).</p>
+      <p style="margin-bottom:8px;"><em>7.2 After Production Starts</em><br>Once production has started, cancellations are not accepted and no refund will be issued, as materials have already been cut and assembled for your specific order.</p>
+      <p style="margin-bottom:16px;"><em>7.3 Modifications</em><br>Order modifications (color, size, engraving, add-ons) may be requested within 24 hours of placement. After that window, your specifications are final.</p>
+
+      <p style="margin-bottom:8px;"><strong>8. Refunds & Returns</strong></p>
+      <p style="margin-bottom:8px;"><em>8.1 No Returns on Custom Orders</em><br>Because all folios are made to your exact specifications, we do not accept returns for change of mind.</p>
+      <p style="margin-bottom:8px;"><em>8.2 Defective Items</em><br>If your folio arrives with a manufacturing defect (e.g., broken hardware, incorrect engraving due to our error, wrong size), contact us within 5 days of receipt with clear photos. We will assess the issue and, at our discretion, offer a replacement, repair, or partial refund.</p>
+      <p style="margin-bottom:16px;"><em>8.3 What Is Not Covered</em><br>Normal variation in handmade craftsmanship, minor color differences between screen and product, wear and tear from use, and damage caused by improper care are not covered.</p>
+
+      <p style="margin-bottom:16px;"><strong>9. Privacy & Data</strong><br>
+      We collect your name, email address, phone number, and shipping address solely to process and fulfil your order. Proof-of-payment images are stored securely in Google Drive and deleted once your order has shipped. We do not sell your personal data to third parties. For data access or deletion requests, contact artcyst.ph@gmail.com.</p>
+
+      <p style="margin-bottom:16px;"><strong>10. Intellectual Property</strong><br>
+      All product photos, brand assets, the artcyst.ph name and logo, and website content are the intellectual property of artcyst.ph. You may not reproduce, distribute, or commercially use any of our content without written permission.</p>
+
+      <p style="margin-bottom:16px;"><strong>11. Limitation of Liability</strong><br>
+      artcyst.ph's liability in any dispute is limited to the value of the order in question. We are not liable for indirect, incidental, or consequential damages of any kind. Our total liability shall not exceed the amount paid by the customer for the specific order concerned.</p>
+
+      <p style="margin-bottom:16px;"><strong>12. Governing Law</strong><br>
+      These Terms and Conditions are governed by the laws of the Republic of the Philippines. Any disputes shall be resolved under Philippine jurisdiction.</p>
+
+      <p style="margin-bottom:16px;"><strong>13. Changes to These Terms</strong><br>
+      artcyst.ph reserves the right to update these Terms and Conditions at any time. The effective date at the top of this page will reflect the most recent revision. Continued use of the website after changes constitutes acceptance of the revised terms.</p>
+
+      <p style="margin-bottom:4px;"><strong>14. Contact</strong></p>
+      <p>Email: artcyst.ph@gmail.com<br>Instagram / TikTok / Facebook: @artcyst.ph</p>
+
+    </div><!-- /scroll body -->
+
+    <!-- Footer: I Agree button -->
+    <div style="flex-shrink:0;border-top:1px solid var(--border);padding-top:16px;margin-top:16px;display:flex;justify-content:flex-end;gap:12px;">
+      <button class="btn-primary" style="padding:12px 28px;font-size:14px;"
+        onclick="acceptTerms()">
+        ✓ I Agree
+      </button>
+      <button
+        style="padding:12px 20px;font-size:14px;background:none;border:1.5px solid var(--border);border-radius:10px;color:var(--text-mid);cursor:pointer;"
+        onclick="closeModal('terms-modal')">
+        Close
+      </button>
+    </div>
+
+  </div>
+</div><!-- /terms-modal -->
+
 <!-- ── Social / Email Link Obfuscator ──────────────────────────────
      Links are assembled from split arrays at runtime.
      Bots scraping raw HTML see only href="#" data-social="xx".
@@ -3408,5 +3872,44 @@ updateProgress();</script>
   });
 })();
 </script>
+<!-- ══════════════════════════════════════
+     COOKIE CONSENT BANNER
+     Shown once per browser; dismissed on Accept or Decline.
+     Stores preference in localStorage: 'artcyst_cookie_consent'
+═════════════════════════════════════════ -->
+<div id="cookie-banner" role="dialog" aria-live="polite" aria-label="Cookie consent" style="display:none;">
+  <div class="cookie-text">
+    <strong>We use functional cookies.</strong>
+    Our site loads Google Fonts, Swiper, and Tailwind from third-party CDNs
+    that may set cookies. We don't use advertising or tracking cookies.
+    See our <a href="privacy.html#s8">Privacy Policy</a> for details.
+  </div>
+  <div class="cookie-actions">
+    <button class="cookie-btn-accept" onclick="cookieConsent('accept')" aria-label="Accept cookies">Accept</button>
+    <button class="cookie-btn-decline" onclick="cookieConsent('decline')" aria-label="Decline cookies">Decline</button>
+  </div>
+</div>
+
+<script>
+// ── Cookie Consent Logic ───────────────────────────────────────
+(function() {
+  const PREF_KEY = 'artcyst_cookie_consent';
+  const banner   = document.getElementById('cookie-banner');
+  if (!banner) return;
+  // Already decided — stay hidden
+  if (localStorage.getItem(PREF_KEY)) return;
+  // Show after a 1.2s delay so page content renders first
+  setTimeout(function() { banner.style.display = 'flex'; }, 1200);
+})();
+
+function cookieConsent(choice) {
+  localStorage.setItem('artcyst_cookie_consent', choice);
+  const banner = document.getElementById('cookie-banner');
+  if (!banner) return;
+  banner.classList.add('hidden');
+  setTimeout(function() { banner.style.display = 'none'; }, 380);
+}
+</script>
+
 </body>
 </html>
