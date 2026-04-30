@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /paymentportal.html
+
+# Block crawling of any admin or internal paths if added later
+Disallow: /admin/
+Disallow: /private/
+
+# Block common bot probing paths
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /*.gs$
+
+# Sitemap location
+Sitemap: https://artcyst.ph/sitemap.xml
