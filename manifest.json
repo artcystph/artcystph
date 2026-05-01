@@ -8,7 +8,6 @@
   "background_color": "#F9F4F2",
   "theme_color": "#C2458C",
   "icons": [
-    "icons": [
     {
       "src": "images/Logo.png",
       "sizes": "192x192",
@@ -27,6 +26,5 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
   ]
 }
