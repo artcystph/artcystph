@@ -1157,6 +1157,7 @@
   <div class="nav-links">
     <a href="#inspiration">Gallery</a>
     <a href="#customizer">Customize</a>
+    <a href="#live-preview">Live Preview</a>
     <a href="#addons">Add-Ons</a>
     <a href="#checkout">Order</a>
   </div>
@@ -1228,6 +1229,39 @@
     <div class="batch-counter-badge">
       Batch slots used: <strong id="batch-count-display">—</strong> / 30
     </div>
+
+    <!-- ── Waitlist Email Signup ── -->
+    <div style="margin-top:28px;border-top:1px solid var(--border);padding-top:24px;">
+      <p style="font-size:13px;color:var(--text-mid);margin-bottom:14px;">
+        Get notified by email when the next batch opens:
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <input
+          type="email"
+          id="waitlist-email"
+          placeholder="your@email.com"
+          style="flex:1;min-width:180px;max-width:260px;padding:11px 18px;
+                 border:1.5px solid var(--border);border-radius:50px;
+                 font-size:14px;font-family:'DM Sans',sans-serif;
+                 background:var(--bg);color:var(--text-dark);outline:none;
+                 transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--accent)'"
+          onblur="this.style.borderColor='var(--border)'">
+        <button
+          id="waitlist-btn"
+          onclick="submitWaitlist()"
+          style="padding:11px 26px;background:var(--accent);color:#fff;
+                 border:none;border-radius:50px;font-size:14px;font-weight:600;
+                 cursor:pointer;font-family:'DM Sans',sans-serif;
+                 transition:background 0.2s,opacity 0.2s;white-space:nowrap;">
+          ✦ Notify Me
+        </button>
+      </div>
+      <div id="waitlist-msg"
+        style="font-size:13px;margin-top:12px;min-height:20px;text-align:center;">
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1485,7 +1519,7 @@
 
       <!-- RIGHT: Preview + Summary -->
       <div>
-        <div class="preview-panel">
+        <div class="preview-panel" id="live-preview">
           <div class="preview-title">✦ Live Preview</div>
           <div id="folio-preview">
             <svg id="folio-svg" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg" class="folio-svg">
@@ -2533,6 +2567,53 @@ function updateStatusIndicator(state, activeCount, batchLimit) {
 }
 
 // ════════════════════════════════════════
+//  WAITLIST SIGNUP
+// ════════════════════════════════════════
+async function submitWaitlist() {
+  const emailInput = document.getElementById('waitlist-email');
+  const btn        = document.getElementById('waitlist-btn');
+  const msg        = document.getElementById('waitlist-msg');
+  const email      = (emailInput.value || '').trim();
+
+  // Basic validation
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    msg.style.color   = 'var(--accent)';
+    msg.textContent   = 'Please enter a valid email address.';
+    return;
+  }
+
+  btn.disabled      = true;
+  btn.textContent   = 'Saving…';
+  msg.textContent   = '';
+
+  try {
+    const payload = new FormData();
+    payload.append('action', 'waitlist');
+    payload.append('email',  email);
+
+    const res  = await fetch(GAS_URL, { method: 'POST', body: payload });
+    const data = await res.json();
+
+    if (data.success) {
+      msg.style.color  = '#2a7a4e';
+      msg.textContent  = "✓ You're on the list! We'll email you when the next batch opens.";
+      emailInput.value = '';
+      btn.textContent  = 'Saved ✓';
+    } else {
+      msg.style.color  = 'var(--accent)';
+      msg.textContent  = data.error || 'Something went wrong. Please try again.';
+      btn.disabled     = false;
+      btn.textContent  = '✦ Notify Me';
+    }
+  } catch (err) {
+    msg.style.color  = 'var(--accent)';
+    msg.textContent  = 'Network error — please try again.';
+    btn.disabled     = false;
+    btn.textContent  = '✦ Notify Me';
+  }
+}
+
+// ════════════════════════════════════════
 //  BATCH CAPACITY CHECK — runs on page load
 // ════════════════════════════════════════
 (async function checkBatchCapacity() {
@@ -2898,7 +2979,7 @@ function updateEngravingPreview() {
 
   // ── Case ──────────────────────────────────────────────────────────
   // 6mm Lowercase: render as-typed. All others: uppercase.
-  const displayText = (font === '6mm Lowercase') ? text : text.toUpperCase();
+  const displayText = (font === '6mm Lowercase') ? text.toLowerCase() : text.toUpperCase();
 
   // ── Font size ─────────────────────────────────────────────────────
   // 3mm Uppercase → 7  |  6mm Uppercase / 6mm Lowercase → 11
@@ -3913,8 +3994,9 @@ updateProgress();</script>
       <p style="margin-bottom:8px;"><em>8.2 Defective Items</em><br>If your folio arrives with a manufacturing defect (e.g., broken hardware, incorrect engraving due to our error, wrong size), contact us within 5 days of receipt with clear photos. We will assess the issue and, at our discretion, offer a replacement, repair, or partial refund.</p>
       <p style="margin-bottom:16px;"><em>8.3 What Is Not Covered</em><br>Normal variation in handmade craftsmanship, minor color differences between screen and product, wear and tear from use, and damage caused by improper care are not covered.</p>
 
-      <p style="margin-bottom:16px;"><strong>9. Privacy & Data</strong><br>
-      We collect your name, email address, phone number, and shipping address solely to process and fulfil your order. Proof-of-payment images are stored securely in Google Drive and deleted once your order has shipped. We do not sell your personal data to third parties. For data access or deletion requests, contact artcyst.ph@gmail.com.</p>
+      <p style="margin-bottom:8px;"><strong>9. Privacy & Data</strong></p>
+      <p style="margin-bottom:8px;"><em>9.1 Order Data</em><br>We collect your name, email address, phone number, and shipping address solely to process and fulfil your order. Proof-of-payment images are stored securely in Google Drive and deleted once your order has shipped.</p>
+      <p style="margin-bottom:16px;"><em>9.2 Waitlist</em><br>If you submit your email address through our "Notify Me" waitlist form, we will store that address solely to send you a one-time notification when the next batch opens. Your email is permanently deleted from our records immediately after that notification is sent. You will not receive further emails unless you sign up again for a future batch. We do not sell your personal data to third parties. For data access or deletion requests, contact artcyst.ph@gmail.com.</p>
 
       <p style="margin-bottom:16px;"><strong>10. Intellectual Property</strong><br>
       All product photos, brand assets, the artcyst.ph name and logo, and website content are the intellectual property of artcyst.ph. You may not reproduce, distribute, or commercially use any of our content without written permission.</p>
