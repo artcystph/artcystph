@@ -26,17 +26,17 @@
 <meta name="keywords"
   content="handcrafted leather folio Philippines, custom journal Philippines, leather notebook cover, artcyst, vegan leather journal, A5 folio, A6 folio, passport folio">
 <meta name="author" content="artcyst.ph">
-<link rel="canonical" href="https://artcyst.ph/">
+<link rel="canonical" href="https://artcystph.com/">
 
 <!-- ══ Open Graph (Facebook, Viber, iMessage, Discord) ══════════ -->
 <!-- ▶ Replace the og:image URL with a real 1200×630 product photo -->
 <meta property="og:type"        content="website">
-<meta property="og:site_name"   content="artcyst.ph">
-<meta property="og:url"         content="https://artcyst.ph/">
+<meta property="og:site_name"   content="artcystph">
+<meta property="og:url"         content="https://artcystph.com/">
 <meta property="og:title"       content="artcyst.ph — Custom Handcrafted Leather Folios">
 <meta property="og:description"
   content="Made-to-order leather folios & journals, handcrafted in Ilocos Norte, Philippines. Choose your size, leather, cord colors, charms & engraving. Ships nationwide.">
-<meta property="og:image"       content="https://artcyst.ph/images/preview.png">
+<meta property="og:image"       content="https://artcystph.com/images/preview.png">
 <meta property="og:image:width"  content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt"    content="artcyst.ph handcrafted leather folio on a flat-lay surface">
@@ -47,7 +47,7 @@
 <meta name="twitter:title"       content="artcyst.ph — Custom Handcrafted Leather Folios">
 <meta name="twitter:description"
   content="Made-to-order leather folios & journals from Ilocos Norte, Philippines. Fully customizable. Ships nationwide.">
-<meta name="twitter:image"       content="https://artcyst.ph/images/preview.png">
+<meta name="twitter:image"       content="https://artcystph.com/images/preview.png">
 <meta name="twitter:image:alt"   content="artcyst.ph handcrafted leather folio">
 
 <!-- ══ Favicon ══════════════════════════════════════════════════ -->
@@ -1542,33 +1542,45 @@
     fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
 
   <!-- Grommets (S1, S2, S3) -->
-  <circle id="g-s1" cx="80" cy="62"  r="5.5" fill="rgba(30,20,20,0.8)" stroke="#d4c0b0" stroke-width="1.5"/>
-  <circle cx="80" cy="62"  r="2.5" fill="none" stroke="#d4c0b0" stroke-width="1"/>
-  <circle id="g-s2" cx="80" cy="110" r="5.5" fill="rgba(30,20,20,0.8)" stroke="#d4c0b0" stroke-width="1.5"/>
-  <circle cx="80" cy="110" r="2.5" fill="none" stroke="#d4c0b0" stroke-width="1"/>
-  <circle id="g-s3" cx="80" cy="158" r="5.5" fill="rgba(30,20,20,0.8)" stroke="#d4c0b0" stroke-width="1.5"/>
-  <circle cx="80" cy="158" r="2.5" fill="none" stroke="#d4c0b0" stroke-width="1"/>
+  <circle id="g-s1" cx="80" cy="62"  r="5" fill="none" stroke="#b8a090" stroke-width="2"/>
+  <circle id="g-s2" cx="80" cy="110" r="5" fill="none" stroke="#b8a090" stroke-width="2"/>
+  <circle id="g-s3" cx="80" cy="158" r="5" fill="none" stroke="#b8a090" stroke-width="2"/>
 
   <!-- Inside cords (left) -->
   <line id="inside-s1" x1="80" y1="62"  x2="22" y2="62"
-    stroke="#e8a4b0" stroke-width="3" stroke-linecap="round" opacity="0.85" filter="url(#cordGlow)"/>
+    stroke="#e8a4b0" stroke-width="2.5" stroke-linecap="round"
+    stroke-dasharray="4,3" opacity="0.7"/>
   <line id="inside-s2" x1="80" y1="110" x2="22" y2="110"
-    stroke="#9b7fd4" stroke-width="3" stroke-linecap="round" opacity="0.85" filter="url(#cordGlow)"/>
+    stroke="#9b7fd4" stroke-width="2.5" stroke-linecap="round"
+    stroke-dasharray="4,3" opacity="0.7"/>
   <line id="inside-s3" x1="80" y1="158" x2="22" y2="158"
-    stroke="#6dba8a" stroke-width="3" stroke-linecap="round" opacity="0.85" filter="url(#cordGlow)"/>
+    stroke="#6dba8a" stroke-width="2.5" stroke-linecap="round"
+    stroke-dasharray="4,3" opacity="0.7"/>
 
   <!-- S-labels -->
   <text x="14" y="65"  font-family="DM Sans,sans-serif" font-size="7.5" fill="#a08080" text-anchor="middle" font-weight="600">S1</text>
   <text x="14" y="113" font-family="DM Sans,sans-serif" font-size="7.5" fill="#a08080" text-anchor="middle" font-weight="600">S2</text>
   <text x="14" y="161" font-family="DM Sans,sans-serif" font-size="7.5" fill="#a08080" text-anchor="middle" font-weight="600">S3</text>
 
-  <!-- Front cord (with shadow + glow) -->
+  <!-- Front cord -->
   <line id="front-cord-shadow" x1="80" y1="134" x2="256" y2="134"
-    stroke="rgba(0,0,0,0.25)" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+    stroke="rgba(0,0,0,0.25)" stroke-width="5" stroke-linecap="round"
+    stroke-dasharray="5 3" opacity="0.6"/>
   <line id="front-cord-line" x1="80" y1="132" x2="256" y2="132"
-    stroke="#d4c8a8" stroke-width="4" stroke-linecap="round" filter="url(#cordGlow)"/>
+    stroke="#d4c8a8" stroke-width="4" stroke-linecap="round"
+    stroke-dasharray="5 3" opacity="0.85"/>
+  <line id="front-cord-line-2" x1="80" y1="132" x2="256" y2="132"
+    stroke="#d4c8a8" stroke-width="4" stroke-linecap="round"/>
   <line x1="80" y1="130" x2="256" y2="130"
     stroke="rgba(255,255,255,0.3)" stroke-width="1.2" stroke-linecap="round" id="front-cord-highlight"/>
+
+  <!-- Double Front Cord (add-on) — hidden by default, revealed by JS when checkbox is checked -->
+  <line id="double-cord-shadow" x1="80" y1="142" x2="256" y2="142"
+    stroke="rgba(0,0,0,0.20)" stroke-width="5" stroke-linecap="round" opacity="0"/>
+  <line id="double-cord-line" x1="80" y1="140" x2="256" y2="140"
+    stroke="#d4c8a8" stroke-width="4" stroke-linecap="round" stroke-dasharray="5 3" opacity="0"/>
+  <line id="double-cord-highlight" x1="80" y1="138" x2="256" y2="138"
+    stroke="rgba(255,255,255,0.3)" stroke-width="1.2" stroke-linecap="round" opacity="0"/>
 
   <!-- Charm -->
   <line x1="167" y1="124" x2="167" y2="119" stroke="#b8a090" stroke-width="1.8"/>
@@ -2766,6 +2778,7 @@ function buildDoubleCordSwatches() {
       container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
       dot.classList.add('active');
       document.getElementById('double-cord-color-label').textContent = name;
+      updateDoubleCordPreview();
       calcTotal();
     };
     const lbl = document.createElement('div');
@@ -2849,7 +2862,10 @@ function selectOpt(key, btn, val, cost) {
   if (parent) parent.querySelectorAll('.opt-pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   state[key] = val;
-  if (key === 'hardware') document.getElementById('s-hardware').textContent = val;
+  if (key === 'hardware') {
+    document.getElementById('s-hardware').textContent = val;
+    updateGrommetPreview();
+  }
   calcTotal();
 }
 
@@ -3153,6 +3169,7 @@ function toggleEdgeProtector(chk) {
 function toggleDoubleCord(chk) {
   state.doubleCord = chk.checked;
   document.getElementById('double-cord-sub').style.display = chk.checked ? 'block' : 'none';
+  updateDoubleCordPreview();
   calcTotal();
 }
 // ── Lace Toggle — shows orientation sub-option (NEW) ──
@@ -3381,6 +3398,7 @@ function updateFolioColor(hex) {
 function updateFrontCordPreview() {
   const color = cordColors[state.frontCord] || '#d4c8a8';
   document.getElementById('front-cord-line').setAttribute('stroke', color);
+  document.getElementById('front-cord-line-2').setAttribute('stroke', color);
 }
 
 function updateInsideCordPreview() {
@@ -3390,6 +3408,31 @@ function updateInsideCordPreview() {
   document.getElementById('inside-s1')?.setAttribute('stroke', s1c);
   document.getElementById('inside-s2')?.setAttribute('stroke', s2c);
   document.getElementById('inside-s3')?.setAttribute('stroke', s3c);
+}
+
+function updateGrommetPreview() {
+  const hw = state.hardware;
+  const color   = hw === 'Gold' ? '#efbf04' : hw === 'Silver' ? '#e0e0e0' : '#b8a090';
+  const opacity = hw === 'None' ? '0' : '1';
+  ['g-s1','g-s2','g-s3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.setAttribute('stroke', color);
+    el.setAttribute('opacity', opacity);
+  });
+}
+
+function updateDoubleCordPreview() {
+  const isChecked = document.getElementById('double-cord-check')?.checked;
+  const color     = (state.doubleCordColor && cordColors[state.doubleCordColor]) || '#d4c8a8';
+  const mainOp    = isChecked ? '0.85' : '0';
+  const shadowOp  = isChecked ? '0.5'  : '0';
+  const shadow = document.getElementById('double-cord-shadow');
+  const line   = document.getElementById('double-cord-line');
+  const hl     = document.getElementById('double-cord-highlight');
+  if (shadow) shadow.setAttribute('opacity', shadowOp);
+  if (line)   { line.setAttribute('stroke', color); line.setAttribute('opacity', mainOp); }
+  if (hl)     hl.setAttribute('opacity', mainOp);
 }
 
 function updateEdgeCorners(edge) {
@@ -3911,5 +3954,14 @@ function cookieConsent(choice) {
 }
 </script>
 
+<script>
+// Auto-open Terms modal when arriving from privacy.html link
+if (window.location.hash === '#terms') {
+  window.addEventListener('DOMContentLoaded', function () {
+    openModal('terms-modal');
+    history.replaceState(null, '', ' '); // clean the hash from the URL bar
+  });
+}
+</script>
 </body>
 </html>
