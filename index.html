@@ -2866,6 +2866,9 @@ function selectOpt(key, btn, val, cost) {
     document.getElementById('s-hardware').textContent = val;
     updateGrommetPreview();
   }
+  if (key === 'font') {
+    updateEngravingPreview();
+  }
   calcTotal();
 }
 
@@ -2873,6 +2876,66 @@ function selectZone(el, zone) {
   document.querySelectorAll('.zone-card').forEach(z => z.classList.remove('active-zone'));
   el.classList.add('active-zone');
   state.engravingZone = zone;
+  updateEngravingPreview();
+}
+
+function updateEngravingPreview() {
+  const prev = document.getElementById('engraving-preview');
+  if (!prev) return;
+
+  const text = state.engravingText || '';
+  const font = state['font'] || '';
+  const zone = state.engravingZone || '';
+
+  // Hide until BOTH text and font are selected
+  if (!text.trim() || !font || !zone) {
+    prev.textContent = '';
+    return;
+  }
+
+  // ── Case ──────────────────────────────────────────────────────────
+  // 6mm Lowercase: render as-typed. All others: uppercase.
+  const displayText = (font === '6mm Lowercase') ? text : text.toUpperCase();
+
+  // ── Font size ─────────────────────────────────────────────────────
+  // 3mm Uppercase → 7  |  6mm Uppercase / 6mm Lowercase → 11
+  const fontSize     = (font === '3mm Uppercase') ? 7 : 11;
+  const letterSpace  = (font === '3mm Uppercase') ? 2 : 3.5;
+
+  // ── Zone → position + rotation ────────────────────────────────────
+  // Front cover rect: x 78–256, y 18–246
+  //   Outer (right area)  : text-anchor "end",   x 248
+  //   Inner (left area)   : text-anchor "start",  x 100  (clears spine crease)
+  // Vertical: rotate(-90) = rotated left  = reads bottom→top  (1B, 1C)
+  //           rotate(+90) = rotated right = reads top→bottom  (2B, 2C)
+  const ZONES = {
+    //          x     y    anchor    rotate (null = none)
+    '1A': { x: 248, y: 235, a: 'end',    r: null             },  // horiz lower-right
+    '1B': { x: 248, y: 195, a: 'middle', r: 'rotate(-90,248,195)' },  // vert  lower-right ←
+    '1C': { x: 248, y:  65, a: 'middle', r: 'rotate(-90,248,65)'  },  // vert  upper-right ←
+    '1D': { x: 248, y:  38, a: 'end',    r: null             },  // horiz upper-right
+    '2A': { x: 100, y: 235, a: 'start',  r: null             },  // horiz lower-left  (inner sim)
+    '2B': { x: 100, y: 195, a: 'middle', r: 'rotate(90,100,195)'  },  // vert  lower-left  →
+    '2C': { x: 100, y:  65, a: 'middle', r: 'rotate(90,100,65)'   },  // vert  upper-left  →
+    '2D': { x: 100, y:  38, a: 'start',  r: null             },  // horiz upper-left  (inner sim)
+  };
+
+  const pos = ZONES[zone];
+  if (!pos) { prev.textContent = ''; return; }
+
+  prev.setAttribute('x',            pos.x);
+  prev.setAttribute('y',            pos.y);
+  prev.setAttribute('text-anchor',  pos.a);
+  prev.setAttribute('font-size',    fontSize);
+  prev.setAttribute('letter-spacing', letterSpace);
+
+  if (pos.r) {
+    prev.setAttribute('transform', pos.r);
+  } else {
+    prev.removeAttribute('transform');
+  }
+
+  prev.textContent = displayText;
 }
 
 // ── Shipping rate table (size-aware) ────────────────────────────────
@@ -3230,8 +3293,7 @@ function onEngravingInput(input) {
     lcEl.innerHTML = `<span class="warn">${nonSpaceLen}/10 · +₱50</span>`;
   }
 
-  const prev = document.getElementById('engraving-preview');
-  if (prev) prev.textContent = input.value.toUpperCase();
+  updateEngravingPreview();
   document.getElementById('s-engraving').textContent = nonSpaceLen ? input.value : '—';
   calcTotal();
 }
