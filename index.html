@@ -1671,7 +1671,7 @@
     <!-- Charms -->
     <div class="step-card fade-in" style="max-width:800px;">
       <div class="step-header"><div class="step-num" style="background:var(--dusty-rose);">★</div><div class="step-title">Charms</div></div>
-
+<div class="info-box">Charms are attached via the side grommets and front cord. Select positions for your charms: S1 (Left), S2 (Middle), S3(Right), and Front.</div>
       <div class="charm-tiers">
 
         <!-- FREE (multi-select) -->
@@ -1879,9 +1879,10 @@
             <input type="radio" name="lace-orientation" value="Outer Flap: Left over Right" checked onchange="onLaceOrientationChange()">
             Outer Flap: Left over Right
           </label>
-          <label class="lace-radio-option">
-            <input type="radio" name="lace-orientation" value="Inner Flap: Right over Left" onchange="onLaceOrientationChange()">
+          <label class="lace-radio-option" id="lace-inner-option">
+            <input type="radio" name="lace-orientation" value="Inner Flap: Right over Left" id="lace-inner-radio" onchange="onLaceOrientationChange()">
             Inner Flap: Right over Left
+            <span id="lace-inner-note" style="display:none;font-size:11px;font-style:italic;color:#b07090;margin-left:6px;">Not available for Bifold</span>
           </label>
         </div>
       </div>
@@ -2908,6 +2909,50 @@ function selectBase(btn) {
   } else {
     fabricRow.classList.remove('addon-disabled');
   }
+
+  // ── Bifold restrictions ──────────────────────────────────────────
+  const isBifold = state.base.endsWith('-bifold');
+
+  // Engraving: hide/disable 2A–2D for Bifold (outer-flap only)
+  ['2A','2B','2C','2D'].forEach(function(z) {
+    const card = document.getElementById('zone-' + z);
+    if (!card) return;
+    if (isBifold) {
+      card.style.opacity       = '0.35';
+      card.style.pointerEvents = 'none';
+      card.style.cursor        = 'not-allowed';
+    } else {
+      card.style.opacity       = '';
+      card.style.pointerEvents = '';
+      card.style.cursor        = '';
+    }
+  });
+
+  // Lace: disable Inner Flap option for Bifold (outer-flap only)
+  const laceInnerOption = document.getElementById('lace-inner-option');
+  const laceInnerRadio  = document.getElementById('lace-inner-radio');
+  const laceInnerNote   = document.getElementById('lace-inner-note');
+  if (laceInnerOption && laceInnerRadio && laceInnerNote) {
+    if (isBifold) {
+      laceInnerRadio.disabled             = true;
+      laceInnerOption.style.opacity       = '0.4';
+      laceInnerOption.style.cursor        = 'not-allowed';
+      laceInnerOption.style.pointerEvents = 'none';
+      laceInnerNote.style.display         = 'inline';
+      // If Inner Flap was already selected, reset to Outer Flap
+      if (laceInnerRadio.checked) {
+        document.querySelector('input[name="lace-orientation"][value="Outer Flap: Left over Right"]').checked = true;
+        state.laceOrientation = 'Outer Flap: Left over Right';
+      }
+    } else {
+      laceInnerRadio.disabled             = false;
+      laceInnerOption.style.opacity       = '';
+      laceInnerOption.style.cursor        = '';
+      laceInnerOption.style.pointerEvents = '';
+      laceInnerNote.style.display         = 'none';
+    }
+  }
+  // ── end Bifold restrictions ──────────────────────────────────────
 
   calcTotal();
 }
