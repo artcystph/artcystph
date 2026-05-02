@@ -3926,6 +3926,12 @@ async function submitOrder() {
     showToast('Please fill in all required fields.'); return;
   }
   
+  if (!state.base) {
+    showToast('Please select a base folio size.'); return;
+  }
+  if (!state.leather) {
+    showToast('Please select a leather color.'); return;
+  }
   if (!state.frontCord) {
     showToast('Please select a front cord color.'); return;
   }
