@@ -2643,12 +2643,14 @@ const batchFullMsg = document.getElementById('batch-full-msg');
       formSections.style.display    = 'none';
       checkoutSection.style.display = 'none';
       updateStatusIndicator('full', data.activeCount, data.batchLimit);
-    } else {
+        } else {
       // ── SLOTS AVAILABLE — show form as normal ────────────────────
       batchFullMsg.style.display    = 'none';
       formSections.style.display    = 'block';
       checkoutSection.style.display = 'block';
       updateStatusIndicator('available', data.activeCount, data.batchLimit);
+      // ── Apply limited stock badges / hiding ──────────────────────
+      if (data.stock) applyStockData(data.stock);
     }
   } catch (err) {
     // Network error / GAS unreachable — fail CLOSED to prevent over-ordering
@@ -2665,6 +2667,205 @@ const batchFullMsg = document.getElementById('batch-full-msg');
   }
 })();
 
+// ════════════════════════════════════════
+//  STOCK DATA — badge ≤5, hide at 0
+// ════════════════════════════════════════
+let _stockData = {};
+
+// ── Called once on load with stock from Sheet ────────────────
+function applyStockData(stock) {
+  _stockData = stock || {};
+
+  // Helper: badge element
+  function addBadge(el, qty, cls) {
+    if (!el) return;
+    const existing = el.parentNode && el.parentNode.querySelector('.' + (cls || 'stock-badge'));
+    if (existing) existing.remove();
+    if (qty !== null && qty !== undefined && qty <= 5 && qty > 0) {
+      const b = document.createElement('div');
+      b.className = cls || 'stock-badge';
+      b.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;margin-top:2px;line-height:1.2;';
+      b.textContent = 'Only ' + qty + ' left!';
+      el.parentNode.insertBefore(b, el.nextSibling);
+    }
+  }
+
+  // ── 1. Leather swatches ──────────────────────────────────────
+  document.querySelectorAll('#leather-swatches .swatch-wrap').forEach(wrap => {
+    const dot  = wrap.querySelector('.swatch');
+    if (!dot) return;
+    const name = dot.dataset.color;
+    const qty  = stock[name];
+    if (qty === 0) {
+      wrap.style.display = 'none';
+    } else {
+      addBadge(wrap.querySelector('.swatch-label') || dot, qty, 'stock-badge-lc');
+    }
+  });
+
+  // ── 2. Hardware pills ────────────────────────────────────────
+  document.querySelectorAll('#hardware-opts .opt-pill, #base-hardware .opt-pill').forEach(btn => {
+    const name = btn.textContent.trim();
+    const qty  = stock[name];
+    if (qty === 0) {
+      btn.style.display = 'none';
+    } else if (qty !== null && qty !== undefined && qty <= 5) {
+      if (!btn.querySelector('.stock-badge-hw')) {
+        const b = document.createElement('span');
+        b.className = 'stock-badge-hw';
+        b.style.cssText = 'display:block;font-size:9px;color:#c0392b;font-weight:700;line-height:1.2;';
+        b.textContent = 'Only ' + qty + ' left!';
+        btn.appendChild(b);
+      }
+    }
+  });
+
+  // ── 3. Cord swatches (rebuild all 5 pickers with stock) ─────
+  buildCordSwatches('front-cord-swatches', 'frontCord', false, stock);
+  buildCordSwatches('s1-cord-swatches',    's1',        true,  stock);
+  buildCordSwatches('s2-cord-swatches',    's2',        true,  stock);
+  buildCordSwatches('s3-cord-swatches',    's3',        true,  stock);
+  buildDoubleCordSwatches(stock);
+
+  // ── 4. Charm buttons (all tiers) ────────────────────────────
+  document.querySelectorAll('.charm-btn').forEach(btn => {
+    const name = btn.textContent.trim();
+    const qty  = stock[name];
+    if (qty === 0) {
+      btn.style.display = 'none';
+    } else if (qty !== null && qty !== undefined && qty <= 5) {
+      if (!btn.querySelector('.stock-badge-charm')) {
+        const b = document.createElement('span');
+        b.className = 'stock-badge-charm';
+        b.style.cssText = 'display:block;font-size:9px;color:#c0392b;font-weight:700;line-height:1.2;margin-top:2px;';
+        b.textContent = 'Only ' + qty + ' left!';
+        btn.appendChild(b);
+      }
+    }
+  });
+
+  // ── 5. Fabric Insert — sub-options (Flower / Grid) ──────────
+  const flowerQty = stock['Fabric Insert - Flower'];
+  const gridQty   = stock['Fabric Insert - Grid'];
+  const fabricRow = document.getElementById('fabric-row');
+  if (fabricRow) {
+    const bothZero = flowerQty === 0 && gridQty === 0;
+    if (bothZero) {
+      fabricRow.style.display = 'none';
+    } else {
+      // Apply to each sub-option pill
+      document.querySelectorAll('#fabric-sub .opt-pill').forEach(btn => {
+        const key = 'Fabric Insert - ' + btn.textContent.trim();
+        const qty = stock[key];
+        if (qty === 0) {
+          btn.style.display = 'none';
+        } else if (qty !== null && qty !== undefined && qty <= 5) {
+          if (!btn.querySelector('.stock-badge-fab')) {
+            const b = document.createElement('span');
+            b.className = 'stock-badge-fab';
+            b.style.cssText = 'display:block;font-size:9px;color:#c0392b;font-weight:700;line-height:1.2;';
+            b.textContent = 'Only ' + qty + ' left!';
+            btn.appendChild(b);
+          }
+        }
+      });
+    }
+  }
+
+  // ── 6. Edge Protector — sub-options (Silver / Gold) ─────────
+  const silverQty = stock['Edge Protector - Silver'];
+  const goldQty   = stock['Edge Protector - Gold'];
+  const edgeRow   = document.getElementById('edge-prot-row');
+  if (edgeRow) {
+    const bothZero = silverQty === 0 && goldQty === 0;
+    if (bothZero) {
+      edgeRow.style.display = 'none';
+    } else {
+      document.querySelectorAll('#edge-prot-sub .opt-pill').forEach(btn => {
+        const name = btn.textContent.trim();
+        if (name === 'None') return; // never hide None
+        const key = 'Edge Protector - ' + name;
+        const qty = stock[key];
+        if (qty === 0) {
+          btn.style.display = 'none';
+        } else if (qty !== null && qty !== undefined && qty <= 5) {
+          if (!btn.querySelector('.stock-badge-ep')) {
+            const b = document.createElement('span');
+            b.className = 'stock-badge-ep';
+            b.style.cssText = 'display:block;font-size:9px;color:#c0392b;font-weight:700;line-height:1.2;';
+            b.textContent = 'Only ' + qty + ' left!';
+            btn.appendChild(b);
+          }
+        }
+      });
+    }
+  }
+
+  // ── 7. Extra Inserts — size-dependent (handled by selectBase) ─
+  applyExtraInsertStock();
+
+  // ── 8. Lace ──────────────────────────────────────────────────
+  document.querySelectorAll('.addon-row').forEach(row => {
+    const nameEl = row.querySelector('.addon-name');
+    if (!nameEl) return;
+    const label = nameEl.textContent.trim();
+    const keyMap = {
+      'Lace':               'Lace',
+      'Mini Leather Keychain': 'Mini Keychain',
+    };
+    const stockKey = keyMap[label];
+    if (!stockKey) return;
+    const qty = stock[stockKey];
+    if (qty === 0) {
+      row.style.display = 'none';
+    } else if (qty !== null && qty !== undefined && qty <= 5) {
+      const priceEl = row.querySelector('.addon-price');
+      if (priceEl && !priceEl.querySelector('.stock-badge-addon')) {
+        const b = document.createElement('div');
+        b.className = 'stock-badge-addon';
+        b.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;margin-top:2px;';
+        b.textContent = 'Only ' + qty + ' left!';
+        priceEl.appendChild(b);
+      }
+    }
+  });
+}
+
+// ── Called by applyStockData AND by selectBase ───────────────
+// Applies correct Extra Inserts stock based on selected base size
+function applyExtraInsertStock() {
+  const isA5  = state.base && state.base.startsWith('a5');
+  const isA6  = state.base && state.base.startsWith('a6');
+  const key   = isA5 ? 'Extra Inserts A5' : isA6 ? 'Extra Inserts A6' : null;
+  const row   = document.getElementById('extra-insert-row');
+  if (!row) return;
+
+  // Remove any previous badge
+  const prev = row.querySelector('.stock-badge-ei');
+  if (prev) prev.remove();
+  // Restore display if previously hidden by stock (not by addon-disabled logic)
+  if (row.dataset.stockHidden === 'true') {
+    row.style.display = '';
+    row.dataset.stockHidden = 'false';
+  }
+
+  if (!key) return; // no base selected yet — do nothing
+  const qty = _stockData[key];
+
+  if (qty === 0) {
+    row.style.display = 'none';
+    row.dataset.stockHidden = 'true';
+  } else if (qty !== null && qty !== undefined && qty <= 5) {
+    const priceEl = row.querySelector('.addon-price');
+    if (priceEl) {
+      const b = document.createElement('div');
+      b.className = 'stock-badge-ei';
+      b.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;margin-top:2px;';
+      b.textContent = 'Only ' + qty + ' left!';
+      priceEl.appendChild(b);
+    }
+  }
+}
 // ════════════════════════════════════════
 //  BACKGROUND CAPACITY RECHECK
 //  Silently polls every 1 minute while the
@@ -2810,11 +3011,13 @@ function toggleFaq(el) {
 // ════════════════════════════════════════
 //  SWATCH BUILDERS
 // ════════════════════════════════════════
-function buildCordSwatches(containerId, stateKey, isInside) {
+function buildCordSwatches(containerId, stateKey, isInside, stock) {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = '';
   cordKeys.forEach(name => {
+    const qty = stock ? stock[name] : null;
+    if (qty === 0) return; // hide completely at 0
     const wrap = document.createElement('div');
     wrap.className = 'swatch-wrap';
     const dot = document.createElement('div');
@@ -2843,15 +3046,23 @@ function buildCordSwatches(containerId, stateKey, isInside) {
     lbl.className = 'swatch-label';
     lbl.textContent = name;
     wrap.appendChild(dot); wrap.appendChild(lbl);
+    if (qty !== null && qty <= 5 && qty > 0) {
+      const badge = document.createElement('div');
+      badge.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;text-align:center;margin-top:2px;line-height:1.2;';
+      badge.textContent = 'Only ' + qty + ' left!';
+      wrap.appendChild(badge);
+    }
     container.appendChild(wrap);
   });
 }
 
-function buildDoubleCordSwatches() {
+function buildDoubleCordSwatches(stock) {
   const container = document.getElementById('double-cord-swatches');
   if (!container) return;
   container.innerHTML = '';
   cordKeys.forEach(name => {
+    const qty = stock ? stock[name] : null;
+    if (qty === 0) return; // hide completely at 0
     const wrap = document.createElement('div');
     wrap.className = 'swatch-wrap';
     const dot = document.createElement('div');
@@ -2870,6 +3081,12 @@ function buildDoubleCordSwatches() {
     lbl.className = 'swatch-label';
     lbl.textContent = name;
     wrap.appendChild(dot); wrap.appendChild(lbl);
+    if (qty !== null && qty <= 5 && qty > 0) {
+      const badge = document.createElement('div');
+      badge.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;text-align:center;margin-top:2px;line-height:1.2;';
+      badge.textContent = 'Only ' + qty + ' left!';
+      wrap.appendChild(badge);
+    }
     container.appendChild(wrap);
   });
 }
@@ -2954,7 +3171,8 @@ function selectBase(btn) {
   }
   // ── end Bifold restrictions ──────────────────────────────────────
 
-  calcTotal();
+    calcTotal();
+  applyExtraInsertStock(); // recheck Extra Inserts stock for selected size
 }
 
 function selectLeather(el) {
