@@ -4052,35 +4052,40 @@ async function submitOrder() {
     }
 
     // ── Step 2: Slot confirmed — submit the order ────────────────
-    // no-cors removed: GAS web apps support CORS for simple POST (text/plain).
-    // We now read json.orderId (the server-generated ORD-XXXX) for the redirect.
-    const res        = await fetch(GAS_URL, {
+    const res  = await fetch(GAS_URL, {
       method:  'POST',
       headers: { 'Content-Type': 'text/plain' },
       body:    JSON.stringify(orderData),
     });
-     const json         = await res.json().catch(() => ({}));
-    const finalOrderId = json.orderId    || orderData.orderId; // fallback to dedupKey
-    const sessionKey   = json.sessionKey || '';               // server-generated UUID
+    const json = await res.json().catch(() => ({}));
 
-    // ── Redirect to payment portal with server-confirmed ORD-XXXX ─
+    // ── If server returned an error, show it — never redirect with a broken ID ──
+    if (!json.success) {
+      submitBtn.disabled    = false;
+      submitBtn.textContent = '✦ Place My Order';
+      const errMsg = json.error || 'Something went wrong. Please try again or contact artcyst.ph@gmail.com';
+      showToast(errMsg);
+      console.error('Server rejected order:', JSON.stringify(json));
+      return;
+    }
+
+    // ── Success — use the server-assigned ORD-XXXX ───────────────
+    const finalOrderId = json.orderId;
+    const sessionKey   = json.sessionKey || '';
+
     const params = new URLSearchParams({
       orderId: finalOrderId,
       total:   String(total),
       email:   orderData.customer.email,
-      key:     sessionKey,              // ← SessionKey for proof upload validation
+      key:     sessionKey,
     });
     window.location.href = '/paymentportal?' + params.toString();
 
- } catch (err) {
+  } catch (err) {
     console.error('Order submission error:', err);
-    const params = new URLSearchParams({
-      orderId: orderData.orderId,
-      total:   String(total),
-      email:   orderData.customer.email,
-      key:     '',   // key unavailable on network error; server skips validation gracefully
-    });
-    window.location.href = '/paymentportal?' + params.toString();
+    submitBtn.disabled    = false;
+    submitBtn.textContent = '✦ Place My Order';
+    showToast('Network error — please check your connection and try again.');
   }
 }
 
