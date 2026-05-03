@@ -639,6 +639,7 @@
   .addon-row.addon-disabled .addon-price { color: #c4a0b0; }
   .addon-disabled-note { display: none; font-size: 11px; font-style: italic; color: #b07090; margin-top: 3px; }
   .addon-row.addon-disabled .addon-disabled-note { display: block; }
+  .addon-row.stock-oos { opacity: 0.45; pointer-events: none; cursor: not-allowed; }
 
   /* ── Shipping ── */
   .ship-option {
@@ -2802,25 +2803,24 @@ function applyStockData(stock) {
     }
   }
 
-  // ── 1. Leather swatches ──────────────────────────────────────
-  document.querySelectorAll('#leather-swatches .swatch-wrap').forEach(wrap => {
-    const dot  = wrap.querySelector('.swatch');
-    if (!dot) return;
-    const name = dot.dataset.color;
-    const qty  = stock[name];
-    if (qty === 0) {
-      wrap.style.display = 'none';
-    } else {
-      addBadge(wrap.querySelector('.swatch-label') || dot, qty, 'stock-badge-lc');
-    }
-  });
+  // ── 1. Leather swatches — size-dependent; re-applied on base select ──
+  applyLeatherStockForBase();
 
   // ── 2. Hardware pills ────────────────────────────────────────
   document.querySelectorAll('#hardware-opts .opt-pill, #base-hardware .opt-pill').forEach(btn => {
     const name = btn.textContent.trim();
     const qty  = stock[name];
     if (qty === 0) {
-      btn.style.display = 'none';
+      btn.style.opacity = '0.45';
+      btn.style.pointerEvents = 'none';
+      btn.style.cursor = 'not-allowed';
+      if (!btn.querySelector('.stock-badge-hw')) {
+        const b = document.createElement('span');
+        b.className = 'stock-badge-hw';
+        b.style.cssText = 'display:block;font-size:9px;color:#888;font-weight:700;line-height:1.2;';
+        b.textContent = 'Out of Stock';
+        btn.appendChild(b);
+      }
     } else if (qty !== null && qty !== undefined && qty <= 5) {
       if (!btn.querySelector('.stock-badge-hw')) {
         const b = document.createElement('span');
@@ -2844,7 +2844,16 @@ function applyStockData(stock) {
     const name = btn.textContent.trim();
     const qty  = stock[name];
     if (qty === 0) {
-      btn.style.display = 'none';
+      btn.style.opacity = '0.45';
+      btn.style.pointerEvents = 'none';
+      btn.style.cursor = 'not-allowed';
+      if (!btn.querySelector('.stock-badge-charm')) {
+        const b = document.createElement('span');
+        b.className = 'stock-badge-charm';
+        b.style.cssText = 'display:block;font-size:9px;color:#888;font-weight:700;line-height:1.2;margin-top:2px;';
+        b.textContent = 'Out of Stock';
+        btn.appendChild(b);
+      }
     } else if (qty !== null && qty !== undefined && qty <= 5) {
       if (!btn.querySelector('.stock-badge-charm')) {
         const b = document.createElement('span');
@@ -2861,27 +2870,46 @@ function applyStockData(stock) {
   const gridQty   = stock['Fabric Insert - Grid'];
   const fabricRow = document.getElementById('fabric-row');
   if (fabricRow) {
-    const bothZero = flowerQty === 0 && gridQty === 0;
-    if (bothZero) {
-      fabricRow.style.display = 'none';
+    fabricRow.style.display = ''; // always keep row visible
+    if (flowerQty === 0 && gridQty === 0) {
+      fabricRow.classList.add('stock-oos');
+      const fabricPriceEl = fabricRow.querySelector('.addon-price');
+      if (fabricPriceEl && !fabricPriceEl.querySelector('.stock-badge-fabric-row')) {
+        const b = document.createElement('div');
+        b.className = 'stock-badge-fabric-row';
+        b.style.cssText = 'font-size:9px;color:#888;font-weight:700;margin-top:2px;';
+        b.textContent = 'Out of Stock';
+        fabricPriceEl.appendChild(b);
+      }
     } else {
-      // Apply to each sub-option pill
-      document.querySelectorAll('#fabric-sub .opt-pill').forEach(btn => {
-        const key = 'Fabric Insert - ' + btn.textContent.trim();
-        const qty = stock[key];
-        if (qty === 0) {
-          btn.style.display = 'none';
-        } else if (qty !== null && qty !== undefined && qty <= 5) {
-          if (!btn.querySelector('.stock-badge-fab')) {
-            const b = document.createElement('span');
-            b.className = 'stock-badge-fab';
-            b.style.cssText = 'display:block;font-size:9px;color:#c0392b;font-weight:700;line-height:1.2;';
-            b.textContent = 'Only ' + qty + ' left!';
-            btn.appendChild(b);
-          }
-        }
-      });
+      fabricRow.classList.remove('stock-oos');
+      const prev = fabricRow.querySelector('.stock-badge-fabric-row');
+      if (prev) prev.remove();
     }
+    document.querySelectorAll('#fabric-sub .opt-pill').forEach(btn => {
+      const key = 'Fabric Insert - ' + btn.textContent.trim();
+      const qty = stock[key];
+      if (qty === 0) {
+        btn.style.opacity = '0.45';
+        btn.style.pointerEvents = 'none';
+        btn.style.cursor = 'not-allowed';
+        if (!btn.querySelector('.stock-badge-fab')) {
+          const b = document.createElement('span');
+          b.className = 'stock-badge-fab';
+          b.style.cssText = 'display:block;font-size:9px;color:#888;font-weight:700;line-height:1.2;';
+          b.textContent = 'Out of Stock';
+          btn.appendChild(b);
+        }
+      } else if (qty !== null && qty !== undefined && qty <= 5) {
+        if (!btn.querySelector('.stock-badge-fab')) {
+          const b = document.createElement('span');
+          b.className = 'stock-badge-fab';
+          b.style.cssText = 'display:block;font-size:9px;color:#c0392b;font-weight:700;line-height:1.2;';
+          b.textContent = 'Only ' + qty + ' left!';
+          btn.appendChild(b);
+        }
+      }
+    });
   }
 
   // ── 6. Edge Protector — sub-options (Silver / Gold) ─────────
@@ -2889,28 +2917,48 @@ function applyStockData(stock) {
   const goldQty   = stock['Edge Protector - Gold'];
   const edgeRow   = document.getElementById('edge-prot-row');
   if (edgeRow) {
-    const bothZero = silverQty === 0 && goldQty === 0;
-    if (bothZero) {
-      edgeRow.style.display = 'none';
+    edgeRow.style.display = ''; // always keep row visible
+    if (silverQty === 0 && goldQty === 0) {
+      edgeRow.classList.add('stock-oos');
+      const edgePriceEl = edgeRow.querySelector('.addon-price');
+      if (edgePriceEl && !edgePriceEl.querySelector('.stock-badge-ep-row')) {
+        const b = document.createElement('div');
+        b.className = 'stock-badge-ep-row';
+        b.style.cssText = 'font-size:9px;color:#888;font-weight:700;margin-top:2px;';
+        b.textContent = 'Out of Stock';
+        edgePriceEl.appendChild(b);
+      }
     } else {
-      document.querySelectorAll('#edge-prot-sub .opt-pill').forEach(btn => {
-        const name = btn.textContent.trim();
-        if (name === 'None') return; // never hide None
-        const key = 'Edge Protector - ' + name;
-        const qty = stock[key];
-        if (qty === 0) {
-          btn.style.display = 'none';
-        } else if (qty !== null && qty !== undefined && qty <= 5) {
-          if (!btn.querySelector('.stock-badge-ep')) {
-            const b = document.createElement('span');
-            b.className = 'stock-badge-ep';
-            b.style.cssText = 'display:block;font-size:9px;color:#c0392b;font-weight:700;line-height:1.2;';
-            b.textContent = 'Only ' + qty + ' left!';
-            btn.appendChild(b);
-          }
-        }
-      });
+      edgeRow.classList.remove('stock-oos');
+      const prev = edgeRow.querySelector('.stock-badge-ep-row');
+      if (prev) prev.remove();
     }
+    document.querySelectorAll('#edge-prot-sub .opt-pill').forEach(btn => {
+      const name = btn.textContent.trim();
+      if (name === 'None') return; // never affect None
+      const key = 'Edge Protector - ' + name;
+      const qty = stock[key];
+      if (qty === 0) {
+        btn.style.opacity = '0.45';
+        btn.style.pointerEvents = 'none';
+        btn.style.cursor = 'not-allowed';
+        if (!btn.querySelector('.stock-badge-ep')) {
+          const b = document.createElement('span');
+          b.className = 'stock-badge-ep';
+          b.style.cssText = 'display:block;font-size:9px;color:#888;font-weight:700;line-height:1.2;';
+          b.textContent = 'Out of Stock';
+          btn.appendChild(b);
+        }
+      } else if (qty !== null && qty !== undefined && qty <= 5) {
+        if (!btn.querySelector('.stock-badge-ep')) {
+          const b = document.createElement('span');
+          b.className = 'stock-badge-ep';
+          b.style.cssText = 'display:block;font-size:9px;color:#c0392b;font-weight:700;line-height:1.2;';
+          b.textContent = 'Only ' + qty + ' left!';
+          btn.appendChild(b);
+        }
+      }
+    });
   }
 
   // ── 7. Extra Inserts — size-dependent (handled by selectBase) ─
@@ -2929,7 +2977,17 @@ function applyStockData(stock) {
     if (!stockKey) return;
     const qty = stock[stockKey];
     if (qty === 0) {
-      row.style.display = 'none';
+      row.classList.add('stock-oos');
+      const toggle = row.querySelector('input[type="checkbox"]');
+      if (toggle) { toggle.disabled = true; toggle.checked = false; }
+      const priceEl = row.querySelector('.addon-price');
+      if (priceEl && !priceEl.querySelector('.stock-badge-addon')) {
+        const b = document.createElement('div');
+        b.className = 'stock-badge-addon';
+        b.style.cssText = 'font-size:9px;color:#888;font-weight:700;margin-top:2px;';
+        b.textContent = 'Out of Stock';
+        priceEl.appendChild(b);
+      }
     } else if (qty !== null && qty !== undefined && qty <= 5) {
       const priceEl = row.querySelector('.addon-price');
       if (priceEl && !priceEl.querySelector('.stock-badge-addon')) {
@@ -2941,6 +2999,63 @@ function applyStockData(stock) {
       }
     }
   });
+}
+
+// ── Leather stock keyed by color + size label ────────────────
+// Stock sheet rows must use keys like "Coal A6 Trifold", "Taro PP Trifold", etc.
+const BASE_SIZE_LABELS = {
+  'a6-trifold': 'A6 Trifold',
+  'a6-bifold':  'A6 Bifold',
+  'a5-trifold': 'A5 Trifold',
+  'a5-bifold':  'A5 Bifold',
+  'pp-trifold': 'PP Trifold',
+};
+
+// Called by applyStockData (after _stockData is populated) AND by selectBase
+// (after state.base changes). Resets all swatch states then re-paints them
+// for the currently selected base. No base selected → swatches stay neutral.
+function applyLeatherStockForBase() {
+  const sizeLabel = (state.base && BASE_SIZE_LABELS[state.base]) || null;
+  document.querySelectorAll('#leather-swatches .swatch-wrap').forEach(wrap => {
+    const dot = wrap.querySelector('.swatch');
+    if (!dot) return;
+    // Reset any previous stock state
+    wrap.style.opacity = '';
+    wrap.style.pointerEvents = '';
+    const prev = wrap.querySelector('.stock-badge-lc');
+    if (prev) prev.remove();
+    if (!sizeLabel) return; // no base selected yet — leave swatches neutral
+    const key = dot.dataset.color + ' ' + sizeLabel; // e.g. "Coal A6 Trifold"
+    const qty = _stockData[key];
+    const lbl = wrap.querySelector('.swatch-label') || dot;
+    if (qty === 0) {
+      wrap.style.opacity = '0.45';
+      wrap.style.pointerEvents = 'none';
+      const b = document.createElement('div');
+      b.className = 'stock-badge-lc';
+      b.style.cssText = 'font-size:9px;color:#888;font-weight:700;margin-top:2px;line-height:1.2;';
+      b.textContent = 'Out of Stock';
+      lbl.parentNode.insertBefore(b, lbl.nextSibling);
+    } else if (qty !== null && qty !== undefined && qty <= 5 && qty > 0) {
+      const b = document.createElement('div');
+      b.className = 'stock-badge-lc';
+      b.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;margin-top:2px;line-height:1.2;';
+      b.textContent = 'Only ' + qty + ' left!';
+      lbl.parentNode.insertBefore(b, lbl.nextSibling);
+    }
+  });
+
+  // ── Auto-deselect if the customer's chosen leather just went OOS ──
+  if (state.leather && sizeLabel) {
+    const chosenKey = state.leather + ' ' + sizeLabel;
+    if (_stockData[chosenKey] === 0) {
+      document.querySelectorAll('#leather-swatches .swatch').forEach(s => s.classList.remove('active'));
+      state.leather = '';
+      document.getElementById('s-leather').textContent = '—';
+      calcTotal();
+      showToast('Sorry — ' + (chosenKey) + ' just sold out. Please choose another color.');
+    }
+  }
 }
 
 // ── Called by applyStockData AND by selectBase ───────────────
@@ -2955,9 +3070,11 @@ function applyExtraInsertStock() {
   // Remove any previous badge
   const prev = row.querySelector('.stock-badge-ei');
   if (prev) prev.remove();
-  // Restore display if previously hidden by stock (not by addon-disabled logic)
+  // Restore if previously greyed-out by stock (not by addon-disabled logic)
   if (row.dataset.stockHidden === 'true') {
-    row.style.display = '';
+    row.classList.remove('stock-oos');
+    const toggle = row.querySelector('input[type="checkbox"]');
+    if (toggle) toggle.disabled = false;
     row.dataset.stockHidden = 'false';
   }
 
@@ -2965,8 +3082,18 @@ function applyExtraInsertStock() {
   const qty = _stockData[key];
 
   if (qty === 0) {
-    row.style.display = 'none';
+    row.classList.add('stock-oos');
     row.dataset.stockHidden = 'true';
+    const toggle = row.querySelector('input[type="checkbox"]');
+    if (toggle) { toggle.disabled = true; toggle.checked = false; }
+    const priceEl = row.querySelector('.addon-price');
+    if (priceEl) {
+      const b = document.createElement('div');
+      b.className = 'stock-badge-ei';
+      b.style.cssText = 'font-size:9px;color:#888;font-weight:700;margin-top:2px;';
+      b.textContent = 'Out of Stock';
+      priceEl.appendChild(b);
+    }
   } else if (qty !== null && qty !== undefined && qty <= 5) {
     const priceEl = row.querySelector('.addon-price');
     if (priceEl) {
@@ -3017,9 +3144,11 @@ function applyExtraInsertStock() {
         if (!emailFilled) {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+        if (data.stock) applyStockData(data.stock); // refresh stock badges even when full
       } else {
         // Still open — quietly refresh the counter
         updateStatusIndicator('available', data.activeCount, data.batchLimit);
+        if (data.stock) applyStockData(data.stock); // refresh stock badges every poll
       }
     } catch (pollErr) {
       // Silent fail — don't disrupt the customer's session
@@ -3129,7 +3258,6 @@ function buildCordSwatches(containerId, stateKey, isInside, stock) {
   container.innerHTML = '';
   cordKeys.forEach(name => {
     const qty = stock ? stock[name] : null;
-    if (qty === 0) return; // hide completely at 0
     const wrap = document.createElement('div');
     wrap.className = 'swatch-wrap';
     const dot = document.createElement('div');
@@ -3137,7 +3265,10 @@ function buildCordSwatches(containerId, stateKey, isInside, stock) {
     dot.style.background = cordColors[name];
     dot.title = name;
     dot.dataset.color = name;
-    if (isInside) {
+    if (qty === 0) {
+      wrap.style.opacity = '0.45';
+      wrap.style.pointerEvents = 'none';
+    } else if (isInside) {
       dot.onclick = () => {
         state.insideCords[stateKey] = name;
         container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
@@ -3158,7 +3289,12 @@ function buildCordSwatches(containerId, stateKey, isInside, stock) {
     lbl.className = 'swatch-label';
     lbl.textContent = name;
     wrap.appendChild(dot); wrap.appendChild(lbl);
-    if (qty !== null && qty <= 5 && qty > 0) {
+    if (qty === 0) {
+      const badge = document.createElement('div');
+      badge.style.cssText = 'font-size:9px;color:#888;font-weight:700;text-align:center;margin-top:2px;line-height:1.2;';
+      badge.textContent = 'Out of Stock';
+      wrap.appendChild(badge);
+    } else if (qty !== null && qty <= 5 && qty > 0) {
       const badge = document.createElement('div');
       badge.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;text-align:center;margin-top:2px;line-height:1.2;';
       badge.textContent = 'Only ' + qty + ' left!';
@@ -3172,28 +3308,58 @@ function buildDoubleCordSwatches(stock) {
   const container = document.getElementById('double-cord-swatches');
   if (!container) return;
   container.innerHTML = '';
+  const allZero = stock ? cordKeys.every(name => stock[name] === 0) : false;
+  const dcRow = document.getElementById('double-cord-check')?.closest('.addon-row');
+  if (dcRow) {
+    dcRow.style.opacity = allZero ? '0.45' : '';
+    dcRow.style.pointerEvents = allZero ? 'none' : '';
+    const toggle = dcRow.querySelector('input[type="checkbox"]');
+    if (toggle) { toggle.disabled = allZero; if (allZero) toggle.checked = false; }
+    if (allZero && !dcRow.querySelector('.stock-badge-dc')) {
+      const priceEl = dcRow.querySelector('.addon-price');
+      if (priceEl) {
+        const b = document.createElement('div');
+        b.className = 'stock-badge-dc';
+        b.style.cssText = 'font-size:9px;color:#888;font-weight:700;margin-top:2px;';
+        b.textContent = 'Out of Stock';
+        priceEl.appendChild(b);
+      }
+    } else if (!allZero) {
+      const prev = dcRow.querySelector('.stock-badge-dc');
+      if (prev) prev.remove();
+    }
+  }
   cordKeys.forEach(name => {
     const qty = stock ? stock[name] : null;
-    if (qty === 0) return; // hide completely at 0
     const wrap = document.createElement('div');
     wrap.className = 'swatch-wrap';
     const dot = document.createElement('div');
     dot.className = 'swatch';
     dot.style.background = cordColors[name];
     dot.title = name;
-    dot.onclick = () => {
-      state.doubleCordColor = name;
-      container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-      dot.classList.add('active');
-      document.getElementById('double-cord-color-label').textContent = name;
-      updateDoubleCordPreview();
-      calcTotal();
-    };
+    if (qty === 0) {
+      wrap.style.opacity = '0.45';
+      wrap.style.pointerEvents = 'none';
+    } else {
+      dot.onclick = () => {
+        state.doubleCordColor = name;
+        container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+        dot.classList.add('active');
+        document.getElementById('double-cord-color-label').textContent = name;
+        updateDoubleCordPreview();
+        calcTotal();
+      };
+    }
     const lbl = document.createElement('div');
     lbl.className = 'swatch-label';
     lbl.textContent = name;
     wrap.appendChild(dot); wrap.appendChild(lbl);
-    if (qty !== null && qty <= 5 && qty > 0) {
+    if (qty === 0) {
+      const badge = document.createElement('div');
+      badge.style.cssText = 'font-size:9px;color:#888;font-weight:700;text-align:center;margin-top:2px;line-height:1.2;';
+      badge.textContent = 'Out of Stock';
+      wrap.appendChild(badge);
+    } else if (qty !== null && qty <= 5 && qty > 0) {
       const badge = document.createElement('div');
       badge.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;text-align:center;margin-top:2px;line-height:1.2;';
       badge.textContent = 'Only ' + qty + ' left!';
@@ -3284,7 +3450,8 @@ function selectBase(btn) {
   // ── end Bifold restrictions ──────────────────────────────────────
 
     calcTotal();
-  applyExtraInsertStock(); // recheck Extra Inserts stock for selected size
+  applyExtraInsertStock();    // recheck Extra Inserts stock for selected size
+  applyLeatherStockForBase(); // recheck leather stock for selected size + color
 }
 
 function selectLeather(el) {
@@ -4072,6 +4239,15 @@ async function submitOrder() {
   }
   if (!state.leather) {
     showToast('Please select a leather color.'); return;
+  }
+  const _leatherSizeKey = state.leather + ' ' + (BASE_SIZE_LABELS[state.base] || '');
+  if (_stockData[_leatherSizeKey] === 0) {
+    showToast('Sorry — ' + state.leather + ' is no longer available in this size. Please choose another color.');
+    state.leather = '';
+    document.querySelectorAll('#leather-swatches .swatch').forEach(s => s.classList.remove('active'));
+    document.getElementById('s-leather').textContent = '—';
+    applyLeatherStockForBase();
+    return;
   }
   if (!state.frontCord) {
     showToast('Please select a front cord color.'); return;
