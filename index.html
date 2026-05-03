@@ -363,6 +363,46 @@
     .customizer-grid { grid-template-columns: 1fr; }
   }
 
+  /* ── Floating mini-preview (mobile only) ── */
+  /* Mini-float hidden on desktop, visible on mobile */
+  #mini-float {
+    display: none; /* desktop: never shown */
+    position: fixed;
+    bottom: 18px;
+    right: 16px;
+    width: 96px;
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 24px rgba(139,77,99,0.18);
+    padding: 8px;
+    z-index: 999;
+    cursor: pointer;
+    opacity: 1;
+    /* transition handled by JS inline style */
+  }
+  #mini-float:active { transform: scale(0.97); }
+  #mini-float svg { width: 100%; height: auto; display: block; border-radius: 8px; }
+  #mini-float-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-align: center;
+    margin-top: 5px;
+  }
+  #mini-float-total {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--deep-mauve);
+    text-align: center;
+    margin-top: 2px;
+  }
+  @media (max-width: 900px) {
+    #mini-float { display: block; } /* mobile: let JS control opacity/pointer-events */
+  }
+
   /* ── Step Cards ── */
   .step-card {
     background: var(--bg-card); border-radius: 20px; padding: 28px;
@@ -402,23 +442,6 @@
   .swatch.active { border-color: var(--accent); box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--accent); }
   .swatch-label { font-size: 11px; text-align: center; color: var(--text-light); margin-top: 4px; }
   .swatch-wrap { display: flex; flex-direction: column; align-items: center; }
-
-  /* ── Stock badges & out-of-stock states ── */
-  .stock-badge {
-    font-size: 10px; font-weight: 700; color: var(--accent);
-    background: rgba(194,69,140,0.10); border-radius: 50px;
-    padding: 2px 7px; margin-top: 3px; text-align: center;
-    white-space: nowrap; display: block; line-height: 1.5;
-  }
-  .charm-btn.charm-oos {
-    opacity: 0.40; cursor: not-allowed; pointer-events: none;
-    border-color: var(--border) !important; background: var(--bg-alt) !important;
-    color: var(--text-light) !important; text-decoration: line-through;
-  }
-  .charm-oos-label {
-    font-size: 10px; color: var(--text-light); font-style: italic;
-    text-align: center; margin-top: 2px; display: block; pointer-events: none;
-  }
 
   /* Leather swatches */
   .lc-coal      { background: #2c2c2c; }
@@ -461,6 +484,44 @@
     background: var(--bg-card); border-radius: 24px; padding: 28px;
     border: 1px solid var(--border);
     box-shadow: 0 4px 24px rgba(139,77,99,0.07);
+  }
+
+  /* ── Persistent desktop sidebar preview ── */
+  #desktop-float {
+    display: none;
+    position: fixed;
+    top: 50%;
+    right: 28px;
+    transform: translateY(-50%);
+    width: 300px;
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 32px rgba(139,77,99,0.13);
+    z-index: 900;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+  }
+  #desktop-float.df-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #desktop-float svg { width: 100%; height: auto; display: block; }
+  #desktop-float .preview-title { font-size: 13px; font-weight: 600; color: var(--deep-mauve); margin-bottom: 12px; text-align: center; }
+  #desktop-float .summary-line {
+    display: flex; justify-content: space-between;
+    padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12px;
+  }
+  #desktop-float .summary-key { color: var(--text-mid); }
+  #desktop-float .summary-val { font-weight: 500; color: var(--text-dark); text-align: right; max-width: 140px; }
+  #desktop-float .summary-total {
+    display: flex; justify-content: space-between;
+    padding: 10px 0 0; font-size: 14px; font-weight: 700; color: var(--deep-mauve);
+  }
+  @media (min-width: 901px) {
+    #desktop-float { display: block; }
   }
   .preview-title { font-size: 14px; font-weight: 600; color: var(--deep-mauve); margin-bottom: 16px; text-align: center; }
   #folio-preview { width: 100%; height: 280px; position: relative; }
@@ -1652,6 +1713,42 @@
     x="167" y="138" text-anchor="middle"
     font-family="DM Sans, sans-serif" font-size="9"
     fill="rgba(255,255,255,0.2)" letter-spacing="0.05em">select a leather color</text>
+
+  <!-- Edge Protector corner brackets — top-right and bottom-right -->
+  <!-- Each bracket = horizontal arm + vertical arm + filigree dot, clipped to folio bounds -->
+  <!-- TOP-RIGHT BRACKET -->
+  <g id="edge-prot-top" opacity="0">
+    <!-- vertical arm: right edge, top -->
+    <rect x="252" y="18" width="4" height="20" rx="2" fill="#b8a090"/>
+    <!-- horizontal arm: top edge, right -->
+    <rect x="237" y="18" width="19" height="4" rx="2" fill="#b8a090"/>
+    <!-- corner fill square -->
+    <rect x="252" y="18" width="4" height="4" fill="#b8a090"/>
+    <!-- filigree dot cluster -->
+    <circle cx="250" cy="26" r="2.2" fill="#b8a090"/>
+    <circle cx="244" cy="22" r="2.2" fill="#b8a090"/>
+    <circle cx="250" cy="22" r="1.4" fill="rgba(255,255,255,0.35)"/>
+    <!-- sheen -->
+    <rect x="253" y="19" width="1.5" height="16" rx="1" fill="rgba(255,255,255,0.30)"/>
+    <rect x="238" y="19" width="13" height="1.5" rx="1" fill="rgba(255,255,255,0.30)"/>
+  </g>
+  <!-- BOTTOM-RIGHT BRACKET -->
+  <g id="edge-prot-bot" opacity="0">
+    <!-- vertical arm: right edge, bottom — ends flush at y=246 -->
+    <rect data-ep-base="1" x="252" y="224" width="4" height="22" rx="2" fill="#b8a090"/>
+    <!-- horizontal arm: sits on very bottom edge y=241 -->
+    <rect data-ep-base="1" x="237" y="241" width="19" height="5" rx="2" fill="#b8a090"/>
+    <!-- corner fill -->
+    <rect data-ep-base="1" x="252" y="241" width="4" height="5" rx="0" fill="#b8a090"/>
+    <!-- filigree dots -->
+    <circle data-ep-base="1" cx="249" cy="237" r="2.2" fill="#b8a090"/>
+    <circle data-ep-base="1" cx="243" cy="243" r="2.2" fill="#b8a090"/>
+    <circle cx="249" cy="237" r="1.2" fill="rgba(255,255,255,0.4)"/>
+    <circle cx="243" cy="243" r="1.2" fill="rgba(255,255,255,0.4)"/>
+    <!-- sheen -->
+    <rect x="253.5" y="225" width="1.5" height="15" rx="1" fill="rgba(255,255,255,0.28)"/>
+    <rect x="238"   y="242" width="13" height="1.5" rx="1" fill="rgba(255,255,255,0.28)"/>
+  </g>
 </svg>
           </div>
 
@@ -1688,7 +1785,7 @@
     <!-- Charms -->
     <div class="step-card fade-in" style="max-width:800px;">
       <div class="step-header"><div class="step-num" style="background:var(--dusty-rose);">★</div><div class="step-title">Charms</div></div>
-
+<div class="info-box">Charms are attached via the side grommets and front cord. Select positions for your charms: S1 (Left), S2 (Middle), S3(Right), and Front.</div>
       <div class="charm-tiers">
 
         <!-- FREE (multi-select) -->
@@ -1843,8 +1940,8 @@
         <label class="field-label">Finish</label>
         <div class="option-grid">
           <button class="opt-pill active" onclick="selectOpt('edge-prot-finish',this,'None',0)">None</button>
-          <button class="opt-pill" onclick="selectOpt('edge-prot-finish',this,'Silver',0)">Silver</button>
-          <button class="opt-pill" onclick="selectOpt('edge-prot-finish',this,'Gold',0)">Gold</button>
+          <button class="opt-pill" onclick="selectOpt('edge-prot-finish',this,'Silver',0);updateEdgeProtectorPreview()">Silver</button>
+          <button class="opt-pill" onclick="selectOpt('edge-prot-finish',this,'Gold',0);updateEdgeProtectorPreview()">Gold</button>
         </div>
       </div>
 
@@ -2650,9 +2747,6 @@ const batchFullMsg = document.getElementById('batch-full-msg');
   try {
     const res  = await fetch(GAS_URL, { method: 'GET' });
     const data = await res.json();
-    // ── Apply stock data to UI (once on page load) ────────────────
-    if (data.stock) { stockData = data.stock; applyStockToUI(stockData); }
-    // ─────────────────────────────────────────────────────────────
 
     loader.style.display = 'none';
 
@@ -2663,12 +2757,14 @@ const batchFullMsg = document.getElementById('batch-full-msg');
       formSections.style.display    = 'none';
       checkoutSection.style.display = 'none';
       updateStatusIndicator('full', data.activeCount, data.batchLimit);
-    } else {
+        } else {
       // ── SLOTS AVAILABLE — show form as normal ────────────────────
       batchFullMsg.style.display    = 'none';
       formSections.style.display    = 'block';
       checkoutSection.style.display = 'block';
       updateStatusIndicator('available', data.activeCount, data.batchLimit);
+      // ── Apply limited stock badges / hiding ──────────────────────
+      if (data.stock) applyStockData(data.stock);
     }
   } catch (err) {
     // Network error / GAS unreachable — fail CLOSED to prevent over-ordering
@@ -2685,6 +2781,205 @@ const batchFullMsg = document.getElementById('batch-full-msg');
   }
 })();
 
+// ════════════════════════════════════════
+//  STOCK DATA — badge ≤5, hide at 0
+// ════════════════════════════════════════
+let _stockData = {};
+
+// ── Called once on load with stock from Sheet ────────────────
+function applyStockData(stock) {
+  _stockData = stock || {};
+
+  // Helper: badge element
+  function addBadge(el, qty, cls) {
+    if (!el) return;
+    const existing = el.parentNode && el.parentNode.querySelector('.' + (cls || 'stock-badge'));
+    if (existing) existing.remove();
+    if (qty !== null && qty !== undefined && qty <= 5 && qty > 0) {
+      const b = document.createElement('div');
+      b.className = cls || 'stock-badge';
+      b.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;margin-top:2px;line-height:1.2;';
+      b.textContent = 'Only ' + qty + ' left!';
+      el.parentNode.insertBefore(b, el.nextSibling);
+    }
+  }
+
+  // ── 1. Leather swatches ──────────────────────────────────────
+  document.querySelectorAll('#leather-swatches .swatch-wrap').forEach(wrap => {
+    const dot  = wrap.querySelector('.swatch');
+    if (!dot) return;
+    const name = dot.dataset.color;
+    const qty  = stock[name];
+    if (qty === 0) {
+      wrap.style.display = 'none';
+    } else {
+      addBadge(wrap.querySelector('.swatch-label') || dot, qty, 'stock-badge-lc');
+    }
+  });
+
+  // ── 2. Hardware pills ────────────────────────────────────────
+  document.querySelectorAll('#hardware-opts .opt-pill, #base-hardware .opt-pill').forEach(btn => {
+    const name = btn.textContent.trim();
+    const qty  = stock[name];
+    if (qty === 0) {
+      btn.style.display = 'none';
+    } else if (qty !== null && qty !== undefined && qty <= 5) {
+      if (!btn.querySelector('.stock-badge-hw')) {
+        const b = document.createElement('span');
+        b.className = 'stock-badge-hw';
+        b.style.cssText = 'display:block;font-size:9px;color:#c0392b;font-weight:700;line-height:1.2;';
+        b.textContent = 'Only ' + qty + ' left!';
+        btn.appendChild(b);
+      }
+    }
+  });
+
+  // ── 3. Cord swatches (rebuild all 5 pickers with stock) ─────
+  buildCordSwatches('front-cord-swatches', 'frontCord', false, stock);
+  buildCordSwatches('s1-cord-swatches',    's1',        true,  stock);
+  buildCordSwatches('s2-cord-swatches',    's2',        true,  stock);
+  buildCordSwatches('s3-cord-swatches',    's3',        true,  stock);
+  buildDoubleCordSwatches(stock);
+
+  // ── 4. Charm buttons (all tiers) ────────────────────────────
+  document.querySelectorAll('.charm-btn').forEach(btn => {
+    const name = btn.textContent.trim();
+    const qty  = stock[name];
+    if (qty === 0) {
+      btn.style.display = 'none';
+    } else if (qty !== null && qty !== undefined && qty <= 5) {
+      if (!btn.querySelector('.stock-badge-charm')) {
+        const b = document.createElement('span');
+        b.className = 'stock-badge-charm';
+        b.style.cssText = 'display:block;font-size:9px;color:#c0392b;font-weight:700;line-height:1.2;margin-top:2px;';
+        b.textContent = 'Only ' + qty + ' left!';
+        btn.appendChild(b);
+      }
+    }
+  });
+
+  // ── 5. Fabric Insert — sub-options (Flower / Grid) ──────────
+  const flowerQty = stock['Fabric Insert - Flower'];
+  const gridQty   = stock['Fabric Insert - Grid'];
+  const fabricRow = document.getElementById('fabric-row');
+  if (fabricRow) {
+    const bothZero = flowerQty === 0 && gridQty === 0;
+    if (bothZero) {
+      fabricRow.style.display = 'none';
+    } else {
+      // Apply to each sub-option pill
+      document.querySelectorAll('#fabric-sub .opt-pill').forEach(btn => {
+        const key = 'Fabric Insert - ' + btn.textContent.trim();
+        const qty = stock[key];
+        if (qty === 0) {
+          btn.style.display = 'none';
+        } else if (qty !== null && qty !== undefined && qty <= 5) {
+          if (!btn.querySelector('.stock-badge-fab')) {
+            const b = document.createElement('span');
+            b.className = 'stock-badge-fab';
+            b.style.cssText = 'display:block;font-size:9px;color:#c0392b;font-weight:700;line-height:1.2;';
+            b.textContent = 'Only ' + qty + ' left!';
+            btn.appendChild(b);
+          }
+        }
+      });
+    }
+  }
+
+  // ── 6. Edge Protector — sub-options (Silver / Gold) ─────────
+  const silverQty = stock['Edge Protector - Silver'];
+  const goldQty   = stock['Edge Protector - Gold'];
+  const edgeRow   = document.getElementById('edge-prot-row');
+  if (edgeRow) {
+    const bothZero = silverQty === 0 && goldQty === 0;
+    if (bothZero) {
+      edgeRow.style.display = 'none';
+    } else {
+      document.querySelectorAll('#edge-prot-sub .opt-pill').forEach(btn => {
+        const name = btn.textContent.trim();
+        if (name === 'None') return; // never hide None
+        const key = 'Edge Protector - ' + name;
+        const qty = stock[key];
+        if (qty === 0) {
+          btn.style.display = 'none';
+        } else if (qty !== null && qty !== undefined && qty <= 5) {
+          if (!btn.querySelector('.stock-badge-ep')) {
+            const b = document.createElement('span');
+            b.className = 'stock-badge-ep';
+            b.style.cssText = 'display:block;font-size:9px;color:#c0392b;font-weight:700;line-height:1.2;';
+            b.textContent = 'Only ' + qty + ' left!';
+            btn.appendChild(b);
+          }
+        }
+      });
+    }
+  }
+
+  // ── 7. Extra Inserts — size-dependent (handled by selectBase) ─
+  applyExtraInsertStock();
+
+  // ── 8. Lace ──────────────────────────────────────────────────
+  document.querySelectorAll('.addon-row').forEach(row => {
+    const nameEl = row.querySelector('.addon-name');
+    if (!nameEl) return;
+    const label = nameEl.textContent.trim();
+    const keyMap = {
+      'Lace':               'Lace',
+      'Mini Leather Keychain': 'Mini Keychain',
+    };
+    const stockKey = keyMap[label];
+    if (!stockKey) return;
+    const qty = stock[stockKey];
+    if (qty === 0) {
+      row.style.display = 'none';
+    } else if (qty !== null && qty !== undefined && qty <= 5) {
+      const priceEl = row.querySelector('.addon-price');
+      if (priceEl && !priceEl.querySelector('.stock-badge-addon')) {
+        const b = document.createElement('div');
+        b.className = 'stock-badge-addon';
+        b.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;margin-top:2px;';
+        b.textContent = 'Only ' + qty + ' left!';
+        priceEl.appendChild(b);
+      }
+    }
+  });
+}
+
+// ── Called by applyStockData AND by selectBase ───────────────
+// Applies correct Extra Inserts stock based on selected base size
+function applyExtraInsertStock() {
+  const isA5  = state.base && state.base.startsWith('a5');
+  const isA6  = state.base && state.base.startsWith('a6');
+  const key   = isA5 ? 'Extra Inserts A5' : isA6 ? 'Extra Inserts A6' : null;
+  const row   = document.getElementById('extra-insert-row');
+  if (!row) return;
+
+  // Remove any previous badge
+  const prev = row.querySelector('.stock-badge-ei');
+  if (prev) prev.remove();
+  // Restore display if previously hidden by stock (not by addon-disabled logic)
+  if (row.dataset.stockHidden === 'true') {
+    row.style.display = '';
+    row.dataset.stockHidden = 'false';
+  }
+
+  if (!key) return; // no base selected yet — do nothing
+  const qty = _stockData[key];
+
+  if (qty === 0) {
+    row.style.display = 'none';
+    row.dataset.stockHidden = 'true';
+  } else if (qty !== null && qty !== undefined && qty <= 5) {
+    const priceEl = row.querySelector('.addon-price');
+    if (priceEl) {
+      const b = document.createElement('div');
+      b.className = 'stock-badge-ei';
+      b.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;margin-top:2px;';
+      b.textContent = 'Only ' + qty + ' left!';
+      priceEl.appendChild(b);
+    }
+  }
+}
 // ════════════════════════════════════════
 //  BACKGROUND CAPACITY RECHECK
 //  Silently polls every 1 minute while the
@@ -2740,9 +3035,6 @@ const batchFullMsg = document.getElementById('batch-full-msg');
   }, POLL_INTERVAL_MS);
 })();
 // ════════════════════════════════════════
-
-// ── Stock Data (populated on load from GAS doGet) ────────────────
-let stockData = {};
 
 // ── App State ───────────────────────────
 const state = {
@@ -2831,204 +3123,15 @@ function toggleFaq(el) {
 }
 
 // ════════════════════════════════════════
-//  STOCK UI APPLICATOR
-//  Runs once after doGet returns stock data.
-//  Hides qty=0 items, badges qty 1–5 items.
-//  Blank cells (null) = unlimited → no change.
-// ════════════════════════════════════════
-function applyStockToUI(stock) {
-  if (!stock) return;
-
-  // isOOS: qty is exactly 0 (not blank/null)
-  function isOOS(name) {
-    return Object.prototype.hasOwnProperty.call(stock, name)
-        && stock[name] !== null
-        && Number(stock[name]) === 0;
-  }
-  // lowQty: returns qty if 1–5, else null
-  function lowQty(name) {
-    if (!Object.prototype.hasOwnProperty.call(stock, name) || stock[name] === null) return null;
-    const q = Number(stock[name]);
-    return (q >= 1 && q <= 5) ? q : null;
-  }
-  // addBadge: inserts a .stock-badge div immediately after `afterEl` (once only)
-  function addBadge(afterEl, qty) {
-    if (!afterEl) return;
-    const next = afterEl.nextSibling;
-    if (next && next.classList && next.classList.contains('stock-badge')) return; // already there
-    const b = document.createElement('div');
-    b.className   = 'stock-badge';
-    b.textContent = 'Only ' + qty + ' left!';
-    afterEl.parentNode.insertBefore(b, afterEl.nextSibling);
-  }
-
-  // ── 1. LEATHER COLORS ──────────────────────────────────────────
-  document.querySelectorAll('#leather-swatches .swatch-wrap').forEach(function(wrap) {
-    const dot = wrap.querySelector('.swatch[data-color]');
-    if (!dot) return;
-    const name = dot.dataset.color;
-    if (isOOS(name)) {
-      wrap.style.display = 'none';
-    } else {
-      const q = lowQty(name);
-      if (q !== null) addBadge(wrap.querySelector('.swatch-label'), q);
-    }
-  });
-
-  // ── 2. HARDWARE / GROMMETS ────────────────────────────────────
-  document.querySelectorAll('#hardware-opts .opt-pill').forEach(function(btn) {
-    const name = btn.textContent.trim();
-    if (name === 'None') return; // always available
-    if (isOOS(name)) {
-      btn.style.display = 'none';
-    } else {
-      const q = lowQty(name);
-      if (q !== null) {
-        // Wrap the pill in an inline-flex container so badge sits below it
-        if (!btn.parentNode.classList.contains('stock-pill-wrap')) {
-          const wrap = document.createElement('span');
-          wrap.className   = 'stock-pill-wrap';
-          wrap.style.cssText = 'display:inline-flex;flex-direction:column;align-items:center;gap:2px;';
-          btn.parentNode.insertBefore(wrap, btn);
-          wrap.appendChild(btn);
-        }
-        addBadge(btn, q);
-      }
-    }
-  });
-
-  // ── 3. CORD COLORS (post-build — swatches are already in the DOM) ──
-  // The swatch builders run synchronously before this async fetch resolves,
-  // so we apply stock state by iterating the already-rendered swatch-wraps.
-  [
-    'front-cord-swatches', 's1-cord-swatches', 's2-cord-swatches',
-    's3-cord-swatches',    'double-cord-swatches'
-  ].forEach(function(gridId) {
-    const grid = document.getElementById(gridId);
-    if (!grid) return;
-    grid.querySelectorAll('.swatch-wrap').forEach(function(wrap) {
-      const dot  = wrap.querySelector('.swatch');
-      // data-color is set on front/inside cords; title is set on all
-      const name = (dot && dot.dataset.color) || (dot && dot.title) || '';
-      if (!name) return;
-      if (isOOS(name)) {
-        wrap.style.display = 'none';
-      } else {
-        const q = lowQty(name);
-        if (q !== null) addBadge(wrap.querySelector('.swatch-label'), q);
-      }
-    });
-  });
-
-  // ── 4. CHARM BUTTONS ──────────────────────────────────────────
-  // Free charms have data-charm; add-on charms are identified by text content.
-  document.querySelectorAll('.charm-btn').forEach(function(btn) {
-    const name = btn.dataset.charm || btn.textContent.trim();
-    if (!name) return;
-    if (isOOS(name)) {
-      btn.classList.add('charm-oos');
-      btn.disabled = true;
-      // Add "Out of Stock" label below the button if not already there
-      const next = btn.nextSibling;
-      if (!next || !next.classList || !next.classList.contains('charm-oos-label')) {
-        const lbl = document.createElement('div');
-        lbl.className   = 'charm-oos-label';
-        lbl.textContent = 'Out of Stock';
-        btn.parentNode.insertBefore(lbl, btn.nextSibling);
-      }
-    } else {
-      const q = lowQty(name);
-      if (q !== null) {
-        const next = btn.nextSibling;
-        if (!next || !next.classList || !next.classList.contains('stock-badge')) {
-          const b = document.createElement('div');
-          b.className   = 'stock-badge';
-          b.textContent = 'Only ' + q + ' left!';
-          btn.parentNode.insertBefore(b, btn.nextSibling);
-        }
-      }
-    }
-  });
-
-  // ── 5. FABRIC INSERT ──────────────────────────────────────────
-  const fabricRow = document.getElementById('fabric-row');
-  if (fabricRow) {
-    const gridOOS   = isOOS('Fabric Insert - Grid');
-    const flowerOOS = isOOS('Fabric Insert - Flower');
-    if (gridOOS && flowerOOS) {
-      // Both patterns OOS → hide the whole row
-      fabricRow.style.display = 'none';
-    } else {
-      // Badge with the lower remaining quantity of the two
-      const qs = [lowQty('Fabric Insert - Grid'), lowQty('Fabric Insert - Flower')]
-                   .filter(function(v) { return v !== null; });
-      if (qs.length) {
-        const nameEl = fabricRow.querySelector('.addon-name');
-        if (nameEl) addBadge(nameEl, Math.min.apply(null, qs));
-      }
-    }
-  }
-
-  // ── 6. EDGE PROTECTOR ─────────────────────────────────────────
-  const edgeProtRow = document.getElementById('edge-prot-row');
-  if (edgeProtRow) {
-    const silverOOS = isOOS('Edge Protector - Silver');
-    const goldOOS   = isOOS('Edge Protector - Gold');
-    if (silverOOS && goldOOS) {
-      edgeProtRow.style.display = 'none';
-    } else {
-      // Hide individual finish buttons that are OOS
-      document.querySelectorAll('#edge-prot-sub .opt-pill').forEach(function(btn) {
-        const t = btn.textContent.trim();
-        if (silverOOS && t === 'Silver') btn.style.display = 'none';
-        if (goldOOS   && t === 'Gold')   btn.style.display = 'none';
-      });
-    }
-  }
-
-  // ── 7. EXTRA BLANK INSERTS ────────────────────────────────────
-  const extraRow = document.getElementById('extra-insert-row');
-  if (extraRow && isOOS('Extra Inserts A6') && isOOS('Extra Inserts A5')) {
-    extraRow.style.display = 'none';
-  }
-
-  // ── 8. LACE ───────────────────────────────────────────────────
-  const laceCheck = document.getElementById('lace-check');
-  if (laceCheck) {
-    const laceRow = laceCheck.closest('.addon-row');
-    if (isOOS('Lace')) {
-      if (laceRow) laceRow.style.display = 'none';
-      const laceSub = document.getElementById('lace-orientation-sub');
-      if (laceSub)  laceSub.style.display = 'none';
-    } else {
-      const q = lowQty('Lace');
-      if (q !== null && laceRow) addBadge(laceRow.querySelector('.addon-name'), q);
-    }
-  }
-
-  // ── 9. MINI KEYCHAIN ──────────────────────────────────────────
-  const kcCheck = document.getElementById('keychain-check');
-  if (kcCheck) {
-    const kcRow = kcCheck.closest('.addon-row');
-    if (isOOS('Mini Keychain')) {
-      if (kcRow) kcRow.style.display = 'none';
-      const kcSub = document.getElementById('keychain-sub');
-      if (kcSub)  kcSub.style.display = 'none';
-    } else {
-      const q = lowQty('Mini Keychain');
-      if (q !== null && kcRow) addBadge(kcRow.querySelector('.addon-name'), q);
-    }
-  }
-}
-
-// ════════════════════════════════════════
 //  SWATCH BUILDERS
 // ════════════════════════════════════════
-function buildCordSwatches(containerId, stateKey, isInside) {
+function buildCordSwatches(containerId, stateKey, isInside, stock) {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = '';
   cordKeys.forEach(name => {
+    const qty = stock ? stock[name] : null;
+    if (qty === 0) return; // hide completely at 0
     const wrap = document.createElement('div');
     wrap.className = 'swatch-wrap';
     const dot = document.createElement('div');
@@ -3057,15 +3160,23 @@ function buildCordSwatches(containerId, stateKey, isInside) {
     lbl.className = 'swatch-label';
     lbl.textContent = name;
     wrap.appendChild(dot); wrap.appendChild(lbl);
+    if (qty !== null && qty <= 5 && qty > 0) {
+      const badge = document.createElement('div');
+      badge.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;text-align:center;margin-top:2px;line-height:1.2;';
+      badge.textContent = 'Only ' + qty + ' left!';
+      wrap.appendChild(badge);
+    }
     container.appendChild(wrap);
   });
 }
 
-function buildDoubleCordSwatches() {
+function buildDoubleCordSwatches(stock) {
   const container = document.getElementById('double-cord-swatches');
   if (!container) return;
   container.innerHTML = '';
   cordKeys.forEach(name => {
+    const qty = stock ? stock[name] : null;
+    if (qty === 0) return; // hide completely at 0
     const wrap = document.createElement('div');
     wrap.className = 'swatch-wrap';
     const dot = document.createElement('div');
@@ -3084,6 +3195,12 @@ function buildDoubleCordSwatches() {
     lbl.className = 'swatch-label';
     lbl.textContent = name;
     wrap.appendChild(dot); wrap.appendChild(lbl);
+    if (qty !== null && qty <= 5 && qty > 0) {
+      const badge = document.createElement('div');
+      badge.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;text-align:center;margin-top:2px;line-height:1.2;';
+      badge.textContent = 'Only ' + qty + ' left!';
+      wrap.appendChild(badge);
+    }
     container.appendChild(wrap);
   });
 }
@@ -3168,7 +3285,8 @@ function selectBase(btn) {
   }
   // ── end Bifold restrictions ──────────────────────────────────────
 
-  calcTotal();
+    calcTotal();
+  applyExtraInsertStock(); // recheck Extra Inserts stock for selected size
 }
 
 function selectLeather(el) {
@@ -3220,65 +3338,6 @@ function selectZone(el, zone) {
   el.classList.add('active-zone');
   state.engravingZone = zone;
   updateEngravingPreview();
-}
-
-function updateEngravingPreview() {
-  const prev = document.getElementById('engraving-preview');
-  if (!prev) return;
-
-  const text = state.engravingText || '';
-  const font = state['font'] || '';
-  const zone = state.engravingZone || '';
-
-  // Hide until BOTH text and font are selected
-  if (!text.trim() || !font || !zone) {
-    prev.textContent = '';
-    return;
-  }
-
-  // ── Case ──────────────────────────────────────────────────────────
-  // 6mm Lowercase: render as-typed. All others: uppercase.
-  const displayText = (font === '6mm Lowercase') ? text : text.toUpperCase();
-
-  // ── Font size ─────────────────────────────────────────────────────
-  // 3mm Uppercase → 7  |  6mm Uppercase / 6mm Lowercase → 11
-  const fontSize     = (font === '3mm Uppercase') ? 7 : 11;
-  const letterSpace  = (font === '3mm Uppercase') ? 2 : 3.5;
-
-  // ── Zone → position + rotation ────────────────────────────────────
-  // Front cover rect: x 78–256, y 18–246
-  //   Outer (right area)  : text-anchor "end",   x 248
-  //   Inner (left area)   : text-anchor "start",  x 100  (clears spine crease)
-  // Vertical: rotate(-90) = rotated left  = reads bottom→top  (1B, 1C)
-  //           rotate(+90) = rotated right = reads top→bottom  (2B, 2C)
-  const ZONES = {
-    //          x     y    anchor    rotate (null = none)
-    '1A': { x: 248, y: 235, a: 'end',    r: null             },  // horiz lower-right
-    '1B': { x: 248, y: 195, a: 'middle', r: 'rotate(-90,248,195)' },  // vert  lower-right ←
-    '1C': { x: 248, y:  65, a: 'middle', r: 'rotate(-90,248,65)'  },  // vert  upper-right ←
-    '1D': { x: 248, y:  38, a: 'end',    r: null             },  // horiz upper-right
-    '2A': { x: 100, y: 235, a: 'start',  r: null             },  // horiz lower-left  (inner sim)
-    '2B': { x: 100, y: 195, a: 'middle', r: 'rotate(90,100,195)'  },  // vert  lower-left  →
-    '2C': { x: 100, y:  65, a: 'middle', r: 'rotate(90,100,65)'   },  // vert  upper-left  →
-    '2D': { x: 100, y:  38, a: 'start',  r: null             },  // horiz upper-left  (inner sim)
-  };
-
-  const pos = ZONES[zone];
-  if (!pos) { prev.textContent = ''; return; }
-
-  prev.setAttribute('x',            pos.x);
-  prev.setAttribute('y',            pos.y);
-  prev.setAttribute('text-anchor',  pos.a);
-  prev.setAttribute('font-size',    fontSize);
-  prev.setAttribute('letter-spacing', letterSpace);
-
-  if (pos.r) {
-    prev.setAttribute('transform', pos.r);
-  } else {
-    prev.removeAttribute('transform');
-  }
-
-  prev.textContent = displayText;
 }
 
 function updateEngravingPreview() {
@@ -3629,6 +3688,7 @@ function toggleFabric(cb) {
 function toggleEdgeProtector(chk) {
   state.edgeProtector = chk.checked;
   document.getElementById('edge-prot-sub').style.display = chk.checked ? 'block' : 'none';
+  updateEdgeProtectorPreview();
   calcTotal();
 }
 function toggleDoubleCord(chk) {
@@ -3905,6 +3965,30 @@ function updateEdgeCorners(edge) {
   document.getElementById('back-cover').setAttribute('rx', rx);
 }
 
+function updateEdgeProtectorPreview() {
+  const isChecked = document.getElementById('edge-prot-check')?.checked;
+  const finish    = state['edge-prot-finish'] || 'Silver';
+  // Gold: warm brass tone; Silver: cool chrome — match grommet palette
+  const color  = finish === 'Gold' ? '#d4a843' : '#c8c8d0';
+  const color2 = finish === 'Gold' ? '#f0c84a' : '#e8e8f0'; // highlight tone
+  const op     = (isChecked && finish !== 'None') ? '1' : '0';
+
+  ['edge-prot-top', 'edge-prot-bot'].forEach(function(gId) {
+    const g = document.getElementById(gId);
+    if (!g) return;
+    g.setAttribute('opacity', op);
+    // Recolor every rect and solid circle inside the group
+    g.querySelectorAll('rect, circle').forEach(function(el) {
+      const currentFill = el.getAttribute('fill') || '';
+      // Skip sheen/highlight elements (they use rgba)
+      if (currentFill.startsWith('rgba')) return;
+      // Filigree highlight dots stay lighter
+      if (currentFill === 'rgba(255,255,255,0.35)') return;
+      el.setAttribute('fill', currentFill === '#b8a090' ? color : color2);
+    });
+  });
+}
+
 // ════════════════════════════════════════
 //  PROGRESS BAR
 // ════════════════════════════════════════
@@ -3951,7 +4035,7 @@ function showToast(msg) {
 //  SCROLL TO CHECKOUT
 // ════════════════════════════════════════
 function scrollToCheckout() {
-  document.getElementById('checkout').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('details').scrollIntoView({ behavior: 'smooth' });
 }
 
 // ════════════════════════════════════════
@@ -3981,6 +4065,12 @@ async function submitOrder() {
     showToast('Please fill in all required fields.'); return;
   }
   
+  if (!state.base) {
+    showToast('Please select a base folio size.'); return;
+  }
+  if (!state.leather) {
+    showToast('Please select a leather color.'); return;
+  }
   if (!state.frontCord) {
     showToast('Please select a front cord color.'); return;
   }
@@ -4101,35 +4191,40 @@ async function submitOrder() {
     }
 
     // ── Step 2: Slot confirmed — submit the order ────────────────
-    // no-cors removed: GAS web apps support CORS for simple POST (text/plain).
-    // We now read json.orderId (the server-generated ORD-XXXX) for the redirect.
-    const res        = await fetch(GAS_URL, {
+    const res  = await fetch(GAS_URL, {
       method:  'POST',
       headers: { 'Content-Type': 'text/plain' },
       body:    JSON.stringify(orderData),
     });
-     const json         = await res.json().catch(() => ({}));
-    const finalOrderId = json.orderId    || orderData.orderId; // fallback to dedupKey
-    const sessionKey   = json.sessionKey || '';               // server-generated UUID
+    const json = await res.json().catch(() => ({}));
 
-    // ── Redirect to payment portal with server-confirmed ORD-XXXX ─
+    // ── If server returned an error, show it — never redirect with a broken ID ──
+    if (!json.success) {
+      submitBtn.disabled    = false;
+      submitBtn.textContent = '✦ Place My Order';
+      const errMsg = json.error || 'Something went wrong. Please try again or contact artcyst.ph@gmail.com';
+      showToast(errMsg);
+      console.error('Server rejected order:', JSON.stringify(json));
+      return;
+    }
+
+    // ── Success — use the server-assigned ORD-XXXX ───────────────
+    const finalOrderId = json.orderId;
+    const sessionKey   = json.sessionKey || '';
+
     const params = new URLSearchParams({
       orderId: finalOrderId,
       total:   String(total),
       email:   orderData.customer.email,
-      key:     sessionKey,              // ← SessionKey for proof upload validation
+      key:     sessionKey,
     });
     window.location.href = '/paymentportal?' + params.toString();
 
- } catch (err) {
+  } catch (err) {
     console.error('Order submission error:', err);
-    const params = new URLSearchParams({
-      orderId: orderData.orderId,
-      total:   String(total),
-      email:   orderData.customer.email,
-      key:     '',   // key unavailable on network error; server skips validation gracefully
-    });
-    window.location.href = '/paymentportal?' + params.toString();
+    submitBtn.disabled    = false;
+    submitBtn.textContent = '✦ Place My Order';
+    showToast('Network error — please check your connection and try again.');
   }
 }
 
@@ -4427,6 +4522,128 @@ if (window.location.hash === '#terms') {
     history.replaceState(null, '', ' '); // clean the hash from the URL bar
   });
 }
+</script>
+<!-- ── Floating Mini Preview (mobile) ── -->
+<!-- ── Desktop persistent floating preview ── -->
+<div id="desktop-float">
+  <div class="preview-title">✦ Live Preview</div>
+  <svg id="df-svg" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div style="border-top:1px solid var(--border);margin:12px 0 8px;"></div>
+  <div class="summary-line"><span class="summary-key">Base</span><span class="summary-val" id="df-base">—</span></div>
+  <div class="summary-line"><span class="summary-key">Leather</span><span class="summary-val" id="df-leather">—</span></div>
+  <div class="summary-line"><span class="summary-key">Hardware</span><span class="summary-val" id="df-hardware">None</span></div>
+  <div class="summary-line"><span class="summary-key">Front Cord</span><span class="summary-val" id="df-cord">—</span></div>
+  <div class="summary-line"><span class="summary-key">Engraving</span><span class="summary-val" id="df-engraving">—</span></div>
+  <div class="summary-total"><span>Total</span><span id="df-total">₱499</span></div>
+</div>
+
+<div id="mini-float" onclick="document.getElementById('live-preview').scrollIntoView({behavior:'smooth'})" title="Tap to see full preview">
+  <svg id="mini-float-svg" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div id="mini-float-label">✦ Preview</div>
+  <div id="mini-float-total">₱499</div>
+</div>
+
+<script>
+// ── Desktop floating preview sidebar ─────────────────────────────
+(function() {
+  const dfEl      = document.getElementById('desktop-float');
+  const dfSvg     = document.getElementById('df-svg');
+  const srcSvg    = document.getElementById('folio-svg');
+  const startEl   = document.getElementById('addons');   // show from addons onward
+  const endEl     = document.getElementById('checkout'); // hide after checkout
+  if (!dfEl) return;
+
+  // Sync SVG
+  function syncDf() {
+    if (srcSvg && dfSvg) dfSvg.innerHTML = srcSvg.innerHTML;
+  }
+  syncDf();
+  if (srcSvg) new MutationObserver(syncDf).observe(srcSvg, { childList:true, subtree:true, attributes:true, characterData:true });
+
+  // Sync summary fields
+  const fieldMap = { 'df-base':'s-base','df-leather':'s-leather','df-hardware':'s-hardware','df-cord':'s-front-cord','df-engraving':'s-engraving','df-total':'s-total' };
+  function syncFields() {
+    Object.entries(fieldMap).forEach(function([dfId, srcId]) {
+      const src = document.getElementById(srcId);
+      const dst = document.getElementById(dfId);
+      if (src && dst) dst.textContent = src.textContent;
+    });
+  }
+  syncFields();
+  // Watch all source fields for changes
+  Object.values(fieldMap).forEach(function(srcId) {
+    const el = document.getElementById(srcId);
+    if (el) new MutationObserver(syncFields).observe(el, { childList:true, subtree:true, characterData:true });
+  });
+
+  // Show/hide based on scroll position — visible between #addons and end of #checkout
+  function checkVisibility() {
+    if (!startEl || !endEl) return;
+    const startTop = startEl.getBoundingClientRect().top;
+    const endBot   = endEl.getBoundingClientRect().bottom;
+    const inRange  = startTop <= 80 && endBot >= 100;
+    dfEl.classList.toggle('df-visible', inRange);
+  }
+  window.addEventListener('scroll', checkVisibility, { passive: true });
+  checkVisibility();
+})();
+
+(function() {
+  // Script is at end of body — DOM is already ready, no need for DOMContentLoaded
+  const src        = document.getElementById('folio-svg');
+  const dest       = document.getElementById('mini-float-svg');
+  const priceEl    = document.getElementById('s-total');
+  const floatPrice = document.getElementById('mini-float-total');
+  const floatEl    = document.getElementById('mini-float');
+  const fullPanel  = document.getElementById('live-preview');
+
+  // ── 1. Sync SVG contents ────────────────────────────────────────
+  function syncMiniFloat() {
+    if (src && dest) dest.innerHTML = src.innerHTML;
+  }
+  syncMiniFloat(); // initial sync
+
+  if (src) {
+    new MutationObserver(syncMiniFloat).observe(src, {
+      childList: true, subtree: true, attributes: true, characterData: true
+    });
+  }
+
+  // ── 2. Sync price ───────────────────────────────────────────────
+  if (priceEl && floatPrice) {
+    floatPrice.textContent = priceEl.textContent;
+    new MutationObserver(function() {
+      floatPrice.textContent = priceEl.textContent;
+    }).observe(priceEl, { childList: true, subtree: true, characterData: true });
+  }
+
+  // ── 3. Show/hide based on whether full preview is on screen ────
+  // Use a boolean flag so we only touch inline style — never fight the media query.
+  // The media query controls whether the float exists on desktop vs mobile.
+  // We only need to hide it when the full preview is scrolled into view on mobile.
+  var fullPanelVisible = false;
+
+  function applyFloatVisibility() {
+    if (!floatEl) return;
+    // On mobile (≤900px): hide when full panel is visible, show otherwise
+    // On desktop: CSS media query keeps it display:none regardless
+    floatEl.style.opacity  = fullPanelVisible ? '0' : '1';
+    floatEl.style.pointerEvents = fullPanelVisible ? 'none' : 'auto';
+    floatEl.style.transform = fullPanelVisible ? 'translateY(12px)' : 'translateY(0)';
+  }
+
+  if (fullPanel && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function(entries) {
+      fullPanelVisible = entries[0].isIntersecting;
+      applyFloatVisibility();
+    }, { threshold: 0.4 }).observe(fullPanel);
+  }
+
+  // Add transition for smooth fade
+  if (floatEl) {
+    floatEl.style.transition = 'opacity 0.25s, transform 0.25s, box-shadow 0.18s';
+  }
+})();
 </script>
 </body>
 </html>
