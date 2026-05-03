@@ -4219,6 +4219,16 @@ async function submitOrder() {
     const finalOrderId = json.orderId;
     const sessionKey   = json.sessionKey || '';
 
+    // Guard: if orderId is missing, the server response was malformed.
+    // Never redirect with undefined — show a recoverable error instead.
+    if (!finalOrderId || finalOrderId === 'undefined') {
+      submitBtn.disabled    = false;
+      submitBtn.textContent = '✦ Place My Order';
+      showToast('Order was received but we could not get your Order ID. Please check your email for confirmation, or contact artcyst.ph@gmail.com.');
+      console.error('Server returned success but orderId is missing:', JSON.stringify(json));
+      return;
+    }
+
     const params = new URLSearchParams({
       orderId: finalOrderId,
       total:   String(total),
