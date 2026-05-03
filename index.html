@@ -2289,9 +2289,7 @@
          page_load_time: real users take >3s; bots submit instantly.
          Both are read server-side in doPost() of Code.gs.
     -->
-    <input type="text" id="hp_field" name="hp_field"
-      style="position:absolute;left:-9999px;opacity:0;height:0;width:0;pointer-events:none;"
-      autocomplete="off" tabindex="-1" aria-hidden="true">
+    <input type="hidden" id="hp_field" name="hp_field">
     <input type="hidden" id="page_load_time" name="page_load_time">
 
       <!-- ── Terms & Conditions Agreement Checkbox ────────────────────── -->
@@ -2705,11 +2703,8 @@ async function submitWaitlist() {
   msg.textContent   = '';
 
   try {
-    const payload = new FormData();
-    payload.append('action', 'waitlist');
-    payload.append('email',  email);
-
-    const res  = await fetch(GAS_URL, { method: 'POST', body: payload });
+    const url  = GAS_URL + '?action=waitlist&email=' + encodeURIComponent(email);
+    const res  = await fetch(url, { method: 'POST' });
     const data = await res.json();
 
     if (data.success) {
