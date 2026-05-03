@@ -378,7 +378,8 @@
     padding: 8px;
     z-index: 999;
     cursor: pointer;
-    opacity: 1;
+    opacity: 0;
+    pointer-events: none;
     /* transition handled by JS inline style */
   }
   #mini-float:active { transform: scale(0.97); }
@@ -501,11 +502,13 @@
     box-shadow: 0 8px 32px rgba(139,77,99,0.13);
     z-index: 900;
     opacity: 0;
-    transition: opacity 0.3s, transform 0.3s;
+    visibility: hidden;          /* hidden from layout + screen readers on load */
+    transition: opacity 0.35s, visibility 0.35s;
     pointer-events: none;
   }
   #desktop-float.df-visible {
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
   }
   #desktop-float svg { width: 100%; height: auto; display: block; }
@@ -1937,9 +1940,9 @@
         <div class="addon-price">₱59</div>
       </div>
       <div id="edge-prot-sub" style="display:none;padding:12px 32px 4px;">
-        <label class="field-label">Finish</label>
+        <label class="field-label">Finish <span style="font-size:11px;color:var(--text-light);font-weight:400;">— choose one</span></label>
         <div class="option-grid">
-          <button class="opt-pill active" onclick="selectOpt('edge-prot-finish',this,'None',0)">None</button>
+          <button class="opt-pill" onclick="selectOpt('edge-prot-finish',this,'None',0);updateEdgeProtectorPreview()">None</button>
           <button class="opt-pill" onclick="selectOpt('edge-prot-finish',this,'Silver',0);updateEdgeProtectorPreview()">Silver</button>
           <button class="opt-pill" onclick="selectOpt('edge-prot-finish',this,'Gold',0);updateEdgeProtectorPreview()">Gold</button>
         </div>
@@ -3054,7 +3057,7 @@ const state = {
   keychain: false,
   shipping: '', shippingFee: 0,
   'fabric-pattern': 'Flower',
-  'edge-prot-finish': 'Silver',
+  'edge-prot-finish': 'None',
   'font': '3mm Uppercase',
 };
 
@@ -3688,6 +3691,10 @@ function toggleFabric(cb) {
 function toggleEdgeProtector(chk) {
   state.edgeProtector = chk.checked;
   document.getElementById('edge-prot-sub').style.display = chk.checked ? 'block' : 'none';
+  // Always clear active pill and reset finish to None when toggling —
+  // whether checking OR unchecking, so no pill is ever pre-selected.
+  state['edge-prot-finish'] = 'None';
+  document.querySelectorAll('#edge-prot-sub .opt-pill').forEach(b => b.classList.remove('active'));
   updateEdgeProtectorPreview();
   calcTotal();
 }
@@ -4341,11 +4348,12 @@ function acceptTerms() {
   if (label) label.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-buildCordSwatches('front-cord-swatches', 'frontCord', false);
-buildCordSwatches('s1-cord-swatches', 's1', true);
-buildCordSwatches('s2-cord-swatches', 's2', true);
-buildCordSwatches('s3-cord-swatches', 's3', true);
-buildDoubleCordSwatches();
+// Initial swatch build (no stock yet — stock-aware rebuild fires inside applyStockData after GAS fetch)
+buildCordSwatches('front-cord-swatches', 'frontCord', false, null);
+buildCordSwatches('s1-cord-swatches', 's1', true, null);
+buildCordSwatches('s2-cord-swatches', 's2', true, null);
+buildCordSwatches('s3-cord-swatches', 's3', true, null);
+buildDoubleCordSwatches(null);
 updateFolioColor('#c8b89a'); // neutral placeholder — no leather selected
 calcTotal();
 document.getElementById('cust-destination').value = '';
@@ -4585,23 +4593,30 @@ if (window.location.hash === '#terms') {
     dfEl.classList.toggle('df-visible', inRange);
   }
   window.addEventListener('scroll', checkVisibility, { passive: true });
-  checkVisibility();
+  // Don't check on load — wait for first scroll or a short delay after layout settles
+  // This prevents the flash on initial page load
+  var hasScrolled = false;
+  window.addEventListener('scroll', function() { hasScrolled = true; }, { once: true, passive: true });
+  setTimeout(function() {
+    // Only auto-show if user has already scrolled, never on fresh page load
+    if (hasScrolled) checkVisibility();
+  }, 800);
 })();
 
 (function() {
-  // Script is at end of body — DOM is already ready, no need for DOMContentLoaded
   const src        = document.getElementById('folio-svg');
   const dest       = document.getElementById('mini-float-svg');
   const priceEl    = document.getElementById('s-total');
   const floatPrice = document.getElementById('mini-float-total');
   const floatEl    = document.getElementById('mini-float');
   const fullPanel  = document.getElementById('live-preview');
+  const customizerEl = document.getElementById('customizer'); // show float once customizer reached
 
   // ── 1. Sync SVG contents ────────────────────────────────────────
   function syncMiniFloat() {
     if (src && dest) dest.innerHTML = src.innerHTML;
   }
-  syncMiniFloat(); // initial sync
+  syncMiniFloat();
 
   if (src) {
     new MutationObserver(syncMiniFloat).observe(src, {
@@ -4617,29 +4632,40 @@ if (window.location.hash === '#terms') {
     }).observe(priceEl, { childList: true, subtree: true, characterData: true });
   }
 
-  // ── 3. Show/hide based on whether full preview is on screen ────
-  // Use a boolean flag so we only touch inline style — never fight the media query.
-  // The media query controls whether the float exists on desktop vs mobile.
-  // We only need to hide it when the full preview is scrolled into view on mobile.
-  var fullPanelVisible = false;
+  // ── 3. Show/hide logic ──────────────────────────────────────────
+  // Float is hidden until the customizer section enters the viewport.
+  // Once the customizer is reached, float shows — unless the full preview panel
+  // is simultaneously visible (then it hides to avoid redundancy).
+  var customizerReached = false;
+  var fullPanelVisible  = false;
 
   function applyFloatVisibility() {
     if (!floatEl) return;
-    // On mobile (≤900px): hide when full panel is visible, show otherwise
-    // On desktop: CSS media query keeps it display:none regardless
-    floatEl.style.opacity  = fullPanelVisible ? '0' : '1';
-    floatEl.style.pointerEvents = fullPanelVisible ? 'none' : 'auto';
-    floatEl.style.transform = fullPanelVisible ? 'translateY(12px)' : 'translateY(0)';
+    const shouldShow = customizerReached && !fullPanelVisible;
+    floatEl.style.opacity      = shouldShow ? '1' : '0';
+    floatEl.style.pointerEvents = shouldShow ? 'auto' : 'none';
+    floatEl.style.transform    = shouldShow ? 'translateY(0)' : 'translateY(12px)';
   }
 
-  if (fullPanel && 'IntersectionObserver' in window) {
-    new IntersectionObserver(function(entries) {
-      fullPanelVisible = entries[0].isIntersecting;
-      applyFloatVisibility();
-    }, { threshold: 0.4 }).observe(fullPanel);
+  if ('IntersectionObserver' in window) {
+    // Watch customizer — once it enters view, enable the float (stays enabled)
+    if (customizerEl) {
+      new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) customizerReached = true;
+        applyFloatVisibility();
+      }, { threshold: 0.1 }).observe(customizerEl);
+    }
+
+    // Watch full preview panel — hide float while panel is visible
+    if (fullPanel) {
+      new IntersectionObserver(function(entries) {
+        fullPanelVisible = entries[0].isIntersecting;
+        applyFloatVisibility();
+      }, { threshold: 0.4 }).observe(fullPanel);
+    }
   }
 
-  // Add transition for smooth fade
+  // Smooth transition
   if (floatEl) {
     floatEl.style.transition = 'opacity 0.25s, transform 0.25s, box-shadow 0.18s';
   }
