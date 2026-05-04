@@ -4380,6 +4380,19 @@ async function submitOrder() {
     if (!json.success) {
       submitBtn.disabled    = false;
       submitBtn.textContent = '✦ Place My Order';
+      // ── Stock sold out between last poll and submit tap ───────────
+      if (json.stockOos) {
+        // Re-fetch fresh stock so badges + swatch states update immediately
+        fetch(GAS_URL, { method: 'GET' })
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            if (d.stock) applyStockData(d.stock);
+          })
+          .catch(function() {});
+        // Scroll back to the customizer so the customer can fix their selection
+        const customizerEl = document.getElementById('customizer');
+        if (customizerEl) customizerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
       const errMsg = json.error || 'Something went wrong. Please try again or contact artcyst.ph@gmail.com';
       showToast(errMsg);
       console.error('Server rejected order:', JSON.stringify(json));
