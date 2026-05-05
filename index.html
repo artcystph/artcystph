@@ -2346,7 +2346,7 @@
       onclick="submitOrder()"
       disabled
     >
-      ✦ Place My Order
+      ✦ Proceed to Payment
     </button>
     <p id="terms-hint"
       style="text-align:center;font-size:12px;color:var(--text-light);margin-top:10px;transition:opacity 0.2s;">
@@ -4310,7 +4310,7 @@ async function submitOrder() {
   }
 
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Placing Order...⏳';
+  submitBtn.textContent = 'Proceeding to Payment...⏳';
 
  // ── Build dedup key (anti-duplicate guard only — canonical ID comes from backend) ──
   const timestamp = new Date().toISOString();
@@ -4393,7 +4393,7 @@ async function submitOrder() {
 
       if (capData.isFull) {
         submitBtn.disabled    = false;
-        submitBtn.textContent = '✦ Place My Order';
+        submitBtn.textContent = '✦ Proceed to Payment';
         document.getElementById('order-form-sections').style.display = 'none';
         document.getElementById('checkout').style.display            = 'none';
         document.getElementById('batch-full-msg').style.display      = 'block';
@@ -4418,7 +4418,7 @@ async function submitOrder() {
     // ── If server returned an error, show it — never redirect with a broken ID ──
     if (!json.success) {
       submitBtn.disabled    = false;
-      submitBtn.textContent = '✦ Place My Order';
+      submitBtn.textContent = '✦ Proceed to Payment';
       // ── Stock sold out between last poll and submit tap ───────────
       if (json.stockOos) {
         // Re-fetch fresh stock so badges + swatch states update immediately
@@ -4446,7 +4446,7 @@ async function submitOrder() {
     // Never redirect with undefined — show a recoverable error instead.
     if (!finalOrderId || finalOrderId === 'undefined') {
       submitBtn.disabled    = false;
-      submitBtn.textContent = '✦ Place My Order';
+      submitBtn.textContent = '✦ Proceed to Payment';
       showToast('Order was received but we could not get your Order ID. Please check your email for confirmation, or contact artcyst.ph@gmail.com.');
       console.error('Server returned success but orderId is missing:', JSON.stringify(json));
       return;
@@ -4463,7 +4463,7 @@ async function submitOrder() {
   } catch (err) {
     console.error('Order submission error:', err);
     submitBtn.disabled    = false;
-    submitBtn.textContent = '✦ Place My Order';
+    submitBtn.textContent = '✦ Proceed to Payment';
     showToast('Network error — please check your connection and try again.');
   }
 }
