@@ -384,6 +384,29 @@
   }
   #mini-float:active { transform: scale(0.97); }
   #mini-float svg { width: 100%; height: auto; display: block; border-radius: 8px; }
+  #mini-float.is-dragging { cursor: grabbing; box-shadow: 0 12px 32px rgba(139,77,99,0.28); transform: scale(1.03); transition: box-shadow 0.18s, transform 0.18s !important; }
+  #mini-float-close {
+    position: absolute;
+    top: 5px;
+    right: 6px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--border);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    line-height: 1;
+    color: var(--text-mid);
+    padding: 0;
+    z-index: 10;
+    transition: background 0.15s;
+  }
+  #mini-float-close:hover { background: var(--accent); color: #fff; }
+  #mini-float-tap-area { display: contents; cursor: pointer; }
   #mini-float-label {
     font-size: 9px;
     font-weight: 600;
@@ -4739,10 +4762,13 @@ if (window.location.hash === '#terms') {
   <div class="summary-total"><span>Total</span><span id="df-total">₱499</span></div>
 </div>
 
-<div id="mini-float" onclick="document.getElementById('live-preview').scrollIntoView({behavior:'smooth'})" title="Tap to see full preview">
-  <svg id="mini-float-svg" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg"></svg>
-  <div id="mini-float-label">✦ Preview</div>
-  <div id="mini-float-total">₱499</div>
+<div id="mini-float" title="Tap to see full preview">
+  <button id="mini-float-close" title="Dismiss preview" aria-label="Close mini preview">✕</button>
+  <div id="mini-float-tap-area">
+    <svg id="mini-float-svg" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="mini-float-label">✦ Preview</div>
+    <div id="mini-float-total">₱499</div>
+  </div>
 </div>
 
 <script>
@@ -4863,6 +4889,108 @@ if (window.location.hash === '#terms') {
   if (floatEl) {
     floatEl.style.transition = 'opacity 0.25s, transform 0.25s, box-shadow 0.18s';
   }
+
+  // ── 4. Close button ─────────────────────────────────────────────
+  var dismissed = false;
+  var closeBtn  = document.getElementById('mini-float-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dismissed = true;
+      floatEl.style.opacity       = '0';
+      floatEl.style.pointerEvents = 'none';
+      floatEl.style.transform     = 'translateY(12px)';
+    });
+  }
+
+  // Patch applyFloatVisibility to respect dismissed state
+  var _origApply = applyFloatVisibility;
+  applyFloatVisibility = function() {
+    if (dismissed) return;
+    _origApply();
+  };
+
+  // ── 5. Tap-area scroll (replaces removed onclick on outer div) ───
+  var tapArea = document.getElementById('mini-float-tap-area');
+  if (tapArea) {
+    tapArea.addEventListener('click', function() {
+      if (hasDragged) return; // ignore tap at end of a drag
+      var lp = document.getElementById('live-preview');
+      if (lp) lp.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  // ── 6. Drag to move (touch + mouse) ─────────────────────────────
+  var hasDragged   = false;
+  var dragActive   = false;
+  var startX, startY, startLeft, startTop;
+
+  function toFixed() {
+    // Switch from bottom/right anchoring to top/left so we can drag freely
+    var r = floatEl.getBoundingClientRect();
+    floatEl.style.bottom = 'auto';
+    floatEl.style.right  = 'auto';
+    floatEl.style.left   = r.left + 'px';
+    floatEl.style.top    = r.top  + 'px';
+  }
+
+  function clamp(val, min, max) { return Math.min(Math.max(val, min), max); }
+
+  function onDragStart(clientX, clientY) {
+    if (dismissed) return;
+    toFixed();
+    dragActive = true;
+    hasDragged = false;
+    startX     = clientX;
+    startY     = clientY;
+    startLeft  = parseFloat(floatEl.style.left);
+    startTop   = parseFloat(floatEl.style.top);
+    floatEl.classList.add('is-dragging');
+    floatEl.style.transition = 'box-shadow 0.18s, transform 0.18s';
+  }
+
+  function onDragMove(clientX, clientY) {
+    if (!dragActive) return;
+    var dx = clientX - startX;
+    var dy = clientY - startY;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) hasDragged = true;
+    var maxLeft = window.innerWidth  - floatEl.offsetWidth  - 8;
+    var maxTop  = window.innerHeight - floatEl.offsetHeight - 8;
+    floatEl.style.left = clamp(startLeft + dx, 8, maxLeft) + 'px';
+    floatEl.style.top  = clamp(startTop  + dy, 8, maxTop)  + 'px';
+  }
+
+  function onDragEnd() {
+    if (!dragActive) return;
+    dragActive = false;
+    floatEl.classList.remove('is-dragging');
+    floatEl.style.transition = 'opacity 0.25s, transform 0.25s, box-shadow 0.18s';
+    // Brief delay so click handler can check hasDragged before we reset it
+    setTimeout(function() { hasDragged = false; }, 100);
+  }
+
+  // Touch events
+  if (floatEl) {
+    floatEl.addEventListener('touchstart', function(e) {
+      if (e.target === closeBtn) return;
+      onDragStart(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    floatEl.addEventListener('touchmove', function(e) {
+      if (!dragActive) return;
+      e.preventDefault();
+      onDragMove(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: false });
+    floatEl.addEventListener('touchend', onDragEnd);
+
+    // Mouse events (desktop)
+    floatEl.addEventListener('mousedown', function(e) {
+      if (e.target === closeBtn) return;
+      onDragStart(e.clientX, e.clientY);
+      e.preventDefault();
+    });
+  }
+  document.addEventListener('mousemove', function(e) { onDragMove(e.clientX, e.clientY); });
+  document.addEventListener('mouseup',   onDragEnd);
 })();
 </script>
 </body>
