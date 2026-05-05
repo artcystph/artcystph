@@ -3695,11 +3695,28 @@ async function submitTrackOrder() {
 
     if (data.found) {
       const statusLower = (data.status || '').toLowerCase();
-      const badgeClass  = statusLower === 'complete' ? 'complete'
-                        : statusLower.includes('craft') ? 'crafting' : 'pending';
+      const badgeClass  = statusLower === 'complete'           ? 'complete'
+                        : statusLower.includes('j&t')          ? 'shipped'
+                        : statusLower.includes('craft')        ? 'crafting' : 'pending';
+
+      let html = `Order <strong>${data.orderId}</strong> — Status: <span class="status-badge ${badgeClass}">${data.status}</span>`;
+
+      if (data.trackingNumber) {
+        html += `<div style="margin-top:12px;font-size:13px;color:var(--text-mid);">
+          J&amp;T Tracking Number:<br>
+          <a href="https://www.jtexpress.ph/trajectoryQuery?bills=${encodeURIComponent(data.trackingNumber)}"
+             target="_blank" rel="noopener"
+             style="font-size:16px;font-weight:600;color:var(--accent);letter-spacing:0.04em;text-decoration:none;">
+            ${data.trackingNumber} ↗
+          </a>
+        </div>`;
+      } else if (statusLower.includes('j&t')) {
+        html += `<div style="margin-top:10px;font-size:13px;color:var(--text-mid);">Tracking number not yet available — check back soon.</div>`;
+      }
+
       result.className = 'found';
       result.style.display = '';
-      result.innerHTML = `Order <strong>${data.orderId}</strong> — Status: <span class="status-badge ${badgeClass}">${data.status}</span>`;
+      result.innerHTML = html;
     } else {
       result.className = 'not-found';
       result.style.display = '';
