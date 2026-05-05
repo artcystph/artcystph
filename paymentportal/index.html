@@ -417,7 +417,7 @@
     style="width:100%;margin-top:28px;padding:18px;font-size:16px;"
     onclick="submitProof()"
   >
-    ✦ Submit Proof of Payment
+    ✦ Place My Order
   </button>
   <p style="text-align:center;font-size:12px;color:var(--text-light);margin-top:12px;">
     Your order has already been received. This step confirms your payment.
@@ -433,15 +433,15 @@
   <!-- Success Card (shown after submission) -->
   <div id="success-card" style="margin-top:32px;">
     <span class="success-icon">🎉</span>
-    <h2 class="serif">Payment Received!</h2>
-    <p>Thank you for your payment. We've noted your proof of payment and will begin crafting your folio soon.</p>
+    <h2 class="serif">Your order has been placed!</h2>
+    <p>Payment Received! We've verified your proof of payment and will begin crafting your folio.</p>
     <div id="success-summary-box">
       <div class="summary-line"><span class="summary-key">Order ID</span><span class="summary-val" id="sc-order-id">—</span></div>
       <div class="summary-line"><span class="summary-key">Payment Method</span><span class="summary-val" id="sc-method">—</span></div>
       <div class="summary-total"><span>Total Paid</span><span id="sc-total">₱0</span></div>
     </div>
     <p style="font-size:13px;color:var(--text-light);margin-top:8px;">A confirmation was sent to your email. Handcrafting takes 7–10 business days.</p>
-    <a href="https://artcystph.com/#customizer" class="btn-primary" style="display:inline-block;margin-top:24px;">← Back to Shop</a>
+    <a href="index.html" class="btn-primary" style="display:inline-block;margin-top:24px;">← Back to Shop</a>
   </div>
 
 </div><!-- /portal-wrapper -->
@@ -494,7 +494,7 @@ function onFileSelected(input) {
 }
 
 // ════════════════════════════════════════
-//  SUBMIT PROOF OF PAYMENT
+//  Place My Order
 // ════════════════════════════════════════
 async function submitProof() {
   const popFile = document.getElementById('pop-upload').files[0];
@@ -524,7 +524,7 @@ async function submitProof() {
   }
 
   btn.disabled    = true;
-  btn.textContent = '⏳ Submitting…';
+  btn.textContent = 'Placing Order...⏳';
 
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbyHNf_0XL7DL5jDMh7yX6uCNAWOXB3A28dwNcoc-QE9fVoxlveMpGQ_dCzcJaCqq1w/exec';
 
