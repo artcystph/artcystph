@@ -306,8 +306,22 @@
     <div class="banner-label">Your Order</div>
     <div class="banner-id" id="banner-order-id">—</div>
     <div class="banner-total" id="banner-total">₱0</div>
+
+    <!-- Expired state (shown when order is expired or status = 'Expired 🗑️') -->
+    <div id="expired-section" style="display:none; margin-top:16px; text-align:center; padding: 12px 0 4px;">
+      <div style="font-size:28px; margin-bottom:8px;">🗑️</div>
+      <div style="font-size:17px; font-weight:700; color:var(--deep-mauve); margin-bottom:6px;">Order Expired</div>
+      <p style="font-size:13px; color:var(--text-light); margin-bottom:16px;">This order link is no longer valid. It may have expired or been cancelled.</p>
+      <a href="index.html" class="btn-primary" style="display:inline-block;">← Back to Shop</a>
+    </div>
+  </div><!-- Order banner populated from URL params -->
+  <div id="order-banner">
+    <div class="banner-label">Your Order</div>
+    <div class="banner-id" id="banner-order-id">—</div>
+    <div class="banner-total" id="banner-total">₱0</div>
   </div>
 
+  <div id="payment-section" style="display:none;">
   <!-- Payment section -->
   <div class="section-label">Settle Your Order</div>
   <h1 class="serif section-title">Payment</h1>
@@ -442,6 +456,24 @@
     </div>
     <p style="font-size:13px;color:var(--text-light);margin-top:8px;">A confirmation was sent to your email. Handcrafting takes 7–10 business days.</p>
     <a href="index.html" class="btn-primary" style="display:inline-block;margin-top:24px;">← Back to Shop</a>
+  </div>
+
+</div><!-- /payment-section -->
+
+  <!-- Expired Section -->
+  <div id="expired-section" style="display:none;text-align:center;padding:48px 0;">
+    <div style="font-size:48px;margin-bottom:16px;">⏰</div>
+    <h2 class="serif" style="color:var(--deep-mauve);margin-bottom:12px;">This order has expired</h2>
+    <p style="color:var(--text-light);margin-bottom:28px;">The 12-hour payment window has passed.<br>Please place a new order to continue.</p>
+    <a href="index.html" class="btn-primary">← Back to Shop</a>
+  </div>
+
+  <!-- Not Found / Error Section -->
+  <div id="not-found-section" style="display:none;text-align:center;padding:48px 0;">
+    <div style="font-size:48px;margin-bottom:16px;">🔍</div>
+    <h2 class="serif" style="color:var(--deep-mauve);margin-bottom:12px;">Order not found</h2>
+    <p style="color:var(--text-light);margin-bottom:28px;">This link may be invalid or already processed.</p>
+    <a href="index.html" class="btn-primary">← Back to Shop</a>
   </div>
 
 </div><!-- /portal-wrapper -->
@@ -652,7 +684,15 @@ function showPortalState(reason, data) {
 
   } else if (reason === 'expired') {
     if (expiredSection) expiredSection.style.display = 'block';
-    // Your portal already has a "Back to Shop" button — no extra code needed
+    // Hide payment form elements so only the banner + expired message shows
+    ['payment-method-btns','qr-gcash','qr-maya','qr-bdo','qr-gotyme'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.style.display = 'none';
+    });
+    document.querySelector('.section-label') && (document.querySelector('.section-label').style.display = 'none');
+    document.querySelector('.section-title') && (document.querySelector('.section-title').style.display = 'none');
+    document.querySelector('.section-sub')   && (document.querySelector('.section-sub').style.display   = 'none');
+    const stepCard = document.querySelector('.step-card'); if (stepCard) stepCard.style.display = 'none';
+    const submitBtn = document.getElementById('submit-btn'); if (submitBtn) submitBtn.style.display = 'none';
 
   } else {
     // notFound, alreadyProcessed, error — show fallback
