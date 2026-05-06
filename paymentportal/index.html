@@ -646,14 +646,16 @@ function showToast(msg) {
     const data = await res.json();
 
     if (data.valid) {
-      // ✅ Still pending and within 12 hours — show payment UI
       showPortalState('valid', data);
     } else {
-      // ❌ Expired, not found, or already processed
+      // Show reason in banner for debugging
+      document.getElementById('banner-order-id').textContent = orderId + ' — reason: ' + (data.reason || 'unknown');
       showPortalState(data.reason || 'expired', data);
     }
   } catch (err) {
     console.error('Validity check failed:', err);
+    // Show the raw error in the banner temporarily for debugging
+    document.getElementById('banner-order-id').textContent = 'Error: ' + err.message;
     showPortalState('error');
   }
 })();
