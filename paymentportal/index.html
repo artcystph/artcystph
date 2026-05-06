@@ -311,8 +311,8 @@
   <!-- Expired state (shown when order is expired or status = 'Expired 🗑️') -->
   <div id="expired-section" style="display:none; margin-top:20px; text-align:center; padding: 32px 24px;">
     <div style="font-size:36px; margin-bottom:12px;">🗑️</div>
-    <div style="font-size:19px; font-weight:700; color:var(--deep-mauve); margin-bottom:8px;">Order Expired</div>
-    <p style="font-size:13px; color:var(--text-light); margin-bottom:20px;">This order link is no longer valid. It may have expired or been cancelled.</p>
+    <div style="font-size:19px; font-weight:700; color:var(--deep-mauve); margin-bottom:8px;">Order Link Expired</div>
+    <p style="font-size:13px; color:var(--text-light); margin-bottom:20px;">It looks like the 12-hour reservation for these items has ended. Please head back to the shop to see if these items are still available!</p>
     <a href="index.html" class="btn-primary" style="display:inline-block;">← Back to Shop</a>
   </div>
 
@@ -643,7 +643,7 @@ function showToast(msg) {
       showPortalState('valid', data);
     } else {
       // Show reason in banner for debugging
-      document.getElementById('banner-order-id').textContent = orderId + ' — reason: ' + (data.reason || 'unknown');
+      document.getElementById('banner-order-id').textContent = orderId + ' — Reservation Expired';
       showPortalState(data.reason || 'expired', data);
     }
   } catch (err) {
