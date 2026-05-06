@@ -601,6 +601,64 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3200);
 }
+
+// ── Order Validity Gate — runs immediately on portal load ──────────
+(async function checkValidity() {
+  const params    = new URLSearchParams(window.location.search);
+  const orderId   = params.get('orderId') || '';
+  const sessionKey = params.get('key')   || '';
+  const GAS_URL   = 'https://script.google.com/macros/s/AKfycbyHNf_0XL7DL5jDMh7yX6uCNAWOXB3A28dwNcoc-QE9fVoxlveMpGQ_dCzcJaCqq1w/exec';
+
+  if (!orderId) {
+    showPortalState('notFound');
+    return;
+  }
+
+  try {
+    const res  = await fetch(
+      `${GAS_URL}?action=checkOrderValidity&orderId=${encodeURIComponent(orderId)}&key=${encodeURIComponent(sessionKey)}`
+    );
+    const data = await res.json();
+
+    if (data.valid) {
+      // ✅ Still pending and within 12 hours — show payment UI
+      showPortalState('valid', data);
+    } else {
+      // ❌ Expired, not found, or already processed
+      showPortalState(data.reason || 'expired', data);
+    }
+  } catch (err) {
+    console.error('Validity check failed:', err);
+    showPortalState('error');
+  }
+})();
+
+function showPortalState(reason, data) {
+  // IDs to show/hide — adjust to match your portal's actual element IDs
+  const paymentSection  = document.getElementById('payment-section');   // your normal payment UI
+  const expiredSection  = document.getElementById('expired-section');   // "Too late" message
+  const notFoundSection = document.getElementById('not-found-section'); // fallback
+
+  // Hide all first
+  [paymentSection, expiredSection, notFoundSection].forEach(el => {
+    if (el) el.style.display = 'none';
+  });
+
+  if (reason === 'valid') {
+    if (paymentSection) paymentSection.style.display = 'block';
+    // Optionally show hours left
+    const hoursEl = document.getElementById('hours-left');
+    if (hoursEl && data) hoursEl.textContent = data.hoursLeft + ' hours';
+
+  } else if (reason === 'expired') {
+    if (expiredSection) expiredSection.style.display = 'block';
+    // Your portal already has a "Back to Shop" button — no extra code needed
+
+  } else {
+    // notFound, alreadyProcessed, error — show fallback
+    if (notFoundSection) notFoundSection.style.display = 'block';
+  }
+}
 </script>
 </body>
 </html>
