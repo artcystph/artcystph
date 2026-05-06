@@ -314,6 +314,8 @@
     <div style="font-size:19px; font-weight:700; color:var(--deep-mauve); margin-bottom:8px;">Order Expired</div>
     <p style="font-size:13px; color:var(--text-light); margin-bottom:20px;">This order link is no longer valid. It may have expired or been cancelled.</p>
     <a href="index.html" class="btn-primary" style="display:inline-block;">← Back to Shop</a>
+  </div>
+
   <div id="payment-section" style="display:none;">
   <!-- Payment section -->
   <div class="section-label">Settle Your Order</div>
@@ -452,14 +454,6 @@
   </div>
 
 </div><!-- /payment-section -->
-
-  <!-- Expired Section -->
-  <div id="expired-section" style="display:none;text-align:center;padding:48px 0;">
-    <div style="font-size:48px;margin-bottom:16px;">⏰</div>
-    <h2 class="serif" style="color:var(--deep-mauve);margin-bottom:12px;">This order has expired</h2>
-    <p style="color:var(--text-light);margin-bottom:28px;">The 12-hour payment window has passed.<br>Please place a new order to continue.</p>
-    <a href="index.html" class="btn-primary">← Back to Shop</a>
-  </div>
 
   <!-- Not Found / Error Section -->
   <div id="not-found-section" style="display:none;text-align:center;padding:48px 0;">
@@ -679,18 +673,19 @@ function showPortalState(reason, data) {
 
   } else if (reason === 'expired') {
     if (expiredSection) expiredSection.style.display = 'block';
-    // Hide payment form elements so only the banner + expired message shows
-    ['payment-method-btns','qr-gcash','qr-maya','qr-bdo','qr-gotyme'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.style.display = 'none';
-    });
-    document.querySelector('.section-label') && (document.querySelector('.section-label').style.display = 'none');
-    document.querySelector('.section-title') && (document.querySelector('.section-title').style.display = 'none');
-    document.querySelector('.section-sub')   && (document.querySelector('.section-sub').style.display   = 'none');
-    const stepCard = document.querySelector('.step-card'); if (stepCard) stepCard.style.display = 'none';
-    const submitBtn = document.getElementById('submit-btn'); if (submitBtn) submitBtn.style.display = 'none';
+    // payment-section stays hidden (display:none by default), so nothing else to hide
 
+  } else if (reason === 'alreadyProcessed') {
+    // Order already paid — show a specific message in the not-found section
+    if (notFoundSection) {
+      notFoundSection.style.display = 'block';
+      const h2 = notFoundSection.querySelector('h2');
+      const p  = notFoundSection.querySelector('p');
+      if (h2) h2.textContent = 'Payment already received';
+      if (p)  p.textContent  = 'This order has already been processed. Check your email for your confirmation.';
+    }
   } else {
-    // notFound, alreadyProcessed, error — show fallback
+    // notFound, error — show fallback
     if (notFoundSection) notFoundSection.style.display = 'block';
   }
 }
