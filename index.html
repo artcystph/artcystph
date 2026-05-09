@@ -2791,12 +2791,16 @@ const batchFullMsg = document.getElementById('batch-full-msg');
       if (data.stock) applyStockData(data.stock);
     }
   } catch (err) {
-    // Network error / GAS unreachable — fail CLOSED to prevent over-ordering
-    console.warn('Capacity check failed, defaulting to batch-full state:', err);
+    // Network error / GAS unreachable — show a retry prompt instead of silently locking the form
+    console.warn('Capacity check failed:', err);
     loader.style.display       = 'none';
-    batchFullMsg.style.display = 'block';
+    batchFullMsg.style.display = 'none';
     formSections.style.display = 'none';
     updateStatusIndicator('error');
+    // Show a user-friendly retry message
+    const retryMsg = document.getElementById('capacity-loader') || document.createElement('div');
+    retryMsg.innerHTML = '<p style="text-align:center;color:#8b4d63;padding:24px;">⚠️ Unable to load batch info. Please <a href="" onclick="location.reload();return false;" style="color:#C2458C;">refresh the page</a> and try again.</p>';
+    retryMsg.style.display = 'block';
     // Update the batch-full card copy for maintenance state
     const batchCard = document.querySelector('#batch-full-msg .batch-full-card h2');
     if (batchCard) batchCard.textContent = 'Temporarily Unavailable';
