@@ -1465,7 +1465,7 @@
       <span id="status-label">Checking availability…</span>
     </div>
 
-    <p style="margin-top:16px;font-size:13px;color:var(--text-light);">Premium vegan leather · Made to order · 7–10 business days</p>
+    <p style="margin-top:16px;font-size:13px;color:var(--text-light);">Premium leather · Made to order · 7–10 business days</p>
   </div>
 </section>
 
@@ -2196,10 +2196,10 @@
           <input type="checkbox" class="addon-check" id="pockets-check" onchange="togglePockets(this)">
           <div class="addon-info">
             <div class="addon-name">Inside Pockets</div>
-            <div class="addon-desc">A6 &amp; A5 · ₱250</div>
+            <div class="addon-desc" id="pocket-desc-text">A6: ₱180 · A5: ₱280 · PP: ₱150</div>
             <div style="margin-top:8px;width:100px;height:70px;background:#e8e0d8;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#8a7070;border:1px dashed #c4b4b4;gap:4px;">📷 Sample photo</div>
           </div>
-          <div class="addon-price">₱250</div>
+          <div class="addon-price" id="pocket-price-tag">₱180–280</div>
         </div>
 
         <!-- Edge Protector -->
@@ -3124,6 +3124,7 @@ const batchFullMsg = document.getElementById('batch-full-msg');
         // If user already clicked Tactile tab, render now
         if (state.leatherType === 'tactile') buildTactileSwatches();
       }
+      _updatePocketPriceDisplay(); // init with correct default
       if (data.stock) {
         applyStockData(data.stock);
         // Sync insert-type stock counts into insertStocks map
@@ -3911,6 +3912,9 @@ function selectBase(btn) {
   calcTotal();
   applyLeatherStockForBase(); // recheck leather stock for selected size + color
   if (typeof updateTactileSwatchBadges === 'function') updateTactileSwatchBadges();
+  _updatePocketPriceDisplay();
+  // Refresh keychain leather choices if sub-panel is open and tactile stock changed
+  if (document.getElementById('keychain-check')?.checked) _populateKeychainLeather();
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -4635,7 +4639,7 @@ function selectLeatherType(type) {
     if (tactileArea) tactileArea.style.display = '';
     if (vpill) vpill.classList.remove('active');
     if (tpill) tpill.classList.add('active');
-    if (sub)   sub.textContent = 'Genuine tactile · Embossed texture · Surcharge applies';
+    if (sub)   sub.textContent = 'Premium tactile · Embossed texture · Surcharge applies';
     // Build swatches if data is ready, otherwise spinner stays
     if (_tactileData && _tactileData.length) {
       buildTactileSwatches();
@@ -5007,11 +5011,12 @@ function _updateSVGLace() {
   if (!on) return;
 
   var isRoL = (state.laceOrientation === 'Inner Flap: Right over Left');
-  // Left-over-Right  → trim on LEFT  spine edge: seam x=82,  scallops bulge RIGHT (Q toward 87)
-  // Right-over-Left  → trim on RIGHT opening edge: seam x=254, scallops bulge LEFT (Q toward 249)
-  var seamX = isRoL ? 254 : 82;
-  var fillX = isRoL ? 258 : 78;   // far edge of the trim strip
-  var qX    = isRoL ? (seamX - 5) : (seamX + 5);  // control point — bulge inward
+  // Matches 3D orientation:
+  // Left-over-Right  (LoR) → trim on RIGHT opening edge: seam x=254, scallops bulge LEFT (inward)
+  // Right-over-Left  (RoL) → trim on LEFT  spine edge:   seam x=82,  scallops bulge RIGHT (inward)
+  var seamX = isRoL ? 82  : 254;
+  var fillX = isRoL ? 78  : 258;
+  var qX    = isRoL ? (seamX + 5) : (seamX - 5);  // control point — bulge inward
   var scallops = '';
   for (var y = 18; y <= 246; y += 9) {
     scallops += ' Q' + qX + ',' + (y + 4.5) + ' ' + seamX + ',' + (y + 9);
@@ -5194,6 +5199,27 @@ function toggleFabric(cb) {
   calcTotal();
   if (typeof update3DPreview === 'function') update3DPreview();
 }
+// Dynamically updates the pocket price description and badge based on selected base size.
+// No base selected → shows all 3 prices. Base selected → shows specific price.
+function _updatePocketPriceDisplay() {
+  var b     = (state.base || '').toLowerCase();
+  var price, desc;
+  if (!state.base) {
+    price = '180–280';
+    desc  = 'A6: ₱180 · A5: ₱280 · PP: ₱150';
+  } else if (b.startsWith('a5')) {
+    price = 280; desc = 'A5 · ₱280';
+  } else if (b.startsWith('pp')) {
+    price = 150; desc = 'Passport · ₱150';
+  } else {
+    price = 180; desc = 'A6 · ₱180';
+  }
+  var descEl  = document.querySelector('#pockets-row .addon-desc');
+  var priceEl = document.querySelector('#pockets-row .addon-price');
+  if (descEl)  descEl.textContent  = desc;
+  if (priceEl) priceEl.textContent = '₱' + price;
+}
+
 function togglePockets(cb) {
   state.pockets = cb.checked;
   calcTotal();
@@ -5222,7 +5248,49 @@ function toggleLace(chk) {
   calcTotal();
   if (typeof update3DPreview === 'function') update3DPreview();
 }
+// Populate #kc-leather dropdown based on current leather type (vegan or tactile)
+function _populateKeychainLeather() {
+  var sel = document.getElementById('kc-leather');
+  if (!sel) return;
+  var prev = sel.value; // remember current selection
+  sel.innerHTML = '';
+
+  if (state.leatherType === 'tactile' && _tactileData && _tactileData.length) {
+    // ── Tactile options with stock awareness ──────────────────
+    _tactileData.forEach(function(item) {
+      var stock = _getStockForBase(item);
+      var oos   = (stock === 0);
+      var low   = (stock !== null && stock !== undefined
+                   && Number(stock) >= 1 && Number(stock) <= 5);
+      var opt   = document.createElement('option');
+      opt.value = item.colorName + ' (' + item.textureType + ')';
+      opt.textContent = item.colorName
+        + (oos ? ' — Out of stock' : low ? ' — Only ' + stock + ' left!' : '');
+      if (oos) { opt.disabled = true; opt.style.color = '#aaa'; }
+      sel.appendChild(opt);
+    });
+  } else {
+    // ── Vegan leather colors (default) ───────────────────────
+    ['Coal','Wine','Latte','Lychee','Pistachio','Sky','Midnight','Taro']
+      .forEach(function(c) {
+        var opt = document.createElement('option');
+        opt.value = c; opt.textContent = c;
+        sel.appendChild(opt);
+      });
+  }
+
+  // Restore previous value if still available
+  if (prev) {
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === prev) { sel.selectedIndex = i; break; }
+    }
+  }
+}
+
 function toggleKeychain(chk) {
+  var sub = document.getElementById('keychain-sub');
+  if (sub) sub.style.display = chk.checked ? 'block' : 'none';
+  if (chk.checked) _populateKeychainLeather();
   state.keychain = chk.checked;
   calcTotal();
   if (typeof update3DPreview === 'function') update3DPreview();
