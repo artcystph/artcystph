@@ -550,7 +550,8 @@
     padding: 2px 6px; border-radius: 4px; pointer-events: none;
     opacity: 0; transition: opacity 0.18s; margin-bottom: 4px;
   }
-  .swatch-wrap.tactile-wrap:hover .tactile-tex-badge { opacity: 1; }
+  .swatch-wrap.tactile-wrap:hover .tactile-tex-badge,
+  .swatch-wrap.tactile-wrap.touch-active .tactile-tex-badge { opacity: 1; }
 
   /* Tactile surcharge badge below swatch */
   .tactile-price-badge {
@@ -4430,7 +4431,7 @@ function buildTactileSwatches() {
     // Texture type badge (shows on hover)
     var badge = document.createElement('div');
     badge.className = 'tactile-tex-badge';
-    badge.textContent = item.textureType + (item.variant !== 'default' ? ' / ' + item.variant : '');
+    badge.textContent = (item.textureType || '').replace(/_/g, ' ') + (item.variant !== 'default' ? ' / ' + item.variant : '');
 
     // Swatch dot
     var dot = document.createElement('div');
@@ -4453,7 +4454,11 @@ function buildTactileSwatches() {
     dot.dataset.imageId     = item.imageId  || '';
     dot.dataset.tileSize    = item.tileSize || '';
     // onclick + OOS state set by updateTactileSwatchBadges after base is known
-    dot.onclick = function() { selectTactile(this); };
+    dot.onclick = function() {
+      document.querySelectorAll('.swatch-wrap.tactile-wrap').forEach(function(w) { w.classList.remove('touch-active'); });
+      this.closest('.swatch-wrap') && this.closest('.swatch-wrap').classList.add('touch-active');
+      selectTactile(this);
+    };
 
     // Label
     var lbl = document.createElement('div');
@@ -5299,7 +5304,7 @@ function _buildKeychainTactileSwatches() {
     if (!oos) dot.onclick = function() { selectKeychainSwatch(this); };
     var badge = document.createElement('div');
     badge.className = 'tactile-tex-badge';
-    badge.textContent = item.textureType || '';
+    badge.textContent = (item.textureType || '').replace(/_/g, ' ');
     var lbl   = document.createElement('div');
     lbl.className = 'swatch-label';
     lbl.textContent = item.colorName;
@@ -5919,6 +5924,12 @@ async function submitOrder() {
         cord: document.getElementById('kc-cord').value,
         letter: document.getElementById('kc-letter').value
       } : null,
+      keychainColor: _keychainChk
+        ? (function() {
+            var el = document.querySelector('#kc-vegan-swatches .swatch.active[data-kc-color], #kc-tactile-swatches .swatch.active[data-kc-color]');
+            return el ? el.dataset.kcColor.split(' ')[0] : (document.getElementById('kc-leather').value.split(' ')[0] || 'Coal');
+          })()
+        : null,
       shipping: { destination: state.shipping, fee: state.shippingFee },
       total,
     }
