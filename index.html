@@ -2198,7 +2198,7 @@
           <div class="addon-info">
             <div class="addon-name">Inside Pockets</div>
             <div class="addon-desc" id="pocket-desc-text">A6: ₱180 · A5: ₱280 · PP: ₱150</div>
-            <img src="Pockets.jpeg" alt="Inside Pockets sample" style="margin-top:8px;width:100px;height:70px;object-fit:cover;border-radius:4px;display:block;" loading="lazy">
+            <img src="images/Pockets.jpeg" alt="Inside Pockets sample" style="margin-top:8px;width:100px;height:70px;object-fit:cover;border-radius:4px;display:block;" loading="lazy">
           </div>
           <div class="addon-price" id="pocket-price-tag">₱180</div>
         </div>
@@ -2256,6 +2256,7 @@
                 <span id="insert-qty-blank" style="display:none;align-items:center;gap:6px;">
                   <label style="font-size:12px;color:var(--text-mid);">Qty:</label>
                   <input type="number" id="iq-blank" min="1" max="10" value="1" style="width:60px;"
+                    oninput="this.value=Math.min(Math.max(1,parseInt(this.value)||1),parseInt(this.max)||10);"
                     onchange="calcTotal();if(typeof update3DPreview==='function')update3DPreview();">
                 </span>
               </div>
@@ -3372,14 +3373,52 @@ function applyStockData(stock) {
     const keyMap = {
       'Lace': 'Lace',
     };
-    // Mini Keychain OOS = all per-color keys are explicitly 0
+    // Mini Keychain — per-color stock badges on vegan swatches + row-level OOS
     if (label === 'Mini Leather Keychain') {
       const kcColors = ['Coal','Wine','Latte','Lychee','Pistachio','Sky','Midnight','Taro'];
+      // Apply per-color badges to vegan swatches
+      document.querySelectorAll('#kc-vegan-swatches .swatch-wrap').forEach(function(wrap) {
+        const dot = wrap.querySelector('.swatch[data-kc-color]');
+        if (!dot) return;
+        const color = dot.dataset.kcColor;
+        // Clear previous badge and reset state
+        const prev = wrap.querySelector('.stock-badge-kc');
+        if (prev) prev.remove();
+        const qty = stock['Mini Keychain ' + color];
+        if (qty === 0) {
+          wrap.style.opacity       = '0.45';
+          wrap.style.pointerEvents = 'none';
+          dot.onclick              = null;
+          const b = document.createElement('div');
+          b.className = 'stock-badge-kc';
+          b.style.cssText = 'font-size:9px;color:#888;font-weight:700;margin-top:2px;line-height:1.2;';
+          b.textContent = 'Out of Stock';
+          const lbl = wrap.querySelector('.swatch-label') || dot;
+          lbl.parentNode.insertBefore(b, lbl.nextSibling);
+        } else {
+          // Available (tracked low stock or unlimited)
+          wrap.style.opacity       = '';
+          wrap.style.pointerEvents = '';
+          dot.onclick              = function() { selectKeychainSwatch(this); };
+          if (qty !== null && qty !== undefined && qty <= 5 && qty > 0) {
+            const b = document.createElement('div');
+            b.className = 'stock-badge-kc';
+            b.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;margin-top:2px;line-height:1.2;';
+            b.textContent = 'Only ' + qty + ' left!';
+            const lbl = wrap.querySelector('.swatch-label') || dot;
+            lbl.parentNode.insertBefore(b, lbl.nextSibling);
+          }
+        }
+      });
+      // Row-level OOS only when ALL vegan AND tactile keychain colors are 0
       const trackedQtys = kcColors.map(function(c){ return stock['Mini Keychain ' + c]; })
                                   .filter(function(v){ return v !== undefined && v !== null && v !== ''; });
-      const qty = trackedQtys.length > 0 && trackedQtys.every(function(v){ return v === 0; }) ? 0
-                : trackedQtys.length > 0 ? Math.max.apply(null, trackedQtys) : null;
-      const stockKey = null; // handled below via qty
+      const tacKcQtys = (_tactileData || [])
+        .map(function(t){ return t.miniKeychainStock; })
+        .filter(function(v){ return v !== undefined && v !== null && v !== ''; });
+      const allTracked = trackedQtys.concat(tacKcQtys);
+      const qty = allTracked.length > 0 && allTracked.every(function(v){ return v === 0; }) ? 0
+                : allTracked.length > 0 ? Math.max.apply(null, allTracked) : null;
       if (qty === 0) {
         row.classList.add('stock-oos');
         const toggle = row.querySelector('input[type="checkbox"]');
@@ -3392,15 +3431,12 @@ function applyStockData(stock) {
           b.textContent = 'Out of Stock';
           priceEl.appendChild(b);
         }
-      } else if (qty !== null && qty <= 5) {
-        const priceEl = row.querySelector('.addon-price');
-        if (priceEl && !priceEl.querySelector('.stock-badge-addon')) {
-          const b = document.createElement('div');
-          b.className = 'stock-badge-addon';
-          b.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;margin-top:2px;';
-          b.textContent = 'Only ' + qty + ' left!';
-          priceEl.appendChild(b);
-        }
+      } else {
+        row.classList.remove('stock-oos');
+        const prev = row.querySelector('.stock-badge-addon');
+        if (prev) prev.remove();
+        const toggle = row.querySelector('input[type="checkbox"]');
+        if (toggle) toggle.disabled = false;
       }
       return;
     }
@@ -3511,18 +3547,20 @@ function applyLeatherStockForBase() {
 }
 
 // ── Called by applyStockData AND by selectBase ───────────────
-// Applies correct Extra Inserts stock based on selected base size
+// Applies correct Extra Inserts stock based on selected base size.
+// Checks per-type keys ('Extra Inserts A6 Line', etc.) so each button
+// can be greyed out individually, and qty inputs are capped to available stock.
 function applyExtraInsertStock() {
-  const isA5  = state.base && state.base.startsWith('a5');
-  const isA6  = state.base && state.base.startsWith('a6');
-  const key   = isA5 ? 'Extra Inserts A5' : isA6 ? 'Extra Inserts A6' : null;
-  const row   = document.getElementById('extra-insert-row');
+  const isA5 = state.base && state.base.startsWith('a5');
+  const isA6 = state.base && state.base.startsWith('a6');
+  const sz   = isA5 ? 'A5' : isA6 ? 'A6' : null;
+  const row  = document.getElementById('extra-insert-row');
   if (!row) return;
 
-  // Remove any previous badge
-  const prev = row.querySelector('.stock-badge-ei');
-  if (prev) prev.remove();
-  // Restore if previously greyed-out by stock (not by addon-disabled logic)
+  // Remove all previous per-type badges
+  row.querySelectorAll('.stock-badge-ei, [class^="stock-badge-type-"]').forEach(function(b) { b.remove(); });
+
+  // Restore whole-row OOS state (re-evaluated below per type)
   if (row.dataset.stockHidden === 'true') {
     row.classList.remove('stock-oos');
     const toggle = row.querySelector('input[type="checkbox"]');
@@ -3530,32 +3568,88 @@ function applyExtraInsertStock() {
     row.dataset.stockHidden = 'false';
   }
 
-  if (!key) return; // no base selected yet — do nothing
-  const qty = _stockData[key];
+  if (!sz) return; // no base selected yet
 
-  if (qty === 0) {
+  const TYPES = ['blank', 'dotted', 'grid', 'line'];
+  let allOos = true; // true only if every type is OOS
+
+  TYPES.forEach(function(t) {
+    const cap    = t.charAt(0).toUpperCase() + t.slice(1); // 'Blank' etc.
+    const sKey   = 'Extra Inserts ' + sz + ' ' + cap;      // 'Extra Inserts A6 Line'
+    const qty    = (_stockData && sKey in _stockData) ? _stockData[sKey] : null;
+    const btn    = document.getElementById('itype-' + t);
+    const qtyInp = document.getElementById('iq-' + t);
+    const priceSpan = document.getElementById('ip-' + t);
+
+    // Remove stale badge on this type's row
+    if (priceSpan) {
+      const old = priceSpan.parentElement && priceSpan.parentElement.querySelector('.stock-badge-type-' + t);
+      if (old) old.remove();
+    }
+
+    if (qty === 0) {
+      // Grey out button, deselect if active, hide qty spinner
+      if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = '0.4';
+        btn.style.cursor  = 'not-allowed';
+        if (btn.classList.contains('active')) {
+          btn.classList.remove('active');
+          delete state.extraInserts[t];
+          const qSpan = document.getElementById('insert-qty-' + t);
+          if (qSpan) qSpan.style.display = 'none';
+          calcTotal();
+        }
+        // Append OOS badge next to button label
+        const badge = document.createElement('span');
+        badge.className = 'stock-badge-type-' + t;
+        badge.style.cssText = 'font-size:9px;color:#888;font-weight:700;margin-left:4px;vertical-align:middle;';
+        badge.textContent = 'Out of Stock';
+        btn.insertAdjacentElement('afterend', badge);
+      }
+    } else {
+      // Re-enable button
+      if (btn) {
+        btn.disabled = false;
+        btn.style.opacity = '';
+        btn.style.cursor  = '';
+      }
+      allOos = false;
+
+      // Cap qty input to available stock when finite
+      if (qtyInp && qty !== null && qty !== undefined) {
+        qtyInp.max = qty;
+        if (parseInt(qtyInp.value) > qty) {
+          qtyInp.value = qty;
+          calcTotal();
+        }
+        // Low-stock badge (≤5 and finite)
+        if (qty <= 5 && btn) {
+          const badge = document.createElement('span');
+          badge.className = 'stock-badge-type-' + t;
+          badge.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;margin-left:4px;vertical-align:middle;';
+          badge.textContent = 'Only ' + qty + ' left!';
+          btn.insertAdjacentElement('afterend', badge);
+        }
+      } else if (qtyInp) {
+        // Unlimited — restore default max
+        qtyInp.max = 10;
+      }
+    }
+  });
+
+  // If ALL types are OOS, grey out the whole addon row
+  if (allOos && sz) {
     row.classList.add('stock-oos');
     row.dataset.stockHidden = 'true';
     const toggle = row.querySelector('input[type="checkbox"]');
     if (toggle) { toggle.disabled = true; toggle.checked = false; }
-    const priceEl = row.querySelector('.addon-price');
-    if (priceEl) {
-      const b = document.createElement('div');
-      b.className = 'stock-badge-ei';
-      b.style.cssText = 'font-size:9px;color:#888;font-weight:700;margin-top:2px;';
-      b.textContent = 'Out of Stock';
-      priceEl.appendChild(b);
-    }
-  } else if (qty !== null && qty !== undefined && qty <= 5) {
-    const priceEl = row.querySelector('.addon-price');
-    if (priceEl) {
-      const b = document.createElement('div');
-      b.className = 'stock-badge-ei';
-      b.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;margin-top:2px;';
-      b.textContent = 'Only ' + qty + ' left!';
-      priceEl.appendChild(b);
-    }
   }
+
+  // Re-sync state after possible deselections
+  const active = Object.keys(state.extraInserts || {});
+  state.extraInsertType = active.length ? active[active.length - 1] : null;
+  _updateInsertRightPrice();
 }
 // ════════════════════════════════════════
 //  BACKGROUND CAPACITY RECHECK
@@ -4581,16 +4675,15 @@ function updateTactileSwatchBadges() {
     if (!wrap2) return;
     var stockBadge2 = wrap2.querySelector('.tactile-stock-badge');
 
-    // Read correct stock for current base + fold type from dataset
+    // Read correct stock from _tactileData (single source of truth)
     var rawStock = '';
     if (state.base) {
-      switch ((state.base || '').toLowerCase()) {
-        case 'a6-bifold':  rawStock = dot2.dataset.stockA6Bifold;  break;
-        case 'a6-trifold': rawStock = dot2.dataset.stockA6Trifold; break;
-        case 'a5-bifold':  rawStock = dot2.dataset.stockA5Bifold;  break;
-        case 'a5-trifold': rawStock = dot2.dataset.stockA5Trifold; break;
-        case 'pp-trifold': rawStock = dot2.dataset.stockPP;        break;
-        default:           rawStock = dot2.dataset.stockA6Bifold;
+      var _item2 = _tactileData.find(function(t) {
+        return t.colorName === dot2.dataset.colorName && t.textureType === dot2.dataset.textureType;
+      });
+      if (_item2) {
+        var _s2 = _getStockForBase(_item2);
+        rawStock = (_s2 !== null && _s2 !== undefined) ? String(_s2) : '';
       }
     }
 
@@ -4648,7 +4741,7 @@ function updateTactileSwatchBadges() {
       var sv = _getTactileSurcharge(sel);
       state.tactileSurcharge = (!isNaN(Number(sv)) && sv !== null && sv !== '') ? Number(sv) : 0;
       var surStr = _formatSurcharge(state.tactileSurcharge);
-      var sLbl = state.tactileColorName + ' (' + state.tactileTextureType + ')';
+      var sLbl = state.tactileColorName;
       if (surStr) sLbl += ' · ' + surStr;
       document.getElementById('s-leather').textContent = sLbl;
       calcTotal();
@@ -4726,7 +4819,7 @@ function selectTactile(el) {
   state.tactileTileSize    = parseInt(el.dataset.tileSize) || 180;
 
   var _surStr = _formatSurcharge(state.tactileSurcharge);
-  var _sLbl   = el.dataset.colorName + ' (' + el.dataset.textureType + ')';
+  var _sLbl   = el.dataset.colorName;
   if (_surStr) _sLbl += ' · ' + _surStr;
   document.getElementById('s-leather').textContent = _sLbl;
 
@@ -5043,6 +5136,7 @@ function onLaceOrientationChange() {
     state.laceOrientation = checked.value;
   }
   _updateSVGLace();
+  updateEdgeProtectorPreview();
   calcTotal();
   if (typeof update3DPreview === 'function') update3DPreview();
 }
@@ -5326,10 +5420,11 @@ function _buildKeychainTactileSwatches() {
                  ? item.miniKeychainStock : null;
     var oos   = (stock === 0);
     var wrap  = document.createElement('div');
+    wrap.className = 'swatch-wrap tactile-wrap';
     var dot   = document.createElement('div');
-    dot.className = 'swatch' + (oos ? ' swatch-oos' : '');
+    dot.className = 'swatch';
     dot.style.background = item.hex || '#ccc';
-    if (oos) { dot.style.opacity = '0.35'; dot.style.cursor = 'not-allowed'; }
+    if (oos) { wrap.style.opacity = '0.45'; wrap.style.pointerEvents = 'none'; dot.style.cursor = 'not-allowed'; }
     dot.dataset.kcColor   = item.colorName + ' (' + item.textureType + ')';
     dot.title = item.colorName;
     if (!oos) dot.onclick = function() { selectKeychainSwatch(this); };
@@ -5345,9 +5440,20 @@ function _buildKeychainTactileSwatches() {
       pb.textContent = '+₱' + item.surcharge;
       wrap.appendChild(pb);
     }
+    var sb = document.createElement('div');
+    sb.className = 'tactile-stock-badge';
+    sb.style.cssText = 'font-size:9px;font-weight:700;text-align:center;margin-top:2px;line-height:1.2;';
+    if (oos) {
+      sb.style.color = '#888';
+      sb.textContent = 'Out of Stock';
+    } else if (stock !== null && stock <= 5 && stock > 0) {
+      sb.style.color = '#c0392b';
+      sb.textContent = 'Only ' + stock + ' left!';
+    }
     wrap.appendChild(badge);
     wrap.appendChild(dot);
     wrap.appendChild(lbl);
+    wrap.appendChild(sb);
     grid.appendChild(wrap);
   });
   grid.dataset.built = '1';
@@ -5456,6 +5562,8 @@ function _updateInsertRightPrice() {
 }
 
 function toggleInsertType(type, btn) {
+  // Block if this type is OOS
+  if (btn.disabled) return;
   var cb = document.getElementById('extra-insert-check');
   if (cb && !cb.checked) { cb.checked = true; toggleExtraInserts(cb); }
   var isActive = btn.classList.contains('active');
@@ -5464,7 +5572,19 @@ function toggleInsertType(type, btn) {
   if (qtySpan) qtySpan.style.display = isActive ? 'none' : 'inline-flex';
   if (!state.extraInserts) state.extraInserts = {};
   if (isActive) { delete state.extraInserts[type]; } else { state.extraInserts[type] = true; }
-  // Keep legacy extraInsertType for 3D preview (last active wins)
+  // Enforce stock cap on qty input when activating
+  if (!isActive) {
+    var isA5  = state.base && state.base.startsWith('a5');
+    var sz    = isA5 ? 'A5' : 'A6';
+    var cap   = type.charAt(0).toUpperCase() + type.slice(1);
+    var sKey  = 'Extra Inserts ' + sz + ' ' + cap;
+    var avail = (_stockData && sKey in _stockData) ? _stockData[sKey] : null;
+    var inp   = document.getElementById('iq-' + type);
+    if (inp && avail !== null && avail !== undefined) {
+      inp.max = avail;
+      if (parseInt(inp.value) > avail) inp.value = avail;
+    }
+  }
   var active = Object.keys(state.extraInserts);
   state.extraInsertType = active.length ? active[active.length - 1] : null;
   _updateInsertRightPrice();
@@ -5740,6 +5860,16 @@ function updateEdgeProtectorPreview() {
   const color2 = finish === 'Gold' ? '#f0c84a' : '#e8e8f0'; // highlight tone
   const op     = (isChecked && finish !== 'None') ? '1' : '0';
 
+  const _epIsRoL = (state.laceOrientation === 'Inner Flap: Right over Left');
+  // Reposition brackets: RoL = left corners (x≈82), LoR = right corners (x≈252)
+  const _epTopG = document.getElementById('edge-prot-top');
+  const _epBotG = document.getElementById('edge-prot-bot');
+  if (_epTopG) {
+    _epTopG.setAttribute('transform', _epIsRoL ? 'scale(-1,1) translate(-334,0)' : '');
+  }
+  if (_epBotG) {
+    _epBotG.setAttribute('transform', _epIsRoL ? 'scale(-1,1) translate(-334,0)' : '');
+  }
   ['edge-prot-top', 'edge-prot-bot'].forEach(function(gId) {
     const g = document.getElementById(gId);
     if (!g) return;
@@ -5913,10 +6043,15 @@ async function submitOrder() {
   if (state.pockets) addonsArr.push('Inside Pockets');
   if (_edgeProtChk) addonsArr.push(`Edge Protector (${state['edge-prot-finish']})`);
   if (document.getElementById('double-cord-check')?.checked) addonsArr.push('Double Front Cord');
-  if (state.extraInsertType) {
-    const iQty  = parseInt(document.getElementById('extra-insert-qty')?.value) || 1;
-    const iName = state.extraInsertType.charAt(0).toUpperCase() + state.extraInsertType.slice(1);
-    addonsArr.push(`Extra Inserts — ${iName} ×${iQty}`);
+  if (state.extraInserts && Object.keys(state.extraInserts).length) {
+    const _eArr = [];
+    ['blank','dotted','grid','line'].forEach(function(t) {
+      if (!state.extraInserts[t]) return;
+      const qty  = parseInt(document.getElementById('iq-' + t)?.value) || 1;
+      const name = t.charAt(0).toUpperCase() + t.slice(1);
+      _eArr.push(name + ' ×' + qty);
+    });
+    if (_eArr.length) addonsArr.push('Extra Inserts — ' + _eArr.join(', '));
   }
   if (laceChecked) addonsArr.push(`Lace (${state.laceOrientation})`);
   if (_keychainChk) addonsArr.push('Mini Keychain');
@@ -5961,6 +6096,15 @@ async function submitOrder() {
       ? (parseInt(document.getElementById('iq-' + state.extraInsertType)?.value) || 1)
       : 0,
     extraInsertType: state.extraInsertType || null,
+    extraInsertsAll: (function() {
+        var result = {};
+        ['blank','dotted','grid','line'].forEach(function(t) {
+          if (state.extraInserts && state.extraInserts[t]) {
+            result[t] = parseInt(document.getElementById('iq-' + t)?.value) || 1;
+          }
+        });
+        return Object.keys(result).length ? result : null;
+      })(),
       lace: laceChecked,
       laceOrientation: laceChecked ? state.laceOrientation : null, // NEW
       addonsLabel: addonsArr.join(' | '),                           // NEW — for Add-Ons column
@@ -6873,9 +7017,15 @@ if (window.location.hash === '#terms') {
 
     // Edge protector — corner brackets (matching 2D)
     // Edge protector — right side only (upper-right + lower-right)
+    var _epRoL = (o.laceOrient === 'Inner Flap: Right over Left');
+    var _epSide = _epRoL ? 'left' : 'right';
+    var _epRadTop = _epRoL ? o.rx+' 0 0 0' : '0 '+o.rx+' 0 0';
+    var _epRadBot = _epRoL ? '0 0 0 '+o.rx : '0 0 '+o.rx+' 0';
+    var _epBorderTop = _epRoL ? 'border-top:2px solid '+o.epColor+';border-left:2px solid '+o.epColor : 'border-top:2px solid '+o.epColor+';border-right:2px solid '+o.epColor;
+    var _epBorderBot = _epRoL ? 'border-bottom:2px solid '+o.epColor+';border-left:2px solid '+o.epColor : 'border-bottom:2px solid '+o.epColor+';border-right:2px solid '+o.epColor;
     var ep = (o.epOn && o.epColor) ? (
-      '<div style="position:absolute;top:0;right:0;width:11px;height:11px;border-top:2px solid '+o.epColor+';border-right:2px solid '+o.epColor+';border-radius:0 '+o.rx+' 0 0;pointer-events:none;"></div>'
-      + '<div style="position:absolute;bottom:0;right:0;width:11px;height:11px;border-bottom:2px solid '+o.epColor+';border-right:2px solid '+o.epColor+';border-radius:0 0 '+o.rx+' 0;pointer-events:none;"></div>'
+      '<div style="position:absolute;top:0;'+_epSide+':0;width:11px;height:11px;'+_epBorderTop+';border-radius:'+_epRadTop+';pointer-events:none;"></div>'
+      + '<div style="position:absolute;bottom:0;'+_epSide+':0;width:11px;height:11px;'+_epBorderBot+';border-radius:'+_epRadBot+';pointer-events:none;"></div>'
     ) : '';
 
     // Lace — vertical orientation
@@ -8059,7 +8209,7 @@ if (window.location.hash === '#terms') {
     _paintCharms(ctx, _byP['Front'] || [], W, H);
 
     // Edge protectors (right-side corner brackets)
-    if (o.epOn && o.epColor) _paintEP(ctx, cv.width, cv.height, o.epColor, o.rx);
+    if (o.epOn && o.epColor) _paintEP(ctx, cv.width, cv.height, o.epColor, o.rx, o.laceOrient === 'Inner Flap: Right over Left');
 
     // Engraving text
     if (o.engDisp) _paintEngraving(ctx, o, W, H);
@@ -8182,17 +8332,26 @@ if (window.location.hash === '#terms') {
     ctx.fillRect(0, centerY - 3 * PX, W, PX);
   }
 
-  function _paintEP(ctx, W, H, color, rx) {
+  function _paintEP(ctx, W, H, color, rx, isRoL) {
     var bw = 14 * PX;
     ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = 2.5 * PX; ctx.lineCap = 'square';
-    // Top-right
-    ctx.beginPath(); ctx.moveTo(W - bw, 0); ctx.lineTo(W, 0); ctx.lineTo(W, bw); ctx.stroke();
-    // Bottom-right
-    ctx.beginPath(); ctx.moveTo(W, H - bw); ctx.lineTo(W, H); ctx.lineTo(W - bw, H); ctx.stroke();
-    // Top-left (subtle)
-    ctx.globalAlpha = 0.35;
-    ctx.beginPath(); ctx.moveTo(bw, 0); ctx.lineTo(0, 0); ctx.lineTo(0, bw); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, H - bw); ctx.lineTo(0, H); ctx.lineTo(bw, H); ctx.stroke();
+    if (isRoL) {
+      // Left corners (opening edge for RoL)
+      ctx.beginPath(); ctx.moveTo(bw, 0); ctx.lineTo(0, 0); ctx.lineTo(0, bw); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, H - bw); ctx.lineTo(0, H); ctx.lineTo(bw, H); ctx.stroke();
+      // Right corners (subtle)
+      ctx.globalAlpha = 0.35;
+      ctx.beginPath(); ctx.moveTo(W - bw, 0); ctx.lineTo(W, 0); ctx.lineTo(W, bw); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(W, H - bw); ctx.lineTo(W, H); ctx.lineTo(W - bw, H); ctx.stroke();
+    } else {
+      // Right corners (opening edge for LoR)
+      ctx.beginPath(); ctx.moveTo(W - bw, 0); ctx.lineTo(W, 0); ctx.lineTo(W, bw); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(W, H - bw); ctx.lineTo(W, H); ctx.lineTo(W - bw, H); ctx.stroke();
+      // Left corners (subtle)
+      ctx.globalAlpha = 0.35;
+      ctx.beginPath(); ctx.moveTo(bw, 0); ctx.lineTo(0, 0); ctx.lineTo(0, bw); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, H - bw); ctx.lineTo(0, H); ctx.lineTo(bw, H); ctx.stroke();
+    }
     ctx.restore();
   }
 
@@ -8533,7 +8692,7 @@ if (window.location.hash === '#terms') {
     var spineCharmsHTML = ['S1','S2','S3'].map(function(slot){var grp=_byP[slot];if(!grp||!grp.length)return'';var cx=_gCols[['S1','S2','S3'].indexOf(slot)],sz=10;return grp.map(function(ch,i){return'<div style="position:absolute;left:'+(cx-sz/2)+'px;top:'+(_gRows[0]+2+i*(sz+3))+'px;pointer-events:none;">'+(i===0?'<div style="width:1px;height:4px;background:rgba(255,255,255,0.5);margin:0 auto;"></div>':'')+'<div style="position:relative;width:'+sz+'px;height:'+sz+'px;display:inline-block;">'+_charmSVG(ch.id)+'</div></div>';}).join('');}).join('');
     var _frontGrp=_byP['Front']||[];
     var charmsHTML=_frontGrp.map(function(ch,i){var sz=11,total=_frontGrp.length;var cx=total===1?Math.round(W*0.50):Math.round(W*(i+1)/(total+1));return'<div style="position:absolute;left:'+(cx-sz/2)+'px;top:'+(cordY+4)+'px;text-align:center;pointer-events:none;"><div style="width:1px;height:6px;background:rgba(180,155,130,0.75);margin:0 auto;"></div><div style="position:relative;width:'+sz+'px;height:'+sz+'px;display:inline-block;">'+_charmSVG(ch.id)+'</div></div>';}).join('');
-    var epHTML=(o.epOn&&o.epColor)?('<div style="position:absolute;top:0;right:0;width:14px;height:14px;border-top:2.5px solid '+o.epColor+';border-right:2.5px solid '+o.epColor+';border-radius:0 '+o.rx+' 0 0;pointer-events:none;"></div>'+'<div style="position:absolute;bottom:0;right:0;width:14px;height:14px;border-bottom:2.5px solid '+o.epColor+';border-right:2.5px solid '+o.epColor+';border-radius:0 0 '+o.rx+' 0;pointer-events:none;"></div>'):'';
+    var _epH_RoL=(o.laceOrient==='Inner Flap: Right over Left');var _epH_side=_epH_RoL?'left':'right';var _epH_bTop=_epH_RoL?'border-top:2.5px solid '+o.epColor+';border-left:2.5px solid '+o.epColor:'border-top:2.5px solid '+o.epColor+';border-right:2.5px solid '+o.epColor;var _epH_bBot=_epH_RoL?'border-bottom:2.5px solid '+o.epColor+';border-left:2.5px solid '+o.epColor:'border-bottom:2.5px solid '+o.epColor+';border-right:2.5px solid '+o.epColor;var _epH_rTop=_epH_RoL?o.rx+' 0 0 0':'0 '+o.rx+' 0 0';var _epH_rBot=_epH_RoL?'0 0 0 '+o.rx:'0 0 '+o.rx+' 0';var epHTML=(o.epOn&&o.epColor)?('<div style="position:absolute;top:0;'+_epH_side+':0;width:14px;height:14px;'+_epH_bTop+';border-radius:'+_epH_rTop+';pointer-events:none;"></div>'+'<div style="position:absolute;bottom:0;'+_epH_side+':0;width:14px;height:14px;'+_epH_bBot+';border-radius:'+_epH_rBot+';pointer-events:none;"></div>'):'';
     var engHTML=o.engDisp?'<div style="'+engStyle+'font-family:Georgia,serif;color:rgba(255,255,255,0.38);text-shadow:0 -1px 0 rgba(0,0,0,0.18);">'+o.engDisp+'</div>':'';
     var cord2HTML=o.dblCord?_cordBand(topCordY,o.cordHex)+_cordBand(botCordY,o.cord2Hex):'';
     // Front cover background — photo multiply takes priority over SVG CSS gradients
