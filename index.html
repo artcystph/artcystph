@@ -2199,7 +2199,7 @@
             <div class="addon-desc" id="pocket-desc-text">A6: ₱180 · A5: ₱280 · PP: ₱150</div>
             <div style="margin-top:8px;width:100px;height:70px;background:#e8e0d8;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#8a7070;border:1px dashed #c4b4b4;gap:4px;">📷 Sample photo</div>
           </div>
-          <div class="addon-price" id="pocket-price-tag">₱180–280</div>
+          <div class="addon-price" id="pocket-price-tag">₱180</div>
         </div>
 
         <!-- Edge Protector -->
@@ -2330,15 +2330,32 @@
         </div>
         <div class="addon-price">₱99</div>
       </div>
-      <div id="keychain-sub" style="display:none;padding:12px 32px 4px;background:var(--accent-light);border-radius:12px;margin:4px 0;">
-        <div class="field-row">
-          <div>
-            <label class="field-label">Leather Color</label>
-            <select id="kc-leather" onchange="calcTotal()">
-              <option>Coal</option><option>Wine</option><option>Latte</option><option>Lychee</option>
-              <option>Pistachio</option><option>Sky</option><option>Midnight</option><option>Taro</option>
-            </select>
+      <div id="keychain-sub" style="display:none;padding:12px 32px 4px;border-radius:12px;margin:4px 0;">
+        <div style="margin-bottom:12px;">
+          <label class="field-label">Leather Color</label>
+          <!-- Keychain leather type toggle (independent) -->
+          <div class="leather-type-toggle" style="margin-bottom:10px;" id="kc-lt-toggle">
+            <button class="lt-pill active" id="kc-lt-vegan" onclick="selectKeychainLeatherType('vegan')">⬛ Vegan Leather</button>
+            <button class="lt-pill" id="kc-lt-tactile" onclick="selectKeychainLeatherType('tactile')">✦ Tactile Leather</button>
           </div>
+          <!-- Vegan swatches -->
+          <div id="kc-vegan-swatches" class="swatch-grid">
+            <div class="swatch-wrap"><div class="swatch lc-coal"      data-kc-color="Coal"      onclick="selectKeychainSwatch(this)"></div><div class="swatch-label">Coal</div></div>
+            <div class="swatch-wrap"><div class="swatch lc-wine"      data-kc-color="Wine"      onclick="selectKeychainSwatch(this)"></div><div class="swatch-label">Wine</div></div>
+            <div class="swatch-wrap"><div class="swatch lc-latte"     data-kc-color="Latte"     onclick="selectKeychainSwatch(this)"></div><div class="swatch-label">Latte</div></div>
+            <div class="swatch-wrap"><div class="swatch lc-lychee"    data-kc-color="Lychee"    onclick="selectKeychainSwatch(this)"></div><div class="swatch-label">Lychee</div></div>
+            <div class="swatch-wrap"><div class="swatch lc-pistachio" data-kc-color="Pistachio" onclick="selectKeychainSwatch(this)"></div><div class="swatch-label">Pistachio</div></div>
+            <div class="swatch-wrap"><div class="swatch lc-sky"       data-kc-color="Sky"       onclick="selectKeychainSwatch(this)"></div><div class="swatch-label">Sky</div></div>
+            <div class="swatch-wrap"><div class="swatch lc-midnight"  data-kc-color="Midnight"  onclick="selectKeychainSwatch(this)"></div><div class="swatch-label">Midnight</div></div>
+            <div class="swatch-wrap"><div class="swatch lc-taro"      data-kc-color="Taro"      onclick="selectKeychainSwatch(this)"></div><div class="swatch-label">Taro</div></div>
+          </div>
+          <!-- Tactile swatches (built dynamically) -->
+          <div id="kc-tactile-swatches" class="swatch-grid" style="display:none;"></div>
+          <p id="kc-tactile-note" style="font-size:11px;color:var(--text-light);margin-top:6px;display:none;">✦ Tactile leather includes a texture surcharge — shown per color.</p>
+          <!-- Hidden input keeps existing calcTotal()/order logic working -->
+          <select id="kc-leather" style="display:none;" onchange="calcTotal()"></select>
+        </div>
+        <div class="field-row">
           <div>
             <label class="field-label">Cord Color</label>
             <select id="kc-cord" onchange="calcTotal()">
@@ -2347,10 +2364,10 @@
               <option>Mint</option><option>Rust</option><option>Apple</option>
             </select>
           </div>
-        </div>
-        <div>
-          <label class="field-label">1 Letter (free, 3mm)</label>
-          <input type="text" id="kc-letter" maxlength="1" placeholder="e.g. A" style="width:80px;">
+          <div>
+            <label class="field-label">1 Letter (free, 3mm)</label>
+            <input type="text" id="kc-letter" maxlength="1" placeholder="e.g. A" style="width:80px;">
+          </div>
         </div>
       </div>
       </div>
@@ -3828,25 +3845,20 @@ function selectBase(btn) {
     var _eiCb = document.getElementById('extra-insert-check');
     if (_eiCb) _eiCb.checked = false;
     document.querySelectorAll('.insert-type-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('insert-type-grid').style.display = 'none';
-    document.getElementById('extra-insert-sub').style.display = 'none';
+    var _itg = document.getElementById('insert-type-grid');
+    if (_itg) _itg.style.display = 'none';
+    var _eis = document.getElementById('extra-insert-sub');
+    if (_eis) _eis.style.display = 'none';
   } else {
     extraInsertRow.classList.remove('addon-disabled');
   }
   // Refresh per-type price labels for the new base size
   if (typeof _refreshInsertPriceLabels === 'function') _refreshInsertPriceLabels();
 
-  // Pockets: A5 & A6 only — disable for Passport
+  // Pockets:
   const pocketsRow = document.getElementById('pockets-row');
   if (pocketsRow) {
-    if (isPP) {
-      pocketsRow.classList.add('addon-disabled');
-      const pocketsChk = document.getElementById('pockets-check');
-      if (pocketsChk) pocketsChk.checked = false;
-      state.pockets = false;
-    } else {
-      pocketsRow.classList.remove('addon-disabled');
-    }
+    pocketsRow.classList.remove('addon-disabled');
   }
 
   // Fabric insert: A6 only — always visible, disabled when not A6
@@ -3915,6 +3927,7 @@ function selectBase(btn) {
   _updatePocketPriceDisplay();
   // Refresh keychain leather choices if sub-panel is open and tactile stock changed
   if (document.getElementById('keychain-check')?.checked) _populateKeychainLeather();
+  if (typeof update3DPreview === 'function') update3DPreview();
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -5205,7 +5218,7 @@ function _updatePocketPriceDisplay() {
   var b     = (state.base || '').toLowerCase();
   var price, desc;
   if (!state.base) {
-    price = '180–280';
+    price = '180';
     desc  = 'A6: ₱180 · A5: ₱280 · PP: ₱150';
   } else if (b.startsWith('a5')) {
     price = 280; desc = 'A5 · ₱280';
@@ -5222,6 +5235,7 @@ function _updatePocketPriceDisplay() {
 
 function togglePockets(cb) {
   state.pockets = cb.checked;
+  _updatePocketPriceDisplay();
   calcTotal();
   if (typeof update3DPreview === 'function') update3DPreview();
 }
@@ -5238,6 +5252,7 @@ function toggleEdgeProtector(chk) {
 function toggleDoubleCord(chk) {
   state.doubleCord = chk.checked;
   document.getElementById('double-cord-sub').style.display = chk.checked ? 'block' : 'none';
+  updateDoubleCordPreview();
   calcTotal();
   if (typeof update3DPreview === 'function') update3DPreview();
 }
@@ -5248,43 +5263,85 @@ function toggleLace(chk) {
   calcTotal();
   if (typeof update3DPreview === 'function') update3DPreview();
 }
-// Populate #kc-leather dropdown based on current leather type (vegan or tactile)
-function _populateKeychainLeather() {
+// ── Keychain leather type (independent of main folio leather) ──
+var _kcLeatherType = 'vegan'; // 'vegan' | 'tactile'
+
+function selectKeychainLeatherType(type) {
+  _kcLeatherType = type;
+  document.getElementById('kc-lt-vegan').classList.toggle('active', type === 'vegan');
+  document.getElementById('kc-lt-tactile').classList.toggle('active', type === 'tactile');
+  document.getElementById('kc-vegan-swatches').style.display   = type === 'vegan'   ? '' : 'none';
+  document.getElementById('kc-tactile-swatches').style.display = type === 'tactile' ? '' : 'none';
+  document.getElementById('kc-tactile-note').style.display     = type === 'tactile' ? '' : 'none';
+  if (type === 'tactile') _buildKeychainTactileSwatches();
+  // clear swatch selection and reset hidden select
+  _clearKeychainSwatches();
   var sel = document.getElementById('kc-leather');
-  if (!sel) return;
-  var prev = sel.value; // remember current selection
-  sel.innerHTML = '';
+  if (sel) { sel.innerHTML = ''; }
+}
 
-  if (state.leatherType === 'tactile' && _tactileData && _tactileData.length) {
-    // ── Tactile options with stock awareness ──────────────────
-    _tactileData.forEach(function(item) {
-      var stock = _getStockForBase(item);
-      var oos   = (stock === 0);
-      var low   = (stock !== null && stock !== undefined
-                   && Number(stock) >= 1 && Number(stock) <= 5);
-      var opt   = document.createElement('option');
-      opt.value = item.colorName + ' (' + item.textureType + ')';
-      opt.textContent = item.colorName
-        + (oos ? ' — Out of stock' : low ? ' — Only ' + stock + ' left!' : '');
-      if (oos) { opt.disabled = true; opt.style.color = '#aaa'; }
-      sel.appendChild(opt);
-    });
-  } else {
-    // ── Vegan leather colors (default) ───────────────────────
-    ['Coal','Wine','Latte','Lychee','Pistachio','Sky','Midnight','Taro']
-      .forEach(function(c) {
-        var opt = document.createElement('option');
-        opt.value = c; opt.textContent = c;
-        sel.appendChild(opt);
-      });
-  }
-
-  // Restore previous value if still available
-  if (prev) {
-    for (var i = 0; i < sel.options.length; i++) {
-      if (sel.options[i].value === prev) { sel.selectedIndex = i; break; }
+function _buildKeychainTactileSwatches() {
+  var grid = document.getElementById('kc-tactile-swatches');
+  if (!grid || grid.dataset.built) return; // build once
+  grid.innerHTML = '';
+  if (!_tactileData || !_tactileData.length) return;
+  _tactileData.forEach(function(item) {
+    var stock = _getStockForBase(item);
+    var oos   = (stock === 0);
+    var wrap  = document.createElement('div');
+    wrap.className = 'swatch-wrap tactile-wrap';
+    var dot   = document.createElement('div');
+    dot.className = 'swatch' + (oos ? ' swatch-oos' : '');
+    dot.style.background = item.colorHex || '#ccc';
+    if (oos) { dot.style.opacity = '0.35'; dot.style.cursor = 'not-allowed'; }
+    dot.dataset.kcColor   = item.colorName + ' (' + item.textureType + ')';
+    dot.title = item.colorName;
+    if (!oos) dot.onclick = function() { selectKeychainSwatch(this); };
+    var badge = document.createElement('div');
+    badge.className = 'tactile-tex-badge';
+    badge.textContent = item.textureType || '';
+    var lbl   = document.createElement('div');
+    lbl.className = 'swatch-label';
+    lbl.textContent = item.colorName;
+    if (item.surcharge) {
+      var pb = document.createElement('div');
+      pb.className = 'tactile-price-badge';
+      pb.textContent = '+₱' + item.surcharge;
+      wrap.appendChild(pb);
     }
+    wrap.appendChild(badge);
+    wrap.appendChild(dot);
+    wrap.appendChild(lbl);
+    grid.appendChild(wrap);
+  });
+  grid.dataset.built = '1';
+}
+
+function _clearKeychainSwatches() {
+  document.querySelectorAll('#kc-vegan-swatches .swatch, #kc-tactile-swatches .swatch')
+    .forEach(function(s) { s.classList.remove('active'); });
+}
+
+function selectKeychainSwatch(el) {
+  _clearKeychainSwatches();
+  el.classList.add('active');
+  var val = el.dataset.kcColor;
+  // sync to hidden select so existing calcTotal / order code keeps working
+  var sel = document.getElementById('kc-leather');
+  if (sel) {
+    sel.innerHTML = '';
+    var opt = document.createElement('option');
+    opt.value = val; opt.textContent = val;
+    sel.appendChild(opt);
+    sel.value = val;
   }
+  calcTotal();
+}
+
+// Populate #kc-leather dropdown — kept for compatibility, called on keychain open
+function _populateKeychainLeather() {
+  // Reset UI to vegan on each open (swatches take over from here)
+  selectKeychainLeatherType(_kcLeatherType);
 }
 
 function toggleKeychain(chk) {
