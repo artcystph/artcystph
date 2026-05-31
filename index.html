@@ -1891,13 +1891,13 @@
   <!-- Back cover -->
   <rect id="back-cover" x="22" y="26" width="138" height="218" rx="22"
     fill="#2c2c2c" opacity="0.55" filter="url(#backShadow)"/>
-  <rect x="22" y="26" width="138" height="218" rx="22"
+  <rect id="back-cover-sheen" x="22" y="26" width="138" height="218" rx="22"
     fill="url(#leatherSheen)" opacity="0.18"/>
 
   <!-- Front cover -->
   <rect id="front-cover" x="78" y="18" width="178" height="228" rx="22"
     fill="#2c2c2c" filter="url(#cardShadow)"/>
-  <rect x="78" y="18" width="178" height="228" rx="22"
+  <rect id="front-cover-grain" x="78" y="18" width="178" height="228" rx="22"
     fill="url(#grainPat)" opacity="0.9"/>
   <rect id="cover-shine" x="78" y="18" width="178" height="228" rx="22"
     fill="url(#leatherSheen)" opacity="0.9"/>
@@ -1906,10 +1906,10 @@
     fill="none" opacity="0" pointer-events="none"
     style="transition: opacity 0.35s ease;"/>
   <!-- Spine crease -->
-  <rect x="78" y="18" width="14" height="228" rx="22"
+  <rect id="front-cover-spine" x="78" y="18" width="14" height="228" rx="22"
     fill="url(#spineGrad)" opacity="0.6"/>
   <!-- Inner border relief -->
-  <rect x="78" y="18" width="178" height="228" rx="22"
+  <rect id="front-cover-relief" x="78" y="18" width="178" height="228" rx="22"
     fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
 
   <!-- Grommets (S1, S2, S3) -->
@@ -2198,7 +2198,7 @@
           <div class="addon-info">
             <div class="addon-name">Inside Pockets</div>
             <div class="addon-desc" id="pocket-desc-text">A6: ₱180 · A5: ₱280 · PP: ₱150</div>
-            <div style="margin-top:8px;width:100px;height:70px;background:#e8e0d8;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#8a7070;border:1px dashed #c4b4b4;gap:4px;">📷 Sample photo</div>
+            <img src="Pockets.jpeg" alt="Inside Pockets sample" style="margin-top:8px;width:100px;height:70px;object-fit:cover;border-radius:4px;display:block;" loading="lazy">
           </div>
           <div class="addon-price" id="pocket-price-tag">₱180</div>
         </div>
@@ -3370,9 +3370,40 @@ function applyStockData(stock) {
     if (!nameEl) return;
     const label = nameEl.textContent.trim();
     const keyMap = {
-      'Lace':               'Lace',
-      'Mini Leather Keychain': 'Mini Keychain',
+      'Lace': 'Lace',
     };
+    // Mini Keychain OOS = all per-color keys are explicitly 0
+    if (label === 'Mini Leather Keychain') {
+      const kcColors = ['Coal','Wine','Latte','Lychee','Pistachio','Sky','Midnight','Taro'];
+      const trackedQtys = kcColors.map(function(c){ return stock['Mini Keychain ' + c]; })
+                                  .filter(function(v){ return v !== undefined && v !== null && v !== ''; });
+      const qty = trackedQtys.length > 0 && trackedQtys.every(function(v){ return v === 0; }) ? 0
+                : trackedQtys.length > 0 ? Math.max.apply(null, trackedQtys) : null;
+      const stockKey = null; // handled below via qty
+      if (qty === 0) {
+        row.classList.add('stock-oos');
+        const toggle = row.querySelector('input[type="checkbox"]');
+        if (toggle) { toggle.disabled = true; toggle.checked = false; }
+        const priceEl = row.querySelector('.addon-price');
+        if (priceEl && !priceEl.querySelector('.stock-badge-addon')) {
+          const b = document.createElement('div');
+          b.className = 'stock-badge-addon';
+          b.style.cssText = 'font-size:9px;color:#888;font-weight:700;margin-top:2px;';
+          b.textContent = 'Out of Stock';
+          priceEl.appendChild(b);
+        }
+      } else if (qty !== null && qty <= 5) {
+        const priceEl = row.querySelector('.addon-price');
+        if (priceEl && !priceEl.querySelector('.stock-badge-addon')) {
+          const b = document.createElement('div');
+          b.className = 'stock-badge-addon';
+          b.style.cssText = 'font-size:9px;color:#c0392b;font-weight:700;margin-top:2px;';
+          b.textContent = 'Only ' + qty + ' left!';
+          priceEl.appendChild(b);
+        }
+      }
+      return;
+    }
     const stockKey = keyMap[label];
     if (!stockKey) return;
     const qty = stock[stockKey];
@@ -5291,13 +5322,13 @@ function _buildKeychainTactileSwatches() {
   grid.innerHTML = '';
   if (!_tactileData || !_tactileData.length) return;
   _tactileData.forEach(function(item) {
-    var stock = _getStockForBase(item);
+    var stock = (item.miniKeychainStock !== undefined && item.miniKeychainStock !== null)
+                 ? item.miniKeychainStock : null;
     var oos   = (stock === 0);
     var wrap  = document.createElement('div');
-    wrap.className = 'swatch-wrap tactile-wrap';
     var dot   = document.createElement('div');
     dot.className = 'swatch' + (oos ? ' swatch-oos' : '');
-    dot.style.background = item.colorHex || '#ccc';
+    dot.style.background = item.hex || '#ccc';
     if (oos) { dot.style.opacity = '0.35'; dot.style.cursor = 'not-allowed'; }
     dot.dataset.kcColor   = item.colorName + ' (' + item.textureType + ')';
     dot.title = item.colorName;
@@ -5412,8 +5443,8 @@ function onEngravingInput(input) {
 function _updateInsertRightPrice() {
   var el = document.getElementById('extra-insert-price');
   if (!el) return;
-  var isA5 = (state.extraInsertSize === 'a5');
-  var prices = { blank: isA5 ? 40 : 40, dotted: isA5 ? 45 : 45, line: isA5 ? 45 : 45, grid: isA5 ? 45 : 45 };
+  var isA5 = (state.base || '').startsWith('a5');
+  var prices = { blank: isA5 ? 40 : 35, dotted: isA5 ? 45 : 40, line: isA5 ? 45 : 40, grid: isA5 ? 45 : 40 };
   var total = 0;
   ['blank','dotted','grid','line'].forEach(function(t) {
     if (state.extraInserts && state.extraInserts[t]) {
@@ -5471,7 +5502,7 @@ function calcTotal() {
   if (document.getElementById('double-cord-check')?.checked) total += isA5 ? 50 : 40;
 
   // Extra Inserts — multi-type, per-type qty
-  const _eip = { blank:{a5:40,o:40}, dotted:{a5:45,o:45}, line:{a5:45,o:45}, grid:{a5:45,o:45} };
+  const _eip = { blank:{a5:40,o:35}, dotted:{a5:45,o:40}, line:{a5:45,o:40}, grid:{a5:45,o:40} };
   const _eis = state.extraInsertSize || (isA5 ? 'a5' : 'o');
   ['blank','dotted','grid','line'].forEach(function(t) {
     if (state.extraInserts && state.extraInserts[t]) {
@@ -5543,12 +5574,13 @@ function calcAddonCost() {
   if (document.getElementById('lace-check')?.checked) cost += isA5 ? 50 : 40;
   const keychainChecked = document.getElementById('keychain-check')?.checked || false;
   if (keychainChecked) cost += 99;
-  if (state.extraInsertType) {
-    const qty  = parseInt(document.getElementById('extra-insert-qty')?.value) || 1;
-    const _eip = { blank:{a5:40,o:35}, dotted:{a5:45,o:40}, line:{a5:45,o:40}, grid:{a5:45,o:40} };
-    const _eir = _eip[state.extraInsertType] || _eip.blank;
-    cost += qty * (isA5 ? _eir.a5 : _eir.o);
-  }
+  const _eip_a = { blank:{a5:40,o:35}, dotted:{a5:45,o:40}, line:{a5:45,o:40}, grid:{a5:45,o:40} };
+  ['blank','dotted','grid','line'].forEach(function(t) {
+    if (state.extraInserts && state.extraInserts[t]) {
+      var qty = parseInt(document.getElementById('iq-'+t)?.value) || 1;
+      cost += qty * (isA5 ? _eip_a[t].a5 : _eip_a[t].o);
+    }
+  });
   // ✅ Addon charm costs (already in calcTotal, now included here for accurate display)
   Object.values(state.addonCharms).forEach(arr => {
     if (Array.isArray(arr)) arr.forEach(c => { cost += (c.price || 0); });
@@ -5583,13 +5615,16 @@ function buildFinalSummary() {
     document.getElementById('edge-prot-check')?.checked ? ['Edge Protector', `${state['edge-prot-finish']} · ₱59`] : null,
     document.getElementById('double-cord-check')?.checked ? ['Double Cord', `+₱${isA5?50:40}`] : null,
     (() => {
-      if (!state.extraInsertType) return null;
-      const qty  = parseInt(document.getElementById('extra-insert-qty')?.value) || 1;
+      if (!state.extraInserts || !Object.keys(state.extraInserts).length) return null;
       const _eip = { blank:{a5:40,o:35}, dotted:{a5:45,o:40}, line:{a5:45,o:40}, grid:{a5:45,o:40} };
-      const _eir = _eip[state.extraInsertType] || _eip.blank;
-      const _pr  = isA5 ? _eir.a5 : _eir.o;
-      const _nm  = state.extraInsertType.charAt(0).toUpperCase() + state.extraInsertType.slice(1);
-      return ['Extra Inserts', `${_nm} ×${qty} · +₱${qty * _pr}`];
+      const parts = [];
+      ['blank','dotted','grid','line'].forEach(function(t) {
+        if (!state.extraInserts[t]) return;
+        var qty = parseInt(document.getElementById('iq-'+t)?.value) || 1;
+        var pr = isA5 ? _eip[t].a5 : _eip[t].o;
+        parts.push(t.charAt(0).toUpperCase()+t.slice(1)+' ×'+qty+' · +₱'+(qty*pr));
+      });
+      return parts.length ? ['Extra Inserts', parts.join(', ')] : null;
     })(),
     lachecked ? ['Lace Trim', `${state.laceOrientation} · +₱${isA5?50:40}`] : null,
     document.getElementById('keychain-check')?.checked ? ['Mini Keychain', `${document.getElementById('kc-leather')?.value} · ₱99`] : null,
@@ -5621,13 +5656,13 @@ function calcTotal_raw() {
   const edgeProtChecked = document.getElementById('edge-prot-check')?.checked || false;
   if (edgeProtChecked) total += 59;
   if (document.getElementById('double-cord-check')?.checked) total += isA5 ? 50 : 40;
-  if (state.extraInsertType) {
-    const qty  = parseInt(document.getElementById('extra-insert-qty')?.value) || 1;
-    const _eip = { blank:{a5:40,o:35}, dotted:{a5:45,o:40}, line:{a5:45,o:40}, grid:{a5:45,o:40} };
-    const _eir = _eip[state.extraInsertType] || _eip.blank;
-    const _eis = state.extraInsertSize || (isA5 ? 'a5' : 'o');
-    total += qty * (_eis === 'a5' ? _eir.a5 : _eir.o);
-  }
+  const _eip_r = { blank:{a5:40,o:35}, dotted:{a5:45,o:40}, line:{a5:45,o:40}, grid:{a5:45,o:40} };
+  ['blank','dotted','grid','line'].forEach(function(t) {
+    if (state.extraInserts && state.extraInserts[t]) {
+      var qty = parseInt(document.getElementById('iq-'+t)?.value) || 1;
+      total += qty * (isA5 ? _eip_r[t].a5 : _eip_r[t].o);
+    }
+  });
   if (document.getElementById('lace-check')?.checked) total += isA5 ? 50 : 40;
   const keychainChecked = document.getElementById('keychain-check')?.checked || false;
   if (keychainChecked) total += 99;
@@ -5689,8 +5724,12 @@ function updateDoubleCordPreview() {
 
 function updateEdgeCorners(edge) {
   const rx = edge === 'Round' ? '10' : '0';
-  document.getElementById('front-cover').setAttribute('rx', rx);
-  document.getElementById('back-cover').setAttribute('rx', rx);
+  ['front-cover','front-cover-grain','cover-shine','tac-tex-overlay',
+   'front-cover-spine','front-cover-relief','back-cover','back-cover-sheen']
+    .forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.setAttribute('rx', rx);
+    });
 }
 
 function updateEdgeProtectorPreview() {
@@ -5837,6 +5876,12 @@ async function submitOrder() {
   if (!state.shipping) {
     showToast('Please select a shipping method.'); return;
   }
+  if (document.getElementById('keychain-check')?.checked && !document.getElementById('kc-leather')?.value) {
+    showToast('Please select a leather color for the Mini Keychain.'); return;
+  }
+  if (document.getElementById('keychain-check')?.checked && !document.getElementById('kc-leather')?.value) {
+    showToast('Please select a leather color for the Mini Keychain.'); return;
+  }
 
   // ── Disable button immediately (prevents double submission) ──
   const submitBtn = document.getElementById('submit-btn');
@@ -5913,7 +5958,7 @@ async function submitOrder() {
       doubleCord: document.getElementById('double-cord-check').checked,
       doubleCordColor: state.doubleCordColor || null,
       extraInserts: state.extraInsertType
-      ? (parseInt(document.getElementById('extra-insert-qty')?.value) || 1)
+      ? (parseInt(document.getElementById('iq-' + state.extraInsertType)?.value) || 1)
       : 0,
     extraInsertType: state.extraInsertType || null,
       lace: laceChecked,
