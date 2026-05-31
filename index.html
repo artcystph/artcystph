@@ -3086,6 +3086,9 @@ const batchFullMsg = document.getElementById('batch-full-msg');
       batchFullMsg.style.display    = 'block';
       formSections.style.display    = 'block';
       checkoutSection.style.display = 'none';
+      // Hide Grand Reveal / mobile 3D section — nothing to preview when batch full
+      const mobile3dSec = document.getElementById('mobile-3d-section');
+      if (mobile3dSec) mobile3dSec.style.display = 'none';
 
       // Hide nav links only
       const navLinks = document.querySelector('.nav-links');
@@ -8669,20 +8672,23 @@ if (window.location.hash === '#terms') {
 
   function applyLayout(isMobile) {
     getEls();
+    var folio2d = document.getElementById('folio-preview'); // 2D SVG container
     if (!p3d || !host || !section || !origin) return;
 
     if (isMobile) {
-      // Move canvas to mobile slot
+      // Move BOTH 2D and 3D previews to mobile host so mode toggle works
+      if (folio2d && !host.contains(folio2d)) host.appendChild(folio2d);
       if (!host.contains(p3d)) host.appendChild(p3d);
       section.style.display = 'block';
-      // Mark body so desktop-float CSS rule can hide it
       document.body.classList.remove('sticky-sidebar-active');
-      // Trigger a renderer resize after the reflow settles
       setTimeout(function () {
         if (typeof update3DPreview === 'function') update3DPreview();
       }, 120);
     } else {
-      // Return canvas to sidebar (before the origin placeholder)
+      // Return both to sidebar (folio2d before p3d, p3d before origin)
+      if (folio2d && host.contains(folio2d)) {
+        origin.parentNode.insertBefore(folio2d, p3d && origin.parentNode.contains(p3d) ? p3d : origin);
+      }
       if (!origin.parentNode.contains(p3d) || host.contains(p3d)) {
         origin.parentNode.insertBefore(p3d, origin);
       }
