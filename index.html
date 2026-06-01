@@ -2380,7 +2380,7 @@
     <h2 class="m3d-title serif">Your Journal in 3D</h2>
     <div class="m3d-mode-row">
       <button class="mode-btn" id="m3d-btn-2d" onclick="setPreviewMode('2d')">⬛ 2D</button>
-      <button class="mode-btn active" id="m3d-btn-3d" onclick="setPreviewMode('3d')">◈ 3D</button>
+      <button class="mode-btn" id="m3d-btn-3d" onclick="setPreviewMode('3d')">◈ 3D</button>
     </div>
     <div id="mobile-3d-host"></div>
   </div>
@@ -4504,6 +4504,8 @@ function applyTactileTexture2D(textureType, variant, hex) {
       // importNode deep-clones with correct namespace
       defs.appendChild(document.importNode(nodes[i], true));
     }
+    var fc2d = document.getElementById('front-cover');
+    if (fc2d && hex) fc2d.setAttribute('fill', hex);
     overlay.setAttribute('fill', 'url(#tac-pat)');
     overlay.setAttribute('opacity', '0.88');
   } catch (e) {
@@ -9017,6 +9019,8 @@ if (window.location.hash === '#terms') {
       if (!host.contains(p3d)) host.appendChild(p3d);
       section.style.display = 'block';
       document.body.classList.remove('sticky-sidebar-active');
+      // Set mode to 3D to match the default active button state
+      if (typeof setPreviewMode === 'function') setPreviewMode('3d');
       setTimeout(function () {
         if (typeof update3DPreview === 'function') update3DPreview();
       }, 120);
