@@ -6680,13 +6680,13 @@ if (window.location.hash === '#terms') {
       }, { threshold: 0.4 }).observe(fullPanel);
     }
 
-    // Watch mobile 3D host — hide float while the in-page 3D canvas is on-screen (mobile)
-    var mobileHostEl = document.getElementById('mobile-3d-host');
-    if (mobileHostEl) {
+    // Watch mobile-3d-section (outer wrapper) — hide float only when Grand Reveal is on-screen
+    var mobileSectionEl = document.getElementById('mobile-3d-section');
+    if (mobileSectionEl) {
       new IntersectionObserver(function(entries) {
         mobileCanvasVisible = entries[0].isIntersecting;
         applyFloatVisibility();
-      }, { threshold: 0.3 }).observe(mobileHostEl);
+      }, { threshold: 0.3 }).observe(mobileSectionEl);
     }
   }
 
