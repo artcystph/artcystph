@@ -104,9 +104,6 @@
     font-family: 'DM Sans', sans-serif;
     background-color: var(--bg);
     /* ▶ Replace 'images/bg-texture.jpg' with your background image path */
-    background-image: url('gallery/The_Journals01.jpg');
-    background-size: cover;
-    background-position: center;
     background-attachment: fixed;
     color: var(--text-dark);
     overflow-x: hidden;
@@ -550,8 +547,7 @@
     padding: 2px 6px; border-radius: 4px; pointer-events: none;
     opacity: 0; transition: opacity 0.18s; margin-bottom: 4px;
   }
-  .swatch-wrap.tactile-wrap:hover .tactile-tex-badge,
-  .swatch-wrap.tactile-wrap.touch-active .tactile-tex-badge { opacity: 1; }
+  /* texture-type badge hidden — name shown in swatch label below */
 
   /* Tactile surcharge badge below swatch */
   .tactile-price-badge {
