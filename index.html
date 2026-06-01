@@ -6651,7 +6651,7 @@ if (window.location.hash === '#terms') {
   // Once the customizer is reached, float shows — unless:
   //   (a) the full sticky preview panel is simultaneously visible (desktop), OR
   //   (b) the mobile 3D canvas host is visible (mobile)
-  var customizerReached   = false;
+  var customizerReached   = window.matchMedia('(max-width: 767px)').matches ? true : false;
   var fullPanelVisible    = false;
   var mobileCanvasVisible = false;
 
@@ -6663,23 +6663,9 @@ if (window.location.hash === '#terms') {
     floatEl.style.transform     = shouldShow ? 'translateY(0)' : 'translateY(12px)';
   }
 
-  // Set customizerReached immediately — the float should show as soon as
-  // the user interacts with the customizer, not only after a scroll event.
-  function _checkCustReached() {
-    if (customizerReached) return;
-    if (!customizerEl) { customizerReached = true; applyFloatVisibility(); return; }
-    var rect = customizerEl.getBoundingClientRect();
-    if (rect.top < window.innerHeight && rect.bottom > 0) {
-      customizerReached = true;
-      applyFloatVisibility();
-    }
-  }
-  window.addEventListener('scroll', _checkCustReached, { passive: true });
-  _checkCustReached(); // run once immediately in case already in view
-
   if ('IntersectionObserver' in window) {
-    // Watch customizer — belt-and-suspenders with the scroll check above
-    if (customizerEl) {
+    // Watch customizer (desktop only — mobile sets customizerReached=true on load)
+    if (customizerEl && !customizerReached) {
       new IntersectionObserver(function(entries) {
         if (entries[0].isIntersecting) { customizerReached = true; applyFloatVisibility(); }
       }, { threshold: 0.1 }).observe(customizerEl);
