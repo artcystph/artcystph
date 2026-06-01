@@ -4861,6 +4861,8 @@ function selectLeather(el) {
   clearTactileTexture2D();
   updateFolioColor(leatherColors[state.leather]);
   document.getElementById('s-leather').textContent = state.leather || '—';
+  calcTotal();
+  if (typeof update3DPreview === 'function') update3DPreview();
 }
 
 function selectEdge(btn, val) {
