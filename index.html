@@ -6681,6 +6681,9 @@ if (window.location.hash === '#terms') {
     floatEl.style.opacity       = shouldShow ? '1' : '0';
     floatEl.style.pointerEvents = shouldShow ? 'auto' : 'none';
     floatEl.style.transform     = shouldShow ? 'translateY(0)' : 'translateY(12px)';
+    // Always re-sync 2D SVG at the moment of becoming visible
+    // so stale/empty content never shows after mode switches
+    if (shouldShow && typeof syncMiniFloat === 'function') syncMiniFloat();
   }
 
   if ('IntersectionObserver' in window) {
@@ -6920,7 +6923,6 @@ if (window.location.hash === '#terms') {
   window.update3DPreview = function () {
     _scheduleUpdate();
     _scheduleFloatUpdate();
-    if (typeof notifyCustomizerInteraction === 'function') notifyCustomizerInteraction();
   };
 
   // ════════════════════════════════════════════════════════
@@ -8782,6 +8784,8 @@ if (window.location.hash === '#terms') {
       _scheduleUpdate();
       // Update float regardless of its current mode so it's ready when switched
       if (typeof _scheduleFloatUpdate === 'function') _scheduleFloatUpdate();
+      // Reveal mini-float on first interaction
+      if (typeof notifyCustomizerInteraction === 'function') notifyCustomizerInteraction();
     }
 
     // calcTotal covers: base, edge, cord, grommet, double-cord,
