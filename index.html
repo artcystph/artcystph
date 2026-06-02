@@ -6629,8 +6629,12 @@ if (window.location.hash === '#terms') {
   // ── 1. Sync SVG contents ────────────────────────────────────────
   function syncMiniFloat() {
     if (!src || !dest) return;
-    // Always sync from 2D SVG regardless of current preview mode
+    // Temporarily force src visible so SVG content is accessible even if parent is display:none
+    var folioPrev = document.getElementById('folio-preview');
+    var wasHidden = folioPrev && folioPrev.style.display === 'none';
+    if (wasHidden) folioPrev.style.visibility = 'hidden'; // keep layout invisible but accessible
     dest.innerHTML = src.innerHTML;
+    if (wasHidden) folioPrev.style.visibility = '';
   }
   syncMiniFloat();
 
@@ -6640,11 +6644,17 @@ if (window.location.hash === '#terms') {
     });
   }
 
-  // Re-sync whenever update3DPreview fires (covers cases where only 3D state changed
-  // but the underlying 2D SVG was also updated by the same customizer action)
+  // Re-sync on every update3DPreview call
   var _origSync = window.update3DPreview;
   window.update3DPreview = function() {
     if (typeof _origSync === 'function') _origSync.apply(this, arguments);
+    requestAnimationFrame(syncMiniFloat);
+  };
+
+  // Re-sync whenever mode is switched (covers 3D→2D and 2D→3D toggles)
+  var _origSetMode = window.setPreviewMode;
+  window.setPreviewMode = function(m) {
+    if (typeof _origSetMode === 'function') _origSetMode.apply(this, arguments);
     requestAnimationFrame(syncMiniFloat);
   };
 
