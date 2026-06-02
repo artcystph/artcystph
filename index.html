@@ -6332,6 +6332,7 @@ buildCordSwatches('s2-cord-swatches', 's2', true, null);
 buildCordSwatches('s3-cord-swatches', 's3', true, null);
 buildDoubleCordSwatches(null);
 updateFolioColor('#c8b89a'); // neutral placeholder — no leather selected
+requestAnimationFrame(function() { if (typeof window._syncMiniFloat === 'function') window._syncMiniFloat(); });
 calcTotal();
 document.getElementById('cust-destination').value = '';
 updateProgress();</script>
@@ -6643,19 +6644,11 @@ if (window.location.hash === '#terms') {
     });
   }
 
-  // Re-sync on every update3DPreview call
-  var _origSync = window.update3DPreview;
-  window.update3DPreview = function() {
-    if (typeof _origSync === 'function') _origSync.apply(this, arguments);
-    requestAnimationFrame(syncMiniFloat);
-  };
+  // Expose globally so the 3D renderer IIFE (which overwrites these window functions) can call it
+  window._syncMiniFloat = syncMiniFloat;
 
-  // Re-sync whenever mode is switched (covers 3D→2D and 2D→3D toggles)
-  var _origSetMode = window.setPreviewMode;
-  window.setPreviewMode = function(m) {
-    if (typeof _origSetMode === 'function') _origSetMode.apply(this, arguments);
-    requestAnimationFrame(syncMiniFloat);
-  };
+  // Delayed initial sync — ensures #folio-svg is fully populated after page init
+  setTimeout(syncMiniFloat, 400);
 
   // ── 2. Sync price ───────────────────────────────────────────────
   if (priceEl && floatPrice) {
@@ -6897,6 +6890,8 @@ if (window.location.hash === '#terms') {
     _cls('m3d-btn-2d', 'active', m === '2d');
     _cls('m3d-btn-3d', 'active', m === '3d');
     if (m === '3d') { _pending = false; _scheduleUpdate(); }
+    // Always keep mini float in sync — mini float always shows 2D regardless of mode
+    requestAnimationFrame(function() { if (typeof window._syncMiniFloat === 'function') window._syncMiniFloat(); });
   };
 
   window.set3DState = function (s) {
@@ -6922,6 +6917,8 @@ if (window.location.hash === '#terms') {
   window.update3DPreview = function () {
     _scheduleUpdate();
     _scheduleFloatUpdate();
+    // Keep mini float 2D SVG in sync on every state update
+    requestAnimationFrame(function() { if (typeof window._syncMiniFloat === 'function') window._syncMiniFloat(); });
   };
 
   // ════════════════════════════════════════════════════════
