@@ -6630,7 +6630,10 @@ if (window.location.hash === '#terms') {
   // ── 1. Sync SVG contents ────────────────────────────────────────
   function syncMiniFloat() {
     if (!src || !dest) return;
-    dest.innerHTML = src.innerHTML;
+    var h = src.innerHTML
+      .replace(/\bid="(cardShadow|backShadow|leatherSheen|grainPat|spineGrad|cordGlow|tac-pat|tac-pat-b)"/g, 'id="mf-$1"')
+      .replace(/url\(#(cardShadow|backShadow|leatherSheen|grainPat|spineGrad|cordGlow|tac-pat|tac-pat-b)\)/g, 'url(#mf-$1)');
+    dest.innerHTML = h;
     // Trigger float visibility on first real SVG change (= first user interaction)
     if (typeof window.notifyCustomizerInteraction === 'function') {
       window.notifyCustomizerInteraction();
