@@ -6629,12 +6629,11 @@ if (window.location.hash === '#terms') {
   // ── 1. Sync SVG contents ────────────────────────────────────────
   function syncMiniFloat() {
     if (!src || !dest) return;
-    // Temporarily force src visible so SVG content is accessible even if parent is display:none
-    var folioPrev = document.getElementById('folio-preview');
-    var wasHidden = folioPrev && folioPrev.style.display === 'none';
-    if (wasHidden) folioPrev.style.visibility = 'hidden'; // keep layout invisible but accessible
     dest.innerHTML = src.innerHTML;
-    if (wasHidden) folioPrev.style.visibility = '';
+    // Trigger float visibility on first real SVG change (= first user interaction)
+    if (typeof window.notifyCustomizerInteraction === 'function') {
+      window.notifyCustomizerInteraction();
+    }
   }
   syncMiniFloat();
 
