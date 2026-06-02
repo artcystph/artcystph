@@ -6628,7 +6628,9 @@ if (window.location.hash === '#terms') {
 
   // ── 1. Sync SVG contents ────────────────────────────────────────
   function syncMiniFloat() {
-    if (src && dest) dest.innerHTML = src.innerHTML;
+    if (!src || !dest) return;
+    // Always sync from 2D SVG regardless of current preview mode
+    dest.innerHTML = src.innerHTML;
   }
   syncMiniFloat();
 
@@ -6637,6 +6639,14 @@ if (window.location.hash === '#terms') {
       childList: true, subtree: true, attributes: true, characterData: true
     });
   }
+
+  // Re-sync whenever update3DPreview fires (covers cases where only 3D state changed
+  // but the underlying 2D SVG was also updated by the same customizer action)
+  var _origSync = window.update3DPreview;
+  window.update3DPreview = function() {
+    if (typeof _origSync === 'function') _origSync.apply(this, arguments);
+    requestAnimationFrame(syncMiniFloat);
+  };
 
   // ── 2. Sync price ───────────────────────────────────────────────
   if (priceEl && floatPrice) {
@@ -6651,7 +6661,7 @@ if (window.location.hash === '#terms') {
   // Once the customizer is reached, float shows — unless:
   //   (a) the full sticky preview panel is simultaneously visible (desktop), OR
   //   (b) the mobile 3D canvas host is visible (mobile)
-  var customizerReached   = window.matchMedia('(max-width: 767px)').matches ? true : false;
+  var customizerReached   = false;
   var fullPanelVisible    = false;
   var mobileCanvasVisible = false;
 
@@ -6671,28 +6681,31 @@ if (window.location.hash === '#terms') {
       }, { threshold: 0.1 }).observe(customizerEl);
     }
 
-    // Watch full sticky preview panel — hide float while panel is visible (desktop)
-    if (fullPanel) {
+    // Watch full sticky preview panel — hide float while panel is visible (desktop only)
+    if (fullPanel && !window.matchMedia('(max-width: 767px)').matches) {
       new IntersectionObserver(function(entries) {
         fullPanelVisible = entries[0].isIntersecting;
         applyFloatVisibility();
       }, { threshold: 0.4 }).observe(fullPanel);
     }
 
-    // Watch mobile-3d-section (outer wrapper) — hide float only when Grand Reveal is on-screen
-    var mobileSectionEl = document.getElementById('mobile-3d-section');
-    if (mobileSectionEl) {
-      new IntersectionObserver(function(entries) {
-        mobileCanvasVisible = entries[0].isIntersecting;
-        applyFloatVisibility();
-      }, { threshold: 0.3 }).observe(mobileSectionEl);
+    // Watch mobile-3d-section — hide float when Grand Reveal is on-screen (mobile only)
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      var mobileSectionEl = document.getElementById('mobile-3d-section');
+      if (mobileSectionEl) {
+        new IntersectionObserver(function(entries) {
+          mobileCanvasVisible = entries[0].isIntersecting;
+          applyFloatVisibility();
+        }, { threshold: 0.3 }).observe(mobileSectionEl);
+      }
     }
   }
 
-  // Smooth transition
+  // Smooth transition — must be set before any applyFloatVisibility call
   if (floatEl) {
     floatEl.style.transition = 'opacity 0.25s, transform 0.25s, box-shadow 0.18s';
   }
+  if (customizerReached) applyFloatVisibility();
 
   // ── 4. Close button ─────────────────────────────────────────────
   var dismissed = false;
@@ -6712,6 +6725,13 @@ if (window.location.hash === '#terms') {
   applyFloatVisibility = function() {
     if (dismissed) return;
     _origApply();
+  };
+
+  // Expose interaction trigger — called on first customizer change (mobile only)
+  window.notifyCustomizerInteraction = function() {
+    if (customizerReached) return; // already triggered
+    customizerReached = true;
+    applyFloatVisibility();
   };
 
   // ── 5. Tap-area scroll (replaces removed onclick on outer div) ───
@@ -6887,7 +6907,11 @@ if (window.location.hash === '#terms') {
     if (typeof _renderFloat === 'function') { _floatPending = false; _renderFloat(); }
   };
 
-  window.update3DPreview = function () { _scheduleUpdate(); _scheduleFloatUpdate(); };
+  window.update3DPreview = function () {
+    _scheduleUpdate();
+    _scheduleFloatUpdate();
+    if (typeof notifyCustomizerInteraction === 'function') notifyCustomizerInteraction();
+  };
 
   // ════════════════════════════════════════════════════════
   //  FLOAT 3D — legacy CSS 3D (unchanged, no WebGL here)
