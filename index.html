@@ -1429,6 +1429,21 @@
 #j3d-canvas-host { border-radius: 14px; overflow: hidden; }
 #j3d-canvas-host canvas { display: block; }
 
+.addon-row-incompatible {
+  border-left: 3px solid #e6a817 !important;
+  border-radius: 6px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.addon-row-incompatible .addon-price {
+  display: none;
+}
+.addon-incompatible-label {
+  font-size: 11px;
+  color: #e6a817;
+  font-weight: 600;
+  margin-left: 4px;
+}
 </style>
 </head>
 <body>
@@ -3159,21 +3174,47 @@ const batchFullMsg = document.getElementById('batch-full-msg');
       }
     }
   } catch (err) {
-    // Network error / GAS unreachable — show a retry prompt instead of silently locking the form
     console.warn('Capacity check failed:', err);
     loader.style.display       = 'none';
-    batchFullMsg.style.display = 'none';
     formSections.style.display = 'none';
     updateStatusIndicator('error');
-    // Show a user-friendly retry message
-    const retryMsg = document.getElementById('capacity-loader') || document.createElement('div');
-    retryMsg.innerHTML = '<p style="text-align:center;color:#8b4d63;padding:24px;">⚠️ Unable to load batch info. Please <a href="" onclick="location.reload();return false;" style="color:#C2458C;">refresh the page</a> and try again.</p>';
-    retryMsg.style.display = 'block';
-    // Update the batch-full card copy for maintenance state
+
+    // ── Hide nav entirely except logo ──────────────────────────────
+    const navLinks = document.querySelector('.nav-links');
+    if (navLinks) navLinks.style.display = 'none';
+
+    // ── Hide all page sections ─────────────────────────────────────
+    ['inspiration','customizer','addons','details','shipping','size-guide','checkout','mobile-3d-section','grand-reveal'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+
+    // ── Hide floating live preview widget ──────────────────────────
+    const previewWidget = document.getElementById('mini-float');
+    if (previewWidget) previewWidget.style.display = 'none';
+
+    // ── Replace hero CTA with Refresh button ───────────────────────
+    const heroCta = document.querySelector('.hero-cta, #hero-cta, a[href="#customizer"], button[onclick*="customizer"]');
+    if (heroCta) {
+      heroCta.textContent = '↻ Refresh Page';
+      heroCta.onclick = function(e) { e.preventDefault(); location.reload(); };
+      heroCta.removeAttribute('href');
+    }
+
+    // ── Show maintenance card (reuse batch-full-msg) ───────────────
+    batchFullMsg.style.display = 'block';
     const batchCard = document.querySelector('#batch-full-msg .batch-full-card h2');
-    if (batchCard) batchCard.textContent = 'Temporarily Unavailable';
+    if (batchCard) batchCard.textContent = 'System Maintenance';
     const batchBody = document.querySelector('#batch-full-msg .batch-full-card p');
-    if (batchBody) batchBody.innerHTML = 'Our order system is undergoing maintenance. Please check back shortly or follow <strong>@artcyst.ph</strong> for updates.';
+    if (batchBody) batchBody.innerHTML = 'Our order system is temporarily unreachable. Please refresh and try again, or follow <strong>@artcyst.ph</strong> for updates.';
+
+    // ── Replace batch-full card CTA with Refresh button ───────────
+    const batchBtn = document.querySelector('#batch-full-msg .batch-full-card a, #batch-full-msg .batch-full-card button');
+    if (batchBtn) {
+      batchBtn.textContent = '↻ Refresh Page';
+      batchBtn.onclick = function(e) { e.preventDefault(); location.reload(); };
+      batchBtn.removeAttribute('href');
+    }
   }
 })();
 
@@ -5366,10 +5407,43 @@ function _updatePocketPriceDisplay() {
 function togglePockets(cb) {
   state.pockets = cb.checked;
   _updatePocketPriceDisplay();
+  _syncPocketsEdgeProtectorConflict(cb.checked);
   calcTotal();
   if (typeof update3DPreview === 'function') update3DPreview();
 }
+function _syncPocketsEdgeProtectorConflict(pocketsOn) {
+  const epCheck = document.getElementById('edge-prot-check');
+  const epRow   = epCheck?.closest('.addon-row, .addon-item, [class*="addon"]') || epCheck?.parentElement;
+  if (!epCheck || !epRow) return;
+
+  if (pocketsOn) {
+    if (epCheck.checked) {
+      epCheck.checked = false;
+      toggleEdgeProtector(epCheck);
+    }
+    epRow.classList.add('addon-row-incompatible');
+    if (!epRow.querySelector('.addon-incompatible-label')) {
+      const lbl = document.createElement('span');
+      lbl.className   = 'addon-incompatible-label';
+      lbl.textContent = 'Incompatible';
+      const nameEl = epRow.querySelector('.addon-name, label');
+      if (nameEl) nameEl.appendChild(lbl);
+    }
+    showToast('Edge protector cannot fit when inside pockets are added.');
+  } else {
+    epRow.classList.remove('addon-row-incompatible');
+    const lbl = epRow.querySelector('.addon-incompatible-label');
+    if (lbl) lbl.remove();
+  }
+}
+
 function toggleEdgeProtector(chk) {
+  const pocketsChecked = document.getElementById('pockets-check')?.checked || false;
+  if (chk.checked && pocketsChecked) {
+    chk.checked = false;
+    showToast('Edge protector cannot fit when inside pockets are added.');
+    return;
+  }
   state.edgeProtector = chk.checked;
   document.getElementById('edge-prot-sub').style.display = chk.checked ? 'block' : 'none';
   // Always clear active pill and reset finish to None when toggling —
