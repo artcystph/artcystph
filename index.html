@@ -3402,6 +3402,9 @@ function applyStockData(stock) {
   // ── 7. Extra Inserts — size-dependent (handled by selectBase) ─
   applyExtraInsertStock();
 
+  // ── 7b. Inside Pockets — base-dependent stock check ──────────
+  applyPocketStock();
+
   // ── 8. Lace ──────────────────────────────────────────────────
   document.querySelectorAll('.addon-row').forEach(row => {
     const nameEl = row.querySelector('.addon-name');
@@ -3687,6 +3690,43 @@ function applyExtraInsertStock() {
   const active = Object.keys(state.extraInserts || {});
   state.extraInsertType = active.length ? active[active.length - 1] : null;
   _updateInsertRightPrice();
+}
+
+function applyPocketStock() {
+  const row = document.getElementById('pockets-row');
+  if (!row) return;
+
+  // Clear previous OOS badge
+  const prev = row.querySelector('.stock-badge-pocket');
+  if (prev) prev.remove();
+
+  const baseToKey = {
+    'a6-bifold':  'Pockets A6 Bifold',
+    'a6-trifold': 'Pockets A6 Trifold',
+    'a5-bifold':  'Pockets A5 Bifold',
+    'a5-trifold': 'Pockets A5 Trifold',
+    'pp-trifold': 'Pockets PP Trifold',
+  };
+  const stockKey = state.base ? baseToKey[state.base] : null;
+  const qty = (stockKey && _stockData && stockKey in _stockData) ? _stockData[stockKey] : null;
+
+  if (qty === 0) {
+    row.classList.add('stock-oos');
+    const toggle = row.querySelector('input[type="checkbox"]');
+    if (toggle) { toggle.disabled = true; toggle.checked = false; state.pockets = false; }
+    const priceEl = row.querySelector('.addon-price');
+    if (priceEl && !priceEl.querySelector('.stock-badge-pocket')) {
+      const b = document.createElement('div');
+      b.className = 'stock-badge-pocket';
+      b.style.cssText = 'font-size:9px;color:#888;font-weight:700;margin-top:2px;';
+      b.textContent = 'Out of Stock';
+      priceEl.appendChild(b);
+    }
+  } else {
+    row.classList.remove('stock-oos');
+    const toggle = row.querySelector('input[type="checkbox"]');
+    if (toggle) toggle.disabled = false;
+  }
 }
 // ════════════════════════════════════════
 //  BACKGROUND CAPACITY RECHECK
@@ -5402,6 +5442,7 @@ function _updatePocketPriceDisplay() {
   var priceEl = document.querySelector('#pockets-row .addon-price');
   if (descEl)  descEl.textContent  = desc;
   if (priceEl) priceEl.textContent = '₱' + price;
+  applyPocketStock();
 }
 
 function togglePockets(cb) {
