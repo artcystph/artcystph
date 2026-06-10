@@ -1710,8 +1710,9 @@
 
             <!-- ── Leather type toggle ── -->
             <div class="leather-type-toggle" style="margin-bottom:14px;">
-              <button class="lt-pill" id="lt-vegan"   onclick="selectLeatherType('vegan')">⬛ Vegan Leather</button>
-              <button class="lt-pill" id="lt-tactile" onclick="selectLeatherType('tactile')">✦ Tactile Leather</button>
+              <button class="lt-pill" id="lt-vegan"   onclick="selectLeatherType('vegan')">☙ Vegan</button>
+              <button class="lt-pill" id="lt-genuine" onclick="selectLeatherType('genuine')">❖ Genuine</button>
+              <button class="lt-pill" id="lt-tactile" onclick="selectLeatherType('tactile')">▤ Tactile</button>
             </div>
             <div id="lt-unavail-note" class="lt-unavail-note">Tactile leather is temporarily unavailable.</div>
 
@@ -1727,6 +1728,28 @@
                 <div class="swatch-wrap"><div class="swatch lc-midnight" data-color="Midnight" onclick="selectLeather(this)" title="Midnight"></div><div class="swatch-label">Midnight</div></div>
                 <div class="swatch-wrap"><div class="swatch lc-taro" data-color="Taro" onclick="selectLeather(this)" title="Taro"></div><div class="swatch-label">Taro</div></div>
               </div>
+            </div>
+
+            <!-- ── Genuine swatches (loaded from GAS) ── -->
+            <div id="genuine-swatches-area" style="display:none;">
+              <div class="flower-spinner" id="genuine-spinner">
+                <svg width="40" height="40" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
+                  <ellipse class="fp1" cx="21" cy="9" rx="4.5" ry="8" fill="#C2458C" transform="rotate(0   21 21)"/>
+                  <ellipse class="fp2" cx="21" cy="9" rx="4.5" ry="8" fill="#C2458C" transform="rotate(45  21 21)"/>
+                  <ellipse class="fp3" cx="21" cy="9" rx="4.5" ry="8" fill="#C2458C" transform="rotate(90  21 21)"/>
+                  <ellipse class="fp4" cx="21" cy="9" rx="4.5" ry="8" fill="#C2458C" transform="rotate(135 21 21)"/>
+                  <ellipse class="fp5" cx="21" cy="9" rx="4.5" ry="8" fill="#C2458C" transform="rotate(180 21 21)"/>
+                  <ellipse class="fp6" cx="21" cy="9" rx="4.5" ry="8" fill="#C2458C" transform="rotate(225 21 21)"/>
+                  <ellipse class="fp7" cx="21" cy="9" rx="4.5" ry="8" fill="#C2458C" transform="rotate(270 21 21)"/>
+                  <ellipse class="fp8" cx="21" cy="9" rx="4.5" ry="8" fill="#C2458C" transform="rotate(315 21 21)"/>
+                  <circle cx="21" cy="21" r="4.5" fill="#C2458C"/>
+                </svg>
+                <span style="font-size:12px;color:var(--text-light);">Loading textures…</span>
+              </div>
+              <div class="swatch-grid" id="genuine-swatches" style="display:none;"></div>
+              <p id="genuine-surcharge-note" style="font-size:11px;color:var(--text-light);margin-top:8px;display:none;">
+                ❖ Genuine leather includes a texture surcharge — shown per color.
+              </p>
             </div>
 
             <!-- ── Tactile swatches (loaded from GAS) ── -->
@@ -2208,10 +2231,11 @@
           <input type="checkbox" class="addon-check" id="pockets-check" onchange="togglePockets(this)">
           <div class="addon-info">
             <div class="addon-name">Inside Pockets</div>
-            <div class="addon-desc" id="pocket-desc-text">A6: ₱180 · A5: ₱280 · PP: ₱150</div>
+            <div class="addon-desc" id="pocket-desc-text">A6: ₱200 · A5: ₱300 · PP: ₱180</div>
             <img src="images/Pockets.jpeg" alt="Inside Pockets sample" class="zoomable" style="margin-top:8px;width:100px;height:70px;object-fit:cover;border-radius:4px;display:block;cursor:zoom-in;" loading="lazy" onclick="openZoom(this)" title="Tap to zoom">
           </div>
-          <div class="addon-price" id="pocket-price-tag">₱180</div>
+          <div class="addon-price" id="pocket-price-tag">₱200</div>
+          <div id="pockets-time-note" style="display:none;font-size:11px;color:var(--text-light);margin-top:4px;width:100%;padding-left:32px;">⏱ Adds 3–5 business days to processing.</div>
         </div>
 
         <!-- Edge Protector -->
@@ -2348,8 +2372,9 @@
           <label class="field-label">Leather Color</label>
           <!-- Keychain leather type toggle (independent) -->
           <div class="leather-type-toggle" style="margin-bottom:10px;" id="kc-lt-toggle">
-            <button class="lt-pill active" id="kc-lt-vegan" onclick="selectKeychainLeatherType('vegan')">⬛ Vegan Leather</button>
-            <button class="lt-pill" id="kc-lt-tactile" onclick="selectKeychainLeatherType('tactile')">✦ Tactile Leather</button>
+            <button class="lt-pill active" id="kc-lt-vegan"   onclick="selectKeychainLeatherType('vegan')">☙ Vegan</button>
+            <button class="lt-pill"        id="kc-lt-genuine" onclick="selectKeychainLeatherType('genuine')">❖ Genuine</button>
+            <button class="lt-pill"        id="kc-lt-tactile" onclick="selectKeychainLeatherType('tactile')">▤ Tactile</button>
           </div>
           <!-- Vegan swatches -->
           <div id="kc-vegan-swatches" class="swatch-grid">
@@ -2362,9 +2387,12 @@
             <div class="swatch-wrap"><div class="swatch lc-midnight"  data-kc-color="Midnight"  onclick="selectKeychainSwatch(this)"></div><div class="swatch-label">Midnight</div></div>
             <div class="swatch-wrap"><div class="swatch lc-taro"      data-kc-color="Taro"      onclick="selectKeychainSwatch(this)"></div><div class="swatch-label">Taro</div></div>
           </div>
+          <!-- Genuine swatches (built dynamically) -->
+          <div id="kc-genuine-swatches" class="swatch-grid" style="display:none;"></div>
+          <p id="kc-genuine-note" style="font-size:11px;color:var(--text-light);margin-top:6px;display:none;">❖ Genuine leather includes a texture surcharge — shown per color.</p>
           <!-- Tactile swatches (built dynamically) -->
           <div id="kc-tactile-swatches" class="swatch-grid" style="display:none;"></div>
-          <p id="kc-tactile-note" style="font-size:11px;color:var(--text-light);margin-top:6px;display:none;">✦ Tactile leather includes a texture surcharge — shown per color.</p>
+          <p id="kc-tactile-note" style="font-size:11px;color:var(--text-light);margin-top:6px;display:none;">▤ Tactile leather includes a texture surcharge — shown per color.</p>
           <!-- Hidden input keeps existing calcTotal()/order logic working -->
           <select id="kc-leather" style="display:none;" onchange="calcTotal()"></select>
         </div>
@@ -2409,27 +2437,41 @@
     <div class="step-card">
       <div class="field-row">
         <div class="field-group">
-          <label class="field-label">Full Name <span class="required">*</span></label>
-          <input type="text" id="cust-name" placeholder="Your full name">
+          <label class="field-label">First Name <span class="required">*</span></label>
+          <input type="text" id="cust-firstname" placeholder="Given name">
         </div>
         <div class="field-group">
-          <label class="field-label">Email <span class="required">*</span></label>
-          <input type="email" id="cust-email" placeholder="you@email.com">
+          <label class="field-label">Last Name <span class="required">*</span></label>
+          <input type="text" id="cust-lastname" placeholder="Family name">
         </div>
       </div>
       <div class="field-row">
         <div class="field-group">
+          <label class="field-label">Email <span class="required">*</span></label>
+          <input type="email" id="cust-email" placeholder="you@email.com">
+        </div>
+        <div class="field-group">
           <label class="field-label">Phone <span class="required">*</span></label>
           <input type="tel" id="cust-phone" placeholder="09XX XXX XXXX">
         </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Shipping Destination <span class="required">*</span></label>
+        <input type="text" id="cust-destination" readonly placeholder="Select below in Shipping section" style="background:var(--bg-alt);">
+      </div>
+      <div class="field-row">
         <div class="field-group">
-          <label class="field-label">Shipping Destination <span class="required">*</span></label>
-          <input type="text" id="cust-destination" readonly placeholder="Select below in Shipping section" style="background:var(--bg-alt);">
+          <label class="field-label">Barangay <span class="required">*</span></label>
+          <input type="text" id="cust-brgy" placeholder="Barangay">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Municipality / City <span class="required">*</span></label>
+          <input type="text" id="cust-municipality" placeholder="Municipality or City">
         </div>
       </div>
       <div class="field-group">
-        <label class="field-label">Complete Shipping Address <span class="required">*</span></label>
-        <textarea id="cust-address" rows="3" placeholder="House No., Street, Barangay, City, Province, ZIP"></textarea>
+        <label class="field-label">Province <span class="required">*</span></label>
+        <input type="text" id="cust-province" placeholder="Province">
       </div>
       <div class="field-group">
         <label class="field-label">Order Notes (optional)</label>
@@ -3149,10 +3191,10 @@ const batchFullMsg = document.getElementById('batch-full-msg');
       checkoutSection.style.display = 'block';
       updateStatusIndicator('available', data.activeCount, data.batchLimit);
       // ── Apply limited stock badges / hiding ──────────────────────
-      if (data.tactile) {
-        _tactileData = data.tactile;
-        // If user already clicked Tactile tab, render now
-        if (state.leatherType === 'tactile') buildTactileSwatches();
+      if (data.leather) {
+        _leatherData = data.leather;
+        if (state.leatherType === 'tactile') buildLeatherSwatches('tactile');
+        if (state.leatherType === 'genuine') buildLeatherSwatches('genuine');
       }
       _updatePocketPriceDisplay(); // init with correct default
       if (data.stock) {
@@ -3453,7 +3495,7 @@ function applyStockData(stock) {
       // Row-level OOS only when ALL vegan AND tactile keychain colors are 0
       const trackedQtys = kcColors.map(function(c){ return stock['Mini Keychain ' + c]; })
                                   .filter(function(v){ return v !== undefined && v !== null && v !== ''; });
-      const tacKcQtys = (_tactileData || [])
+      const tacKcQtys = (_leatherData || [])
         .map(function(t){ return t.miniKeychainStock; })
         .filter(function(v){ return v !== undefined && v !== null && v !== ''; });
       const allTracked = trackedQtys.concat(tacKcQtys);
@@ -4155,7 +4197,7 @@ function selectBase(btn) {
 //   Match the existing code style exactly."
 // ════════════════════════════════════════════════════════════════
 
-var _tactileData    = []; // populated by doGet response
+var _leatherData    = []; // populated by doGet response (all categories)
 var _textureCache   = {}; // fileId → base64 dataUrl (session cache)
 
 // Fetches a texture photo from GAS proxy. Calls callback(dataUrl) on success,
@@ -4613,22 +4655,23 @@ function clearTactileTexture2D() {
 }
 
 // ── Build tactile swatch grid ──────────────────────────────────
-function buildTactileSwatches() {
-  var spinner  = document.getElementById('tactile-spinner');
-  var grid     = document.getElementById('tactile-swatches');
-  var note     = document.getElementById('tactile-surcharge-note');
+function buildLeatherSwatches(category) {
+  var spinner  = document.getElementById(category + '-spinner');
+  var grid     = document.getElementById(category + '-swatches');
+  var note     = document.getElementById(category + '-surcharge-note');
   if (!grid) return;
 
   if (spinner) spinner.style.display = 'none';
   grid.style.display = '';
   grid.innerHTML = '';
 
-  if (!_tactileData || !_tactileData.length) {
-    grid.innerHTML = '<p style="font-size:12px;color:var(--text-light);font-style:italic;">No tactile options available right now.</p>';
+  var items = (_leatherData || []).filter(function(i) { return i.leatherCategory === category; });
+  if (!items.length) {
+    grid.innerHTML = '<p style="font-size:12px;color:var(--text-light);font-style:italic;">No ' + category + ' options available right now.</p>';
     return;
   }
 
-  _tactileData.forEach(function(item) {
+  items.forEach(function(item) {
     var wrap = document.createElement('div');
     wrap.className = 'swatch-wrap tactile-wrap';
 
@@ -4729,86 +4772,61 @@ function _formatSurcharge(val) {
 // Updates each swatch badge and dataset.surcharge to reflect current base size.
 // Also re-prices the currently selected tactile leather.
 function updateTactileSwatchBadges() {
-  var dots = document.querySelectorAll('#tactile-swatches .swatch');
-  dots.forEach(function(dot) {
-    var wrap    = dot.closest ? dot.closest('.tactile-wrap') : null;
-    if (!wrap) return;
-    var prBadge = wrap.querySelector('.tactile-price-badge');
-    if (!prBadge) return;
-    var item = _tactileData.find(function(t) {
-      return t.colorName === dot.dataset.colorName
-          && t.textureType === dot.dataset.textureType;
+  ['tactile', 'genuine'].forEach(function(cat) {
+    var dots = document.querySelectorAll('#' + cat + '-swatches .swatch');
+    dots.forEach(function(dot) {
+      var wrap = dot.closest ? dot.closest('.tactile-wrap') : null;
+      if (!wrap) return;
+      var prBadge = wrap.querySelector('.tactile-price-badge');
+      if (prBadge) {
+        var item = _leatherData.find(function(t) {
+          return t.leatherCategory === cat && t.colorName === dot.dataset.colorName && t.textureType === dot.dataset.textureType;
+        });
+        if (item) {
+          var s = _getTactileSurcharge(item);
+          prBadge.textContent   = (s !== null && s !== undefined) ? _formatSurcharge(s) : '';
+          dot.dataset.surcharge = (s !== null && s !== undefined) ? s : '';
+        }
+      }
+      var stockBadge = wrap.querySelector('.tactile-stock-badge');
+      var rawStock   = '';
+      if (state.base) {
+        var _item2 = _leatherData.find(function(t) {
+          return t.leatherCategory === cat && t.colorName === dot.dataset.colorName && t.textureType === dot.dataset.textureType;
+        });
+        if (_item2) {
+          var _s2 = _getStockForBase(_item2);
+          rawStock = (_s2 !== null && _s2 !== undefined) ? String(_s2) : '';
+        }
+      }
+      var st2    = (rawStock === '' || rawStock === null) ? null : Number(rawStock);
+      var isOos2 = (st2 === 0);
+      var isLow2 = (st2 !== null && !isNaN(st2) && st2 >= 1 && st2 <= 5);
+      wrap.style.opacity       = isOos2 ? '0.45' : '';
+      wrap.style.pointerEvents = isOos2 ? 'none'  : '';
+      dot.onclick              = isOos2 ? null : function() { selectTactile(this); };
+      if (stockBadge) {
+        if (!state.base)   { stockBadge.textContent = ''; }
+        else if (isOos2)   { stockBadge.style.color = '#888';    stockBadge.textContent = 'Out of stock!'; }
+        else if (isLow2)   { stockBadge.style.color = '#c0392b'; stockBadge.textContent = 'Only ' + st2 + ' left!'; }
+        else               { stockBadge.textContent = ''; }
+      }
     });
-    if (!item) return;
-    var s = _getTactileSurcharge(item);
-    // Badge: blank if no base selected, otherwise formatted price
-    prBadge.textContent = (s !== null && s !== undefined) ? _formatSurcharge(s) : '';
-    // Keep dataset in sync for selectTactile
-    dot.dataset.surcharge = (s !== null && s !== undefined) ? s : '';
   });
 
-  // ── Per-swatch: update stock badge + OOS state ──────────────────
-  var dots2 = document.querySelectorAll('#tactile-swatches .swatch');
-  dots2.forEach(function(dot2) {
-    var wrap2       = dot2.closest ? dot2.closest('.tactile-wrap') : null;
-    if (!wrap2) return;
-    var stockBadge2 = wrap2.querySelector('.tactile-stock-badge');
-
-    // Read correct stock from _tactileData (single source of truth)
-    var rawStock = '';
-    if (state.base) {
-      var _item2 = _tactileData.find(function(t) {
-        return t.colorName === dot2.dataset.colorName && t.textureType === dot2.dataset.textureType;
-      });
-      if (_item2) {
-        var _s2 = _getStockForBase(_item2);
-        rawStock = (_s2 !== null && _s2 !== undefined) ? String(_s2) : '';
-      }
-    }
-
-    var st2    = (rawStock === '' || rawStock === null || rawStock === undefined) ? null : Number(rawStock);
-    var isOos2 = (st2 === 0);
-    var isLow2 = (st2 !== null && !isNaN(st2) && st2 >= 1 && st2 <= 5);
-
-    // Apply OOS visual state
-    wrap2.style.opacity       = isOos2 ? '0.45' : '';
-    wrap2.style.pointerEvents = isOos2 ? 'none'  : '';
-    dot2.onclick              = isOos2 ? null : function() { selectTactile(this); };
-
-    // Update stock badge text
-    if (stockBadge2) {
-      if (!state.base) {
-        stockBadge2.textContent = ''; // no base = no stock info yet
-      } else if (isOos2) {
-        stockBadge2.style.color = '#888';
-        stockBadge2.textContent = 'Out of stock!';
-      } else if (isLow2) {
-        stockBadge2.style.color = '#c0392b';
-        stockBadge2.textContent = 'Only ' + st2 + ' left!';
-      } else {
-        stockBadge2.textContent = '';
-      }
-    }
-  });
-
-  // ── Re-price currently selected tactile + deselect if now OOS ───
-  if (state.leatherType === 'tactile' && state.tactileColorName) {
-    var sel = _tactileData.find(function(t) {
-      return t.colorName   === state.tactileColorName
-          && t.textureType === state.tactileTextureType;
+  // ── Re-price currently selected leather + deselect if now OOS ───
+  if ((state.leatherType === 'tactile' || state.leatherType === 'genuine') && state.tactileColorName) {
+    var sel = _leatherData.find(function(t) {
+      return t.leatherCategory === state.leatherType && t.colorName === state.tactileColorName && t.textureType === state.tactileTextureType;
     });
     if (sel) {
-      // Check if OOS for new base
       var selStock = _getStockForBase(sel);
       if (selStock === 0) {
-        // Deselect — this size is out of stock
         state.leather = ''; state.tactileSurcharge = 0;
         state.tactileColorName = ''; state.tactileTextureType = '';
         state.tactileVariant = ''; state.tactileHex = '';
         state.tactileImageData = null; state.tactileTileSize = 180;
-        document.querySelectorAll('#tactile-swatches .swatch').forEach(function(s) {
-          s.classList.remove('active');
-        });
+        document.querySelectorAll('#tactile-swatches .swatch, #genuine-swatches .swatch').forEach(function(s) { s.classList.remove('active'); });
         document.getElementById('s-leather').textContent = '—';
         clearTactileTexture2D();
         updateFolioColor('#c8b89a');
@@ -4816,7 +4834,6 @@ function updateTactileSwatchBadges() {
         calcTotal();
         return;
       }
-      // Still available — re-price
       var sv = _getTactileSurcharge(sel);
       state.tactileSurcharge = (!isNaN(Number(sv)) && sv !== null && sv !== '') ? Number(sv) : 0;
       var surStr = _formatSurcharge(state.tactileSurcharge);
@@ -4831,14 +4848,15 @@ function updateTactileSwatchBadges() {
 // ── Select leather type (Vegan / Tactile) ─────────────────────
 function selectLeatherType(type) {
   var veganArea   = document.getElementById('vegan-swatches-area');
+  var genuineArea = document.getElementById('genuine-swatches-area');
   var tactileArea = document.getElementById('tactile-swatches-area');
   var vpill = document.getElementById('lt-vegan');
+  var gpill = document.getElementById('lt-genuine');
   var tpill = document.getElementById('lt-tactile');
   var sub   = document.getElementById('leather-step-sub');
 
-  // Deselect current leather
   document.querySelectorAll('#leather-swatches .swatch').forEach(function(s) { s.classList.remove('active'); });
-  document.querySelectorAll('#tactile-swatches .swatch').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('#tactile-swatches .swatch, #genuine-swatches .swatch').forEach(function(s) { s.classList.remove('active'); });
   state.leather = ''; state.tactileSurcharge = 0;
   state.tactileColorName = ''; state.tactileTextureType = '';
   state.tactileVariant = ''; state.tactileHex = '';
@@ -4847,30 +4865,42 @@ function selectLeatherType(type) {
   clearTactileTexture2D();
   updateFolioColor('#c8b89a');
 
+  if (veganArea)   veganArea.style.display   = 'none';
+  if (genuineArea) genuineArea.style.display = 'none';
+  if (tactileArea) tactileArea.style.display = 'none';
+  if (vpill) vpill.classList.remove('active');
+  if (gpill) gpill.classList.remove('active');
+  if (tpill) tpill.classList.remove('active');
+
   if (type === 'vegan') {
     state.leatherType = 'vegan';
-    if (veganArea)   veganArea.style.display = '';
-    if (tactileArea) tactileArea.style.display = 'none';
+    if (veganArea) veganArea.style.display = '';
     if (vpill) vpill.classList.add('active');
-    if (tpill) tpill.classList.remove('active');
     if (sub)   sub.textContent = 'Premium vegan · Smooth matte texture';
+  } else if (type === 'genuine') {
+    state.leatherType = 'genuine';
+    if (genuineArea) genuineArea.style.display = '';
+    if (gpill) gpill.classList.add('active');
+    if (sub)   sub.textContent = 'Premium genuine · Natural texture · Surcharge applies';
+    var _gItems = (_leatherData || []).filter(function(i) { return i.leatherCategory === 'genuine'; });
+    if (_gItems.length) {
+      buildLeatherSwatches('genuine');
+      updateTactileSwatchBadges();
+      _gItems.forEach(function(item) {
+        if (item.imageId && !_textureCache[item.imageId]) _fetchTexture(item.imageId, function() {});
+      });
+    }
   } else {
     state.leatherType = 'tactile';
-    if (veganArea)   veganArea.style.display = 'none';
     if (tactileArea) tactileArea.style.display = '';
-    if (vpill) vpill.classList.remove('active');
     if (tpill) tpill.classList.add('active');
     if (sub)   sub.textContent = 'Premium tactile · Embossed texture · Surcharge applies';
-    // Build swatches if data is ready, otherwise spinner stays
-    if (_tactileData && _tactileData.length) {
-      buildTactileSwatches();
-      updateTactileSwatchBadges(); // set badges based on current base
-      // Preload all photo textures in background — by the time
-      // user picks a color, photos are already cached → no visible two-step
-      _tactileData.forEach(function(item) {
-        if (item.imageId && !_textureCache[item.imageId]) {
-          _fetchTexture(item.imageId, function() {}); // fire-and-forget
-        }
+    var _tItems = (_leatherData || []).filter(function(i) { return i.leatherCategory === 'tactile'; });
+    if (_tItems.length) {
+      buildLeatherSwatches('tactile');
+      updateTactileSwatchBadges();
+      _tItems.forEach(function(item) {
+        if (item.imageId && !_textureCache[item.imageId]) _fetchTexture(item.imageId, function() {});
       });
     }
   }
@@ -4888,8 +4918,9 @@ function selectTactile(el) {
   state.tactileTextureType = el.dataset.textureType;
   state.tactileVariant     = el.dataset.variant    || 'default';
   // Compute directly from _tactileData — don't rely on dataset.surcharge being populated
-  var _tacItem = _tactileData.find(function(t) {
-    return t.colorName === el.dataset.colorName && t.textureType === el.dataset.textureType;
+  var _tacItem = _leatherData.find(function(t) {
+    return t.leatherCategory === state.leatherType
+        && t.colorName === el.dataset.colorName && t.textureType === el.dataset.textureType;
   });
   var _sv = _tacItem ? _getTactileSurcharge(_tacItem) : null;
   state.tactileSurcharge = (_sv !== null && _sv !== undefined && !isNaN(Number(_sv))) ? Number(_sv) : 0;
@@ -5058,7 +5089,7 @@ const SHIPPING_RATES = {
 
 function getShippingFee(region) {
   // ── Ilocos Norte + Meet-up override: always free ──────────────────
-  const addrVal = (document.getElementById('cust-address')?.value || '').toLowerCase();
+  const addrVal = (document.getElementById('cust-province')?.value || '').toLowerCase();
   const isIlocosNorte = addrVal.includes('ilocos norte');
   const isMeetup = (state.shipping || '').startsWith('Meet-up');
   if (isIlocosNorte && isMeetup) return 0;
@@ -5082,8 +5113,8 @@ function selectShipping(el, region, fee) {
   state.shippingFee = getShippingFee(region);
   document.getElementById('cust-destination').value = region;
 
-  // Show Ilocos toggle only when Luzon is selected AND address has 'ilocos norte'
-  const addrVal    = (document.getElementById('cust-address')?.value || '').toLowerCase();
+  // Show Ilocos toggle only when Luzon is selected AND province is Ilocos Norte
+  const addrVal    = (document.getElementById('cust-province')?.value || '').toLowerCase();
   const showIlocos = region === 'Luzon' && addrVal.includes('ilocos norte');
   document.getElementById('ilocos-toggle').style.display = showIlocos ? 'block' : 'none';
 
@@ -5118,11 +5149,11 @@ function onMeetupLocationChange(radio) {
 
 // ── Ilocos Norte address watcher ──────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-  const addrField = document.getElementById('cust-address');
+  const addrField = document.getElementById('cust-province');
   if (!addrField) return;
   addrField.addEventListener('input', function() {
     const val       = this.value.toLowerCase();
-    const isLuzon   = state.shipping === 'Luzon' || state.shipping.startsWith('Meet-up');
+    const isLuzon   = state.shipping === 'Luzon' || (state.shipping || '').startsWith('Meet-up');
     const hasIlocos = val.includes('ilocos norte');
     const toggle    = document.getElementById('ilocos-toggle');
     if (toggle) toggle.style.display = (isLuzon && hasIlocos) ? 'block' : 'none';
@@ -5199,10 +5230,11 @@ async function submitTrackOrder() {
 function renderDispatchDate() {
   const el = document.getElementById('dispatch-date-label');
   if (!el) return;
+  const pocketsOn = document.getElementById('pockets-check')?.checked || false;
   const d = new Date();
-  d.setDate(d.getDate() + 10);
+  d.setDate(d.getDate() + (pocketsOn ? 15 : 10));
   const label = d.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' });
-  el.textContent = `Order today for estimated dispatch by ${label}`;
+  el.textContent = `Order today for estimated dispatch by ${label}${pocketsOn ? ' (+3–5 days for pockets)' : ''}`;
 }
 renderDispatchDate();
 
@@ -5429,14 +5461,14 @@ function _updatePocketPriceDisplay() {
   var b     = (state.base || '').toLowerCase();
   var price, desc;
   if (!state.base) {
-    price = '180';
-    desc  = 'A6: ₱180 · A5: ₱280 · PP: ₱150';
+    price = '200';
+    desc  = 'A6: ₱200 · A5: ₱300 · PP: ₱180';
   } else if (b.startsWith('a5')) {
-    price = 280; desc = 'A5 · ₱280';
+    price = 300; desc = 'A5 · ₱300';
   } else if (b.startsWith('pp')) {
-    price = 150; desc = 'Passport · ₱150';
+    price = 180; desc = 'Passport · ₱180';
   } else {
-    price = 180; desc = 'A6 · ₱180';
+    price = 200; desc = 'A6 · ₱200';
   }
   var descEl  = document.querySelector('#pockets-row .addon-desc');
   var priceEl = document.querySelector('#pockets-row .addon-price');
@@ -5449,6 +5481,9 @@ function togglePockets(cb) {
   state.pockets = cb.checked;
   _updatePocketPriceDisplay();
   _syncPocketsEdgeProtectorConflict(cb.checked);
+  var noteEl = document.getElementById('pockets-time-note');
+  if (noteEl) noteEl.style.display = cb.checked ? '' : 'none';
+  renderDispatchDate();
   calcTotal();
   if (typeof update3DPreview === 'function') update3DPreview();
 }
@@ -5509,28 +5544,32 @@ function toggleLace(chk) {
   if (typeof update3DPreview === 'function') update3DPreview();
 }
 // ── Keychain leather type (independent of main folio leather) ──
-var _kcLeatherType = 'vegan'; // 'vegan' | 'tactile'
+var _kcLeatherType = 'vegan'; // 'vegan' | 'tactile' | 'genuine'
 
 function selectKeychainLeatherType(type) {
   _kcLeatherType = type;
-  document.getElementById('kc-lt-vegan').classList.toggle('active', type === 'vegan');
+  document.getElementById('kc-lt-vegan').classList.toggle('active',   type === 'vegan');
+  document.getElementById('kc-lt-genuine').classList.toggle('active', type === 'genuine');
   document.getElementById('kc-lt-tactile').classList.toggle('active', type === 'tactile');
   document.getElementById('kc-vegan-swatches').style.display   = type === 'vegan'   ? '' : 'none';
+  document.getElementById('kc-genuine-swatches').style.display = type === 'genuine' ? '' : 'none';
   document.getElementById('kc-tactile-swatches').style.display = type === 'tactile' ? '' : 'none';
+  document.getElementById('kc-genuine-note').style.display     = type === 'genuine' ? '' : 'none';
   document.getElementById('kc-tactile-note').style.display     = type === 'tactile' ? '' : 'none';
-  if (type === 'tactile') _buildKeychainTactileSwatches();
-  // clear swatch selection and reset hidden select
+  if (type === 'genuine') _buildKeychainLeatherSwatches('genuine');
+  if (type === 'tactile') _buildKeychainLeatherSwatches('tactile');
   _clearKeychainSwatches();
   var sel = document.getElementById('kc-leather');
   if (sel) { sel.innerHTML = ''; }
 }
 
-function _buildKeychainTactileSwatches() {
-  var grid = document.getElementById('kc-tactile-swatches');
+function _buildKeychainLeatherSwatches(category) {
+  var grid = document.getElementById('kc-' + category + '-swatches');
   if (!grid || grid.dataset.built) return; // build once
   grid.innerHTML = '';
-  if (!_tactileData || !_tactileData.length) return;
-  _tactileData.forEach(function(item) {
+  var items = (_leatherData || []).filter(function(i) { return i.leatherCategory === category; });
+  if (!items.length) return;
+  items.forEach(function(item) {
     var stock = (item.miniKeychainStock !== undefined && item.miniKeychainStock !== null)
                  ? item.miniKeychainStock : null;
     var oos   = (stock === 0);
@@ -5575,7 +5614,7 @@ function _buildKeychainTactileSwatches() {
 }
 
 function _clearKeychainSwatches() {
-  document.querySelectorAll('#kc-vegan-swatches .swatch, #kc-tactile-swatches .swatch')
+  document.querySelectorAll('#kc-vegan-swatches .swatch, #kc-genuine-swatches .swatch, #kc-tactile-swatches .swatch')
     .forEach(function(s) { s.classList.remove('active'); });
 }
 
@@ -5716,8 +5755,8 @@ function calcTotal() {
   const isA5 = (state.base || '').startsWith('a5');
   let total = state.basePrice;
 
-  // Tactile leather surcharge (positive = add, negative = discount, 0 = skip)
-  if (state.leatherType === 'tactile' && state.tactileSurcharge !== 0) total += state.tactileSurcharge;
+  // Leather surcharge — tactile or genuine (positive = add, negative = discount, 0 = skip)
+  if ((state.leatherType === 'tactile' || state.leatherType === 'genuine') && state.tactileSurcharge !== 0) total += state.tactileSurcharge;
 
   if (state.engravingText && state.engravingText.replace(/ /g, '').length > 5) total += 50;
 
@@ -5730,7 +5769,7 @@ function calcTotal() {
   state.pockets = document.getElementById('pockets-check')?.checked || false;
   if (state.pockets) {
     var _pb = (state.base || '').toLowerCase();
-    total += _pb.startsWith('a5') ? 280 : _pb.startsWith('pp') ? 150 : 180;
+    total += _pb.startsWith('a5') ? 300 : _pb.startsWith('pp') ? 180 : 200;
   }
   state.edgeProtector = document.getElementById('edge-prot-check')?.checked || false;
   if (state.edgeProtector) total += 59;
@@ -5801,7 +5840,7 @@ function calcAddonCost() {
   const pocketsChecked = document.getElementById('pockets-check')?.checked || false;
   if (pocketsChecked) {
     var _pb2 = (state.base || '').toLowerCase();
-    cost += _pb2.startsWith('a5') ? 280 : _pb2.startsWith('pp') ? 150 : 180;
+    cost += _pb2.startsWith('a5') ? 300 : _pb2.startsWith('pp') ? 180 : 200;
   }
   const edgeProtChecked = document.getElementById('edge-prot-check')?.checked || false;
   if (edgeProtChecked) cost += 59;
@@ -5845,7 +5884,7 @@ function buildFinalSummary() {
     document.getElementById('fabric-check')?.checked ? ['Fabric Insert', `${state['fabric-pattern']} · ₱250`] : null,
     document.getElementById('pockets-check')?.checked ? (function() {
       var _bp = (state.base || '').toLowerCase();
-      return ['Inside Pockets', '₱' + (_bp.startsWith('a5') ? 280 : _bp.startsWith('pp') ? 150 : 180)];
+      return ['Inside Pockets', '₱' + (_bp.startsWith('a5') ? 300 : _bp.startsWith('pp') ? 180 : 200)];
     })() : null,
     document.getElementById('edge-prot-check')?.checked ? ['Edge Protector', `${state['edge-prot-finish']} · ₱59`] : null,
     document.getElementById('double-cord-check')?.checked ? ['Double Cord', `+₱${isA5?50:40}`] : null,
@@ -5876,7 +5915,7 @@ function buildFinalSummary() {
 function calcTotal_raw() {
   const isA5 = (state.base || '').startsWith('a5');
   let total = state.basePrice;
-  if (state.leatherType === 'tactile' && state.tactileSurcharge !== 0) total += state.tactileSurcharge;
+  if ((state.leatherType === 'tactile' || state.leatherType === 'genuine') && state.tactileSurcharge !== 0) total += state.tactileSurcharge;
   if (state.engravingText && state.engravingText.replace(/ /g, '').length > 5) total += 50;
   Object.values(state.addonCharms).forEach(arr => {
     if (Array.isArray(arr)) arr.forEach(c => { total += (c.price || 0); });
@@ -5886,7 +5925,7 @@ function calcTotal_raw() {
   const pocketsCheckedR = document.getElementById('pockets-check')?.checked || false;
   if (pocketsCheckedR) {
     var _pb3 = (state.base || '').toLowerCase();
-    total += _pb3.startsWith('a5') ? 280 : _pb3.startsWith('pp') ? 150 : 180;
+    total += _pb3.startsWith('a5') ? 300 : _pb3.startsWith('pp') ? 180 : 200;
   }
   const edgeProtChecked = document.getElementById('edge-prot-check')?.checked || false;
   if (edgeProtChecked) total += 59;
@@ -6067,15 +6106,21 @@ function scrollToCheckout() {
   if (el) el.value = Date.now();
 })();
 async function submitOrder() {
-  const name    = document.getElementById('cust-name').value.trim();
-  const email   = document.getElementById('cust-email').value.trim();
-  const phone   = document.getElementById('cust-phone').value.trim();
-  const address = document.getElementById('cust-address').value.trim();
+  const firstName    = document.getElementById('cust-firstname').value.trim();
+  const lastName     = document.getElementById('cust-lastname').value.trim();
+  const name         = (firstName + ' ' + lastName).trim();
+  const email        = document.getElementById('cust-email').value.trim();
+  const phone        = document.getElementById('cust-phone').value.trim();
+  const brgy         = document.getElementById('cust-brgy').value.trim();
+  const municipality = document.getElementById('cust-municipality').value.trim();
+  const province     = document.getElementById('cust-province').value.trim();
+  const address      = [brgy, municipality, province].filter(Boolean).join(', ');
 
   // ── Validation ──────────────────────────
-  if (!name || !email || !phone || !address) {
-    showToast('Please fill in all required fields.'); return;
-  }
+  if (!firstName)                          { showToast('Please enter your first name.'); return; }
+  if (!lastName)                           { showToast('Please enter your last name.'); return; }
+  if (!email || !phone)                    { showToast('Please fill in all required fields.'); return; }
+  if (!brgy || !municipality || !province) { showToast('Please fill in your complete address (Barangay, Municipality, Province).'); return; }
   
   if (!state.base) {
     showToast('Please select a base folio size.'); return;
@@ -6230,7 +6275,7 @@ async function submitOrder() {
       } : null,
       keychainColor: _keychainChk
         ? (function() {
-            var el = document.querySelector('#kc-vegan-swatches .swatch.active[data-kc-color], #kc-tactile-swatches .swatch.active[data-kc-color]');
+            var el = document.querySelector('#kc-vegan-swatches .swatch.active[data-kc-color], #kc-genuine-swatches .swatch.active[data-kc-color], #kc-tactile-swatches .swatch.active[data-kc-color]');
             return el ? el.dataset.kcColor.split(' ')[0] : (document.getElementById('kc-leather').value.split(' ')[0] || 'Coal');
           })()
         : null,
