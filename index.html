@@ -1769,7 +1769,7 @@
                 </svg>
                 <span style="font-size:12px;color:var(--text-light);">Loading textures…</span>
               </div>
-              <!-- Swatches injected here by buildTactileSwatches() -->
+              <!-- Swatches injected here by buildLeatherSwatches('tactile') / buildLeatherSwatches('genuine') -->
               <div class="swatch-grid" id="tactile-swatches" style="display:none;"></div>
               <p id="tactile-surcharge-note" style="font-size:11px;color:var(--text-light);margin-top:8px;display:none;">
                 ✦ Tactile leather includes a texture surcharge — shown per color.
@@ -5868,7 +5868,7 @@ function buildFinalSummary() {
   const lachecked = document.getElementById('lace-check')?.checked;
   const lines = [
     ['Base Folio', (state.base || '').toUpperCase().replace('-', ' ') + ' — ₱' + state.basePrice],
-    state.leatherType === 'tactile'
+    (state.leatherType === 'tactile' || state.leatherType === 'genuine')
       ? (function() {
           var _sl = state.tactileColorName + ' (' + state.tactileTextureType + ')';
           var _ss = _formatSurcharge(state.tactileSurcharge);
@@ -6128,10 +6128,10 @@ async function submitOrder() {
   if (!state.leather) {
     showToast('Please select a leather color.'); return;
   }
-  if (state.leatherType === 'tactile') {
-    // Tactile stock check
-    const _tItem = _tactileData.find(function(t) {
-      return t.colorName === state.tactileColorName &&
+  if (state.leatherType === 'tactile' || state.leatherType === 'genuine') {
+    const _tItem = _leatherData.find(function(t) {
+      return t.leatherCategory === state.leatherType &&
+             t.colorName === state.tactileColorName &&
              t.textureType === state.tactileTextureType &&
              t.variant === state.tactileVariant;
     });
@@ -6139,7 +6139,7 @@ async function submitOrder() {
       var _tStock = _getStockForBase(_tItem);
       if (_tStock === 0) {
         showToast('Sorry — this leather is out of stock in your selected folio size.');
-        document.querySelectorAll('#tactile-swatches .swatch').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('#tactile-swatches .swatch, #genuine-swatches .swatch').forEach(s => s.classList.remove('active'));
         state.leather = ''; state.tactileSurcharge = 0;
         document.getElementById('s-leather').textContent = '—';
         calcTotal();
@@ -7780,7 +7780,7 @@ if (window.location.hash === '#terms') {
     var icS2 = (_ic.s2 && _cc[_ic.s2]) || null;
     var icS3 = (_ic.s3 && _cc[_ic.s3]) || null;
 
-    var leatherHex = state.leatherType === 'tactile'
+    var leatherHex = (state.leatherType === 'tactile' || state.leatherType === 'genuine')
       ? (state.tactileHex || '#c8b89a')
       : ((state.leather && typeof leatherColors !== 'undefined' && leatherColors[state.leather]) || '#c8b89a');
     var tactileTex       = state.tactileTextureType || null;
