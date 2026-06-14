@@ -2459,6 +2459,10 @@
         <label class="field-label">Shipping Destination <span class="required">*</span></label>
         <input type="text" id="cust-destination" readonly placeholder="Select below in Shipping section" style="background:var(--bg-alt);">
       </div>
+      <div class="field-group">
+        <label class="field-label">Street Name, Building, House No. <span class="required">*</span></label>
+        <input type="text" id="cust-street" placeholder="e.g. 12 Rizal St., Unit 3B">
+      </div>
       <div class="field-row">
         <div class="field-group">
           <label class="field-label">Barangay <span class="required">*</span></label>
@@ -5858,16 +5862,17 @@ async function submitOrder() {
   const name         = (firstName + ' ' + lastName).trim();
   const email        = document.getElementById('cust-email').value.trim();
   const phone        = document.getElementById('cust-phone').value.trim();
+  const street       = document.getElementById('cust-street').value.trim();
   const brgy         = document.getElementById('cust-brgy').value.trim();
   const municipality = document.getElementById('cust-municipality').value.trim();
   const province     = document.getElementById('cust-province').value.trim();
-  const address      = [brgy, municipality, province].filter(Boolean).join(', ');
+  const address      = [street, brgy, municipality, province].filter(Boolean).join(', ');
 
   // ── Validation ──────────────────────────
   if (!firstName)                          { showToast('Please enter your first name.'); return; }
   if (!lastName)                           { showToast('Please enter your last name.'); return; }
   if (!email || !phone)                    { showToast('Please fill in all required fields.'); return; }
-  if (!brgy || !municipality || !province) { showToast('Please fill in your complete address (Barangay, Municipality, Province).'); return; }
+  if (!street || !brgy || !municipality || !province) { showToast('Please fill in your complete address (Street, Barangay, Municipality, Province).'); return; }
   
   if (!state.base) {
     showToast('Please select a base folio size.'); return;
