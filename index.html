@@ -4228,7 +4228,7 @@ function _fetchTexture(fileId, callback) {
 
 // Applies a greyscale photo texture to the 2D SVG folio preview.
 // Uses createElementNS (correct SVG namespace) + mix-blend-mode: multiply.
-function applyPhotoTexture2D(dataUrl, hex, tileSize) {
+function applyPhotoTexture2D(dataUrl, hex, tileSize, blendMode) {
   var svg     = document.getElementById('folio-svg');
   var overlay = document.getElementById('tac-tex-overlay');
   if (!svg || !overlay) return;
@@ -4268,7 +4268,7 @@ function applyPhotoTexture2D(dataUrl, hex, tileSize) {
   img.setAttribute('width',               sz);
   img.setAttribute('height',              sz);
   img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-  img.style.mixBlendMode = 'multiply';
+  img.style.mixBlendMode = blendMode || 'multiply';
 
   pat.appendChild(rect);
   pat.appendChild(img);
@@ -4715,7 +4715,7 @@ function selectTactile(el) {
       if (!dataUrl) return; // fetch failed, SVG fallback stays
 
       state.tactileImageData = dataUrl;
-      applyPhotoTexture2D(dataUrl, state.tactileHex, _tileSize);
+      applyPhotoTexture2D(dataUrl, state.tactileHex, _tileSize, state.tactileTextureType === 'cowhide_ghost_wax' ? 'screen' : 'multiply');
       if (typeof update3DPreview === 'function') update3DPreview();
     });
   }
@@ -8658,7 +8658,7 @@ if (window.location.hash === '#terms') {
       _frontCoverStyle = 'background-color:' + lx + ';'
         + 'background-image:url(' + o.tactileImageData + ');'
         + 'background-size:' + _ts + 'px ' + _ts + 'px;'
-        + 'background-blend-mode:multiply;';
+        + 'background-blend-mode:' + (o.tactileTex === 'cowhide_ghost_wax' ? 'screen' : 'multiply') + ';';
     } else {
       var _tacPat3d = (o.tactileTex && typeof _tactilePattern === 'function') ? _tactilePattern(o.tactileTex, o.tactileVar, lx) : null;
       var _frontBg  = (_tacPat3d && _tacPat3d.css3d) ? _tacPat3d.css3d + ',' + lx : lx;
