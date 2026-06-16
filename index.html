@@ -4289,28 +4289,29 @@ function _tactilePattern(textureType, variant, hex) {
   var svgDefs = '', css3d = '';
 
  if (t === 'cowhide_ghost_wax') {
-    // Ghost wax cowhide — pale waxy surface with fine multi-directional scratches
+    // Ghost wax cowhide — waxy light highlights, sheen clouds, all marks catch light
     svgDefs = '<pattern id=\"tac-pat\" x=\"0\" y=\"0\" width=\"120\" height=\"80\" patternUnits=\"userSpaceOnUse\">'
       + '<rect width=\"120\" height=\"80\" fill=\"' + h + '\"/>'
-      + '<line x1=\"0\" y1=\"9\" x2=\"90\" y2=\"6\" stroke=\"rgba(255,255,255,0.22)\" stroke-width=\"0.5\"/>'
-      + '<line x1=\"5\" y1=\"22\" x2=\"110\" y2=\"18\" stroke=\"rgba(0,0,0,0.07)\" stroke-width=\"0.4\"/>'
-      + '<line x1=\"0\" y1=\"38\" x2=\"75\" y2=\"34\" stroke=\"rgba(255,255,255,0.16)\" stroke-width=\"0.55\"/>'
-      + '<line x1=\"20\" y1=\"52\" x2=\"120\" y2=\"47\" stroke=\"rgba(0,0,0,0.06)\" stroke-width=\"0.4\"/>'
-      + '<line x1=\"0\" y1=\"67\" x2=\"95\" y2=\"62\" stroke=\"rgba(255,255,255,0.14)\" stroke-width=\"0.45\"/>'
-      + '<line x1=\"15\" y1=\"0\" x2=\"28\" y2=\"80\" stroke=\"rgba(0,0,0,0.06)\" stroke-width=\"0.4\"/>'
-      + '<line x1=\"55\" y1=\"0\" x2=\"72\" y2=\"80\" stroke=\"rgba(255,255,255,0.09)\" stroke-width=\"0.35\"/>'
-      + '<line x1=\"92\" y1=\"0\" x2=\"110\" y2=\"80\" stroke=\"rgba(0,0,0,0.05)\" stroke-width=\"0.4\"/>'
-      + '<line x1=\"0\" y1=\"28\" x2=\"32\" y2=\"0\" stroke=\"rgba(255,255,255,0.10)\" stroke-width=\"0.4\"/>'
-      + '<line x1=\"75\" y1=\"80\" x2=\"120\" y2=\"42\" stroke=\"rgba(0,0,0,0.06)\" stroke-width=\"0.35\"/>'
-      + '<ellipse cx=\"40\" cy=\"25\" rx=\"26\" ry=\"14\" fill=\"rgba(255,255,255,0.05)\" transform=\"rotate(-5,40,25)\"/>'
-      + '<ellipse cx=\"90\" cy=\"58\" rx=\"22\" ry=\"12\" fill=\"rgba(0,0,0,0.04)\" transform=\"rotate(4,90,58)\"/>'
-      + '<ellipse cx=\"10\" cy=\"60\" rx=\"14\" ry=\"9\" fill=\"rgba(255,255,255,0.04)\" transform=\"rotate(-8,10,60)\"/>'
+      + '<line x1=\"0\" y1=\"9\" x2=\"90\" y2=\"6\" stroke=\"rgba(255,255,255,0.40)\" stroke-width=\"0.6\"/>'
+      + '<line x1=\"5\" y1=\"22\" x2=\"110\" y2=\"18\" stroke=\"rgba(255,255,255,0.24)\" stroke-width=\"0.5\"/>'
+      + '<line x1=\"0\" y1=\"38\" x2=\"75\" y2=\"34\" stroke=\"rgba(255,255,255,0.32)\" stroke-width=\"0.6\"/>'
+      + '<line x1=\"20\" y1=\"52\" x2=\"120\" y2=\"47\" stroke=\"rgba(255,255,255,0.20)\" stroke-width=\"0.45\"/>'
+      + '<line x1=\"0\" y1=\"67\" x2=\"95\" y2=\"62\" stroke=\"rgba(255,255,255,0.28)\" stroke-width=\"0.55\"/>'
+      + '<line x1=\"15\" y1=\"0\" x2=\"28\" y2=\"80\" stroke=\"rgba(255,255,255,0.18)\" stroke-width=\"0.4\"/>'
+      + '<line x1=\"55\" y1=\"0\" x2=\"72\" y2=\"80\" stroke=\"rgba(255,255,255,0.22)\" stroke-width=\"0.4\"/>'
+      + '<line x1=\"92\" y1=\"0\" x2=\"110\" y2=\"80\" stroke=\"rgba(255,255,255,0.16)\" stroke-width=\"0.4\"/>'
+      + '<line x1=\"0\" y1=\"28\" x2=\"32\" y2=\"0\" stroke=\"rgba(255,255,255,0.22)\" stroke-width=\"0.4\"/>'
+      + '<line x1=\"75\" y1=\"80\" x2=\"120\" y2=\"42\" stroke=\"rgba(255,255,255,0.18)\" stroke-width=\"0.35\"/>'
+      + '<ellipse cx=\"40\" cy=\"25\" rx=\"28\" ry=\"15\" fill=\"rgba(255,255,255,0.16)\" transform=\"rotate(-5,40,25)\"/>'
+      + '<ellipse cx=\"90\" cy=\"55\" rx=\"24\" ry=\"13\" fill=\"rgba(255,255,255,0.12)\" transform=\"rotate(4,90,55)\"/>'
+      + '<ellipse cx=\"10\" cy=\"62\" rx=\"16\" ry=\"10\" fill=\"rgba(255,255,255,0.14)\" transform=\"rotate(-8,10,62)\"/>'
+      + '<ellipse cx=\"70\" cy=\"14\" rx=\"20\" ry=\"9\" fill=\"rgba(255,255,255,0.10)\" transform=\"rotate(3,70,14)\"/>'
       + '</pattern>';
-    css3d = 'repeating-linear-gradient(6deg,rgba(255,255,255,.18) 0,rgba(255,255,255,.18) .5px,transparent .5px,transparent 16px),'
-           + 'repeating-linear-gradient(-22deg,rgba(0,0,0,.06) 0,rgba(0,0,0,.06) .4px,transparent .4px,transparent 26px),'
-           + 'repeating-linear-gradient(50deg,rgba(255,255,255,.07) 0,rgba(255,255,255,.07) .4px,transparent .4px,transparent 44px),'
-           + 'radial-gradient(ellipse 50% 35% at 33% 32%,rgba(255,255,255,.06) 45%,transparent 80%),'
-           + 'radial-gradient(ellipse 42% 30% at 76% 68%,rgba(0,0,0,.05) 45%,transparent 80%)';
+    css3d = 'repeating-linear-gradient(6deg,rgba(255,255,255,.32) 0,rgba(255,255,255,.32) .5px,transparent .5px,transparent 16px),'
+           + 'repeating-linear-gradient(-22deg,rgba(255,255,255,.20) 0,rgba(255,255,255,.20) .4px,transparent .4px,transparent 26px),'
+           + 'repeating-linear-gradient(50deg,rgba(255,255,255,.14) 0,rgba(255,255,255,.14) .4px,transparent .4px,transparent 44px),'
+           + 'radial-gradient(ellipse 55% 38% at 33% 32%,rgba(255,255,255,.18) 45%,transparent 80%),'
+           + 'radial-gradient(ellipse 45% 32% at 76% 68%,rgba(255,255,255,.12) 45%,transparent 80%)';
   } else if (t === 'croc_organic') {
     // Organic croc belly — irregular rounded cells, no regular grid
     svgDefs = '<pattern id="tac-pat" x="0" y="0" width="60" height="50" patternUnits="userSpaceOnUse">'
