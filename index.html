@@ -4268,7 +4268,7 @@ function applyPhotoTexture2D(dataUrl, hex, tileSize) {
   img.setAttribute('width',               sz);
   img.setAttribute('height',              sz);
   img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-  img.style.mixBlendMode = 'multiply';
+  img.style.mixBlendMode = blendMode || 'multiply';
 
   pat.appendChild(rect);
   pat.appendChild(img);
@@ -4641,6 +4641,11 @@ function selectLeatherType(type) {
       _gItems.forEach(function(item) {
         if (item.imageId && !_textureCache[item.imageId]) _fetchTexture(item.imageId, function() {});
       });
+    } else {
+      var _gSpinner = document.getElementById('genuine-spinner');
+      var _gGrid    = document.getElementById('genuine-swatches');
+      if (_gSpinner) _gSpinner.style.display = 'none';
+      if (_gGrid)    { _gGrid.style.display = ''; _gGrid.innerHTML = '<p style="font-size:13px;color:var(--text-light);font-style:italic;padding:8px 0;">Unavailable or out of stock — check back soon.</p>'; }
     }
   } else {
     state.leatherType = 'tactile';
@@ -4654,9 +4659,13 @@ function selectLeatherType(type) {
       _tItems.forEach(function(item) {
         if (item.imageId && !_textureCache[item.imageId]) _fetchTexture(item.imageId, function() {});
       });
+    } else {
+      var _tSpinner = document.getElementById('tactile-spinner');
+      var _tGrid    = document.getElementById('tactile-swatches');
+      if (_tSpinner) _tSpinner.style.display = 'none';
+      if (_tGrid)    { _tGrid.style.display = ''; _tGrid.innerHTML = '<p style="font-size:13px;color:var(--text-light);font-style:italic;padding:8px 0;">Unavailable or out of stock — check back soon.</p>'; }
     }
   }
-
   calcTotal();
   if (typeof update3DPreview === 'function') update3DPreview();
 }
@@ -4706,7 +4715,7 @@ function selectTactile(el) {
       if (!dataUrl) return; // fetch failed, SVG fallback stays
 
       state.tactileImageData = dataUrl;
-      applyPhotoTexture2D(dataUrl, state.tactileHex, _tileSize);
+      applyPhotoTexture2D(dataUrl, state.tactileHex, _tileSize, state.tactileTextureType === 'cowhide_ghost_wax' ? 'overlay' : 'multiply');
       if (typeof update3DPreview === 'function') update3DPreview();
     });
   }
