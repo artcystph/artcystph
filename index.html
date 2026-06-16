@@ -4268,7 +4268,7 @@ function applyPhotoTexture2D(dataUrl, hex, tileSize) {
   img.setAttribute('width',               sz);
   img.setAttribute('height',              sz);
   img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-  img.style.mixBlendMode = blendMode || 'multiply';
+  img.style.mixBlendMode = 'multiply';
 
   pat.appendChild(rect);
   pat.appendChild(img);
@@ -4715,7 +4715,7 @@ function selectTactile(el) {
       if (!dataUrl) return; // fetch failed, SVG fallback stays
 
       state.tactileImageData = dataUrl;
-      applyPhotoTexture2D(dataUrl, state.tactileHex, _tileSize, state.tactileTextureType === 'cowhide_ghost_wax' ? 'overlay' : 'multiply');
+      applyPhotoTexture2D(dataUrl, state.tactileHex, _tileSize);
       if (typeof update3DPreview === 'function') update3DPreview();
     });
   }
