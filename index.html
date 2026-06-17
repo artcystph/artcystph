@@ -2227,15 +2227,20 @@
         </div>
 
       <!-- Inside Pockets -->
-        <div class="addon-row" id="pockets-row">
-          <input type="checkbox" class="addon-check" id="pockets-check" onchange="togglePockets(this)">
+        <div class="addon-row" id="pockets-row" style="align-items:flex-start;flex-wrap:wrap;">
+          <input type="checkbox" class="addon-check" id="pockets-check" onchange="togglePockets(this)" style="margin-top:3px;">
           <div class="addon-info">
             <div class="addon-name">Inside Pockets</div>
             <div class="addon-desc" id="pocket-desc-text">A6: ₱200 · A5: ₱300 · PP: ₱180</div>
             <img src="images/Pockets.jpeg" alt="Inside Pockets sample" class="zoomable" style="margin-top:8px;width:100px;height:70px;object-fit:cover;border-radius:4px;display:block;cursor:zoom-in;" loading="lazy" onclick="openZoom(this)" title="Tap to zoom">
           </div>
-          <div class="addon-price" id="pocket-price-tag">₱200</div>
-          <div id="pockets-time-note" style="display:none;font-size:11px;color:var(--text-light);margin-top:4px;width:100%;padding-left:32px;">⏱ Adds 3–5 business days to processing.</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <div class="addon-price" id="pocket-price-tag">₱200</div>
+            <div id="pockets-surcharge-note" style="display:none;font-size:10px;color:var(--text-light);white-space:nowrap;"></div>
+          </div>
+          <div id="pockets-time-note" style="display:none;width:100%;padding-left:32px;margin-top:8px;">
+            <span style="display:inline-block;padding:6px 14px;background:rgba(194,69,140,0.07);border:1px solid rgba(194,69,140,0.18);border-radius:999px;font-size:11px;color:var(--text-mid);">⏱ <strong style="color:var(--accent);">Adds 3–5 business days</strong> to processing.</span>
+          </div>
         </div>
 
         <!-- Edge Protector -->
@@ -5221,18 +5226,20 @@ function toggleFabric(cb) {
 // Dynamically updates the pocket price description and badge based on selected base size.
 // No base selected → shows all 3 prices. Base selected → shows specific price.
 function _updatePocketPriceDisplay() {
-  var b     = (state.base || '').toLowerCase();
-  var price, desc;
+  var b = (state.base || '').toLowerCase();
+  var basePrice, desc;
   if (!state.base) {
-    price = '200';
-    desc  = 'A6: ₱200 · A5: ₱300 · PP: ₱180';
+    basePrice = 200;
+    desc = 'A6: ₱200 · A5: ₱300 · PP: ₱180';
   } else if (b.startsWith('a5')) {
-    price = 300; desc = 'A5 · ₱300';
+    basePrice = 300; desc = 'A5 · ₱300';
   } else if (b.startsWith('pp')) {
-    price = 180; desc = 'Passport · ₱180';
+    basePrice = 180; desc = 'Passport · ₱180';
   } else {
-    price = 200; desc = 'A6 · ₱200';
+    basePrice = 200; desc = 'A6 · ₱200';
   }
+  var displayPrice    = basePrice;
+  var surchargeNoteEl = document.getElementById('pockets-surcharge-note');
   if (state.base && state.leatherType === 'genuine') {
     const _gpKeyMap = {
       'a6-bifold':  'Genuine Pockets A6 Bifold',
@@ -5244,14 +5251,21 @@ function _updatePocketPriceDisplay() {
     const _gpEntry = _stockData && _gpKeyMap[b] ? _stockData[_gpKeyMap[b]] : null;
     const _gpSur   = (_gpEntry && typeof _gpEntry === 'object') ? (_gpEntry.surcharge || 0) : 0;
     if (_gpSur !== 0) {
-      price = Number(price) + _gpSur;
-      desc  = desc + (_gpSur > 0 ? ' +₱' + _gpSur + ' Genuine' : ' −₱' + Math.abs(_gpSur) + ' Genuine');
+      displayPrice = basePrice + _gpSur;
+      if (surchargeNoteEl) {
+        surchargeNoteEl.textContent = (_gpSur > 0 ? '+₱' : '−₱') + Math.abs(_gpSur) + ' Genuine';
+        surchargeNoteEl.style.display = '';
+      }
+    } else {
+      if (surchargeNoteEl) surchargeNoteEl.style.display = 'none';
     }
+  } else {
+    if (surchargeNoteEl) surchargeNoteEl.style.display = 'none';
   }
   var descEl  = document.querySelector('#pockets-row .addon-desc');
   var priceEl = document.querySelector('#pockets-row .addon-price');
   if (descEl)  descEl.textContent  = desc;
-  if (priceEl) priceEl.textContent = '₱' + price;
+  if (priceEl) priceEl.textContent = '₱' + displayPrice;
   applyPocketStock();
 }
 
