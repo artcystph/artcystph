@@ -3746,15 +3746,17 @@ function applyPocketStock() {
   const prev = row.querySelector('.stock-badge-pocket');
   if (prev) prev.remove();
 
+  const isGenuine = state.leatherType === 'genuine';
   const baseToKey = {
-    'a6-bifold':  'Pockets A6 Bifold',
-    'a6-trifold': 'Pockets A6 Trifold',
-    'a5-bifold':  'Pockets A5 Bifold',
-    'a5-trifold': 'Pockets A5 Trifold',
-    'pp-trifold': 'Pockets PP Trifold',
+    'a6-bifold':  isGenuine ? 'Genuine Pockets A6 Bifold'  : 'Pockets A6 Bifold',
+    'a6-trifold': isGenuine ? 'Genuine Pockets A6 Trifold' : 'Pockets A6 Trifold',
+    'a5-bifold':  isGenuine ? 'Genuine Pockets A5 Bifold'  : 'Pockets A5 Bifold',
+    'a5-trifold': isGenuine ? 'Genuine Pockets A5 Trifold' : 'Pockets A5 Trifold',
+    'pp-trifold': isGenuine ? 'Genuine Pockets PP Trifold' : 'Pockets PP Trifold',
   };
-  const stockKey = state.base ? baseToKey[state.base] : null;
-  const qty = (stockKey && _stockData && stockKey in _stockData) ? _stockData[stockKey] : null;
+  const stockKey   = state.base ? baseToKey[state.base] : null;
+  const stockEntry = (stockKey && _stockData && stockKey in _stockData) ? _stockData[stockKey] : null;
+  const qty = (stockEntry !== null && typeof stockEntry === 'object') ? stockEntry.qty : stockEntry;
 
   if (qty === 0) {
     row.classList.add('stock-oos');
@@ -5231,6 +5233,21 @@ function _updatePocketPriceDisplay() {
   } else {
     price = 200; desc = 'A6 · ₱200';
   }
+  if (state.base && state.leatherType === 'genuine') {
+    const _gpKeyMap = {
+      'a6-bifold':  'Genuine Pockets A6 Bifold',
+      'a6-trifold': 'Genuine Pockets A6 Trifold',
+      'a5-bifold':  'Genuine Pockets A5 Bifold',
+      'a5-trifold': 'Genuine Pockets A5 Trifold',
+      'pp-trifold': 'Genuine Pockets PP Trifold',
+    };
+    const _gpEntry = _stockData && _gpKeyMap[b] ? _stockData[_gpKeyMap[b]] : null;
+    const _gpSur   = (_gpEntry && typeof _gpEntry === 'object') ? (_gpEntry.surcharge || 0) : 0;
+    if (_gpSur !== 0) {
+      price = Number(price) + _gpSur;
+      desc  = desc + (_gpSur > 0 ? ' +₱' + _gpSur + ' Genuine' : ' −₱' + Math.abs(_gpSur) + ' Genuine');
+    }
+  }
   var descEl  = document.querySelector('#pockets-row .addon-desc');
   var priceEl = document.querySelector('#pockets-row .addon-price');
   if (descEl)  descEl.textContent  = desc;
@@ -5531,6 +5548,22 @@ function calcTotal() {
   if (state.pockets) {
     var _pb = (state.base || '').toLowerCase();
     total += _pb.startsWith('a5') ? 300 : _pb.startsWith('pp') ? 180 : 200;
+    if (state.leatherType === 'genuine') {
+      const _gpSurMap = {
+        'a6-bifold':  'Genuine Pockets A6 Bifold',
+        'a6-trifold': 'Genuine Pockets A6 Trifold',
+        'a5-bifold':  'Genuine Pockets A5 Bifold',
+        'a5-trifold': 'Genuine Pockets A5 Trifold',
+        'pp-trifold': 'Genuine Pockets PP Trifold',
+      };
+      const _gpEntry = _stockData && _gpSurMap[_pb] ? _stockData[_gpSurMap[_pb]] : null;
+      state.genuinePocketsSurcharge = (_gpEntry && typeof _gpEntry === 'object') ? (_gpEntry.surcharge || 0) : 0;
+      total += state.genuinePocketsSurcharge;
+    } else {
+      state.genuinePocketsSurcharge = 0;
+    }
+  } else {
+    state.genuinePocketsSurcharge = 0;
   }
   state.edgeProtector = document.getElementById('edge-prot-check')?.checked || false;
   if (state.edgeProtector) total += 59;
@@ -5602,6 +5635,7 @@ function calcAddonCost() {
   if (pocketsChecked) {
     var _pb2 = (state.base || '').toLowerCase();
     cost += _pb2.startsWith('a5') ? 300 : _pb2.startsWith('pp') ? 180 : 200;
+    cost += state.genuinePocketsSurcharge || 0;
   }
   const edgeProtChecked = document.getElementById('edge-prot-check')?.checked || false;
   if (edgeProtChecked) cost += 59;
@@ -5644,8 +5678,11 @@ function buildFinalSummary() {
    (() => { const parts = []; Object.entries(state.addonCharms).forEach(([tier, arr]) => { if (Array.isArray(arr)) arr.forEach(c => parts.push(`${c.id} (${tier.toUpperCase()}) · ₱${c.price}`)); }); return parts.length ? ['Add-On Charms', parts.join(', ')] : null; })(),
     document.getElementById('fabric-check')?.checked ? ['Fabric Insert', `${state['fabric-pattern']} · ₱250`] : null,
     document.getElementById('pockets-check')?.checked ? (function() {
-      var _bp = (state.base || '').toLowerCase();
-      return ['Inside Pockets', '₱' + (_bp.startsWith('a5') ? 300 : _bp.startsWith('pp') ? 180 : 200)];
+      var _bp     = (state.base || '').toLowerCase();
+      var _bprice = _bp.startsWith('a5') ? 300 : _bp.startsWith('pp') ? 180 : 200;
+      var _gps    = state.genuinePocketsSurcharge || 0;
+      var _gpsStr = _gps > 0 ? ' + Genuine +₱' + _gps : _gps < 0 ? ' + Genuine −₱' + Math.abs(_gps) : '';
+      return ['Inside Pockets', '₱' + _bprice + _gpsStr];
     })() : null,
     document.getElementById('edge-prot-check')?.checked ? ['Edge Protector', `${state['edge-prot-finish']} · ₱59`] : null,
     document.getElementById('double-cord-check')?.checked ? ['Double Cord', `+₱${isA5?50:40}`] : null,
@@ -5687,6 +5724,7 @@ function calcTotal_raw() {
   if (pocketsCheckedR) {
     var _pb3 = (state.base || '').toLowerCase();
     total += _pb3.startsWith('a5') ? 300 : _pb3.startsWith('pp') ? 180 : 200;
+    total += state.genuinePocketsSurcharge || 0;
   }
   const edgeProtChecked = document.getElementById('edge-prot-check')?.checked || false;
   if (edgeProtChecked) total += 59;
@@ -6011,6 +6049,8 @@ async function submitOrder() {
       addonCharms: state.addonCharms,
       fabricInsert: _fabricChk ? { pattern: state['fabric-pattern'] } : null,
       pockets: state.pockets || false,
+      pocketsType: (state.pockets && state.leatherType === 'genuine') ? 'genuine' : 'regular',
+      genuinePocketsSurcharge: state.genuinePocketsSurcharge || 0,
       edgeProtector: _edgeProtChk ? state['edge-prot-finish'] : null,
       doubleCord: document.getElementById('double-cord-check').checked,
       doubleCordColor: state.doubleCordColor || null,
