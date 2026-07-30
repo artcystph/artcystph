@@ -3751,16 +3751,8 @@ function applyPocketStock() {
   const prev = row.querySelector('.stock-badge-pocket');
   if (prev) prev.remove();
 
-  const isGenuine = state.leatherType === 'genuine';
-  const baseToKey = {
-    'a6-bifold':  isGenuine ? 'Genuine Pockets A6 Bifold'  : 'Pockets A6 Bifold',
-    'a6-trifold': isGenuine ? 'Genuine Pockets A6 Trifold' : 'Pockets A6 Trifold',
-    'a5-bifold':  isGenuine ? 'Genuine Pockets A5 Bifold'  : 'Pockets A5 Bifold',
-    'a5-trifold': isGenuine ? 'Genuine Pockets A5 Trifold' : 'Pockets A5 Trifold',
-    'pp-trifold': isGenuine ? 'Genuine Pockets PP Trifold' : 'Pockets PP Trifold',
-  };
-  const stockKey   = state.base ? baseToKey[state.base] : null;
-  const stockEntry = (stockKey && _stockData && stockKey in _stockData) ? _stockData[stockKey] : null;
+  const stockKey   = 'Inside Pockets';
+  const stockEntry = (_stockData && stockKey in _stockData) ? _stockData[stockKey] : null;
   const qty = (stockEntry !== null && typeof stockEntry === 'object') ? stockEntry.qty : stockEntry;
 
   if (qty === 0) {
